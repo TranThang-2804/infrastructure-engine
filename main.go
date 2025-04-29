@@ -32,6 +32,6 @@ func main() {
 
 func chatRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Post("/", handler.CallAI)
+	r.Post("/", handler.blueprint)
 	return r
 }
