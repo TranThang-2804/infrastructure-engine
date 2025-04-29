@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/TranThang-2804/ai-blog-writer/backend/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/shared/log"
 	"github.com/tmc/langchaingo/chains"
 	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/tmc/langchaingo/prompts"

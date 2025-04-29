@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/TranThang-2804/ai-blog-writer/backend/ai"
-	"github.com/TranThang-2804/ai-blog-writer/backend/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/ai"
+	"github.com/TranThang-2804/infrastructure-engine/shared/log"
 )
 
 type AIRequestDTO struct {

@@ -1,4 +1,4 @@
-module github.com/TranThang-2804/ai-blog-writer/backend
+module github.com/TranThang-2804/infrastructure-engine
 
 go 1.23.4
 
