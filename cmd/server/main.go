@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/TranThang-2804/infrastructure-engine/handler"
 	"github.com/TranThang-2804/infrastructure-engine/shared/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -32,6 +31,6 @@ func main() {
 
 func chatRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Post("/", handler.blueprint)
+	// r.Post("/", handler.blueprint)
 	return r
 }
