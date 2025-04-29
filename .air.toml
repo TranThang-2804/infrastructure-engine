@@ -1,0 +1,45 @@
+[build]
+  # Working directory
+  # . means the current directory
+  cmd = "go build -o ./tmp/main ."
+  bin = "./tmp/main"
+  full_bin = "APP_ENV=dev APP_USER=air LOG_LEVEL=DEBUG ./tmp/main"
+  # Watch these filename extensions
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  # Ignore these directories
+  exclude_dir = ["assets", "tmp", "vendor"]
+  # Ignore these files
+  exclude_file = ["air.toml"]
+  # Binary will be reloaded on these events
+  include_event = ["chmod", "create", "delete", "rename", "write"]
+  # Exclude files from being watched
+  exclude_event = ["open"]
+  # Kill the process if an error occurs
+  stop_on_error = true
+  # Send Interrupt signal before killing process (windows does not support this feature)
+  send_interrupt = false
+  # Delay after sending Interrupt signal
+  kill_delay = 2000 # nanosecond
+  # Rerun binary or not
+  rerun = false
+  # Delay after each execution
+  rerun_delay = 500
+
+[log]
+  # Show log time
+  time = true
+
+[color]
+  # Customize each part's color. If no color found, use the raw app log.
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+
+  [misc]
+  # Delete tmp directory on exit
+  clean_on_exit = true
+
+  [screen]
+  clear_on_rebuild = true
+  keep_scroll = true
