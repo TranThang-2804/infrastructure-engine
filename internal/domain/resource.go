@@ -16,7 +16,7 @@ type Resource struct {
 	LastModifiedAt string                  `json:"lastModifiedAt"`
 	LastModifiedBy string                  `json:"lastModifiedBy"`
 	Spec           string                  `json:"spec"`
-	BluePrintId    string                  `json:"bluePrintId"`
+	BluePrintName  string                  `json:"bluePrintName"`
 }
 
 type CompositeResource struct {

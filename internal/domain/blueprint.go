@@ -3,16 +3,15 @@ package domain
 import "context"
 
 type BluePrint struct {
-	Name              string `json:"name"`
-	Id                string `json:"id"`
-	Version           string `json:"version"`
-	OpenAPI           string `json:"openapi"`
-	OpenAPIForEditing string `json:"openapiForEditing"`
-	UiSchema          string `json:"uiSchema"`
-	Template          string `json:"template"`
-	Description       string `json:"description"`
-	Provider          string `json:"provider"`
-	IconImageUrl      string `json:"iconImageUrl"`
+	Name                 string `json:"name"`
+	Version              string `json:"version"`
+	JsonSchema           string `json:"jsonSchema"`
+	JsonSchemaForEditing string `json:"jsonSchemaForEditing"`
+	UiSchema             string `json:"uiSchema"`
+	Template             string `json:"template"`
+	Description          string `json:"description"`
+	Provider             string `json:"provider"`
+	IconImageUrl         string `json:"iconImageUrl"`
 }
 
 type BluePrintRepository interface {

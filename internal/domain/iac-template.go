@@ -7,7 +7,7 @@ type IacTemplate struct {
 	Version     string `json:"version"`
 	Description string `json:"description"`
 	Provider    string `json:"provider"`
-	Path        string `json:"path"`
+	Url         string `json:"url"`
 }
 
 type IacTemplateUsecase interface {
