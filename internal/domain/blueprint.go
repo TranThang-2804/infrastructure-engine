@@ -12,16 +12,16 @@ type BluePrint struct {
 	Description     string            `json:"description" yaml:"description"`
 	Provider        constant.Provider `json:"provider" yaml:"provider"`
 	IconImageUrl    string            `json:"iconImageUrl" yaml:"iconImageUrl"`
-	Versions        []Version         `json:"versions" yaml:"versions"` // Changed to a slice to match the format
+	Versions        []Version         `json:"versions" yaml:"versions"`
 	Valid           bool              `json:"valid,omitempty" yaml:"valid,omitempty"`
 	ValidationError string            `json:"validationError,omitempty" yaml:"validationError,omitempty"`
 }
 
 type Version struct {
-	Name                 string            `json:"name" yaml:"name"`
-	JsonSchema           string            `json:"jsonSchema" yaml:"jsonSchema"`
-	JsonSchemaForEditing string            `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
-	UiSchema             string            `json:"uiSchema",omitempty yaml:"uiSchema,omitempty"` // Use interface{} for null or other types
+	Name                 string              `json:"name" yaml:"name"`
+	JsonSchema           string              `json:"jsonSchema" yaml:"jsonSchema"`
+	JsonSchemaForEditing string              `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
+	UiSchema             string              `json:"uiSchema",omitempty yaml:"uiSchema,omitempty"`
 	CompositeTemplate    []CompositeTemplate `json:"compositeTemplate" yaml:"compositeTemplate"`
 }
 
