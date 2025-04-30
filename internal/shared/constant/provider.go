@@ -10,16 +10,16 @@ type Provider int
 const (
 	AWS Provider = iota
 	GCP
-  AZURE
-  K8S
+	AZURE
+	K8S
 )
 
 func (p Provider) String() string {
 	return [...]string{
 		"AWS",
 		"GCP",
-    "AZURE",
-    "K8S",
+		"AZURE",
+		"K8S",
 	}[p]
 }
 

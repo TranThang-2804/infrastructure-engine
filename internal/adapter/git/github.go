@@ -64,7 +64,7 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 		return nil, err
 	}
 
-  fmt.Print("Directory Content: ", directoryContent)
+	fmt.Print("Directory Content: ", directoryContent)
 
 	// Check if the path is a directory
 	if directoryContent == nil {
@@ -77,8 +77,8 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 	for _, content := range directoryContent {
 		if content.GetType() == "file" {
 			// Fetch the file content
-      fileContent, err := gh.ReadFileContent(owner, repo, branch, content.GetPath())
-      if err != nil {
+			fileContent, err := gh.ReadFileContent(owner, repo, branch, content.GetPath())
+			if err != nil {
 				log.Logger.Error("Error fetching file content:", "file", content.GetPath(), "err", err)
 				return nil, err
 			}

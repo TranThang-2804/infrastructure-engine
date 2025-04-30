@@ -25,14 +25,14 @@ func (br *bluePrintRepository) GetAll(c context.Context) ([]domain.BluePrint, er
 	fileContents, err := br.gitStore.GetAllFileContentsInDirectory("TranThang-2804", "platform-iac-template", "master", "blueprint")
 
 	for _, fileContent := range fileContents {
-    var bluePrint domain.BluePrint
+		var bluePrint domain.BluePrint
 		err = yaml.Unmarshal([]byte(fileContent), &bluePrint)
 		if err != nil {
 			log.Logger.Error("Error unmarshalling YAML", "error", err)
 			return nil, err
 		}
 
-    bluePrints = append(bluePrints, bluePrint)
+		bluePrints = append(bluePrints, bluePrint)
 	}
 
 	log.Logger.Debug("Blueprints Content", "content", bluePrints)

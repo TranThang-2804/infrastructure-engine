@@ -23,7 +23,7 @@ func main() {
 
 	env := app.Env
 
-  gitStore := app.GitStore
+	gitStore := app.GitStore
 
 	defer app.CloseDBConnection()
 

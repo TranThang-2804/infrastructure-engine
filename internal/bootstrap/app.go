@@ -10,7 +10,7 @@ type Application struct {
 func App() Application {
 	app := &Application{}
 	app.Env = NewEnv()
-  app.GitStore = NewGitHubStore(app.Env)
+	app.GitStore = NewGitHubStore(app.Env)
 	return *app
 }
 
