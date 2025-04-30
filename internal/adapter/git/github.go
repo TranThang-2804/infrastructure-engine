@@ -9,14 +9,13 @@ import (
 	"github.com/google/go-github/v50/github"
 )
 
-type GitHub struct{}
+type GitHub struct {
+  Client *github.Client
+}
 
 func (gh *GitHub) ReadFileContent(owner string, repo string, branch string, path string) (string, error) {
-	// Create a GitHub client
-	client := github.NewClient(nil)
-
 	// Fetch the file content
-	rawFileContent, _, _, err := client.Repositories.GetContents(
+	rawFileContent, _, _, err := gh.Client.Repositories.GetContents(
 		context.Background(),
 		owner,
 		repo,
@@ -48,11 +47,8 @@ func (gh *GitHub) ReadFileContent(owner string, repo string, branch string, path
 }
 
 func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branch string, path string) ([]string, error) {
-	// Create a GitHub client
-	client := github.NewClient(nil)
-
 	// Fetch the directory content
-	_, directoryContent, _, err := client.Repositories.GetContents(
+	_, directoryContent, _, err := gh.Client.Repositories.GetContents(
 		context.Background(),
 		owner,
 		repo,
@@ -94,8 +90,6 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 }
 
 func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath string, content string) error {
-	// Create a GitHub client
-	client := github.NewClient(nil)
 	// Create the file content
 	fileContent := &github.RepositoryContentFileOptions{
 		Message: github.String("Create " + filePath),
@@ -103,7 +97,7 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 		Branch:  github.String(branch),
 	}
 	// Create the file in the repository
-	_, _, err := client.Repositories.CreateFile(
+	_, _, err := gh.Client.Repositories.CreateFile(
 		context.Background(),
 		owner,
 		repo,
