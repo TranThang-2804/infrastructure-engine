@@ -18,7 +18,7 @@ type BluePrint struct {
 }
 
 type BluePrintVersion struct {
-	Name                 string                       `json:"name" yaml:"name"`
+	Name                 string                       `json:"versionName" yaml:"versionName"`
 	JsonSchema           string                       `json:"jsonSchema" yaml:"jsonSchema"`
 	JsonSchemaForEditing string                       `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
 	UiSchema             string                       `json:"uiSchema,omitempty" yaml:"uiSchema,omitempty"`
