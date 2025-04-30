@@ -3,6 +3,7 @@ package route
 import (
 	"time"
 
+	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/api/controller"
 	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/TranThang-2804/infrastructure-engine/internal/repository"
@@ -10,8 +11,8 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewBluePrintRouter(env *bootstrap.Env, timeout time.Duration, router chi.Router) {
-	br := repository.NewBluePrintRepository()
+func NewBluePrintRouter(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
+	br := repository.NewBluePrintRepository(gitStore)
 	bp := &controller.BluePrintController{
 		BluePrintUsecase: usecase.NewBluePrintUsecase(br, timeout),
 		Env:              env,

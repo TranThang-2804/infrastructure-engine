@@ -23,6 +23,8 @@ func main() {
 
 	env := app.Env
 
+  gitStore := app.GitStore
+
 	defer app.CloseDBConnection()
 
 	timeout := time.Duration(env.ContextTimeout) * time.Second
@@ -40,7 +42,7 @@ func main() {
 	})
 	r.Use(cors.Handler)
 
-	route.Setup(env, timeout, r)
+	route.Setup(env, gitStore, timeout, r)
 
 	log.Logger.Info("Starting server...", "on port", env.ServerAddress)
 	http.ListenAndServe(env.ServerAddress, r)

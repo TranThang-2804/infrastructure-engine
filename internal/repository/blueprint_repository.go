@@ -3,15 +3,18 @@ package repository
 import (
 	"context"
 
+	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 )
 
 type bluePrintRepository struct {
-	// database   mongo.Database
+	gitStore   git.GitStore
 }
 
-func NewBluePrintRepository() domain.BluePrintRepository {
-	return &bluePrintRepository{}
+func NewBluePrintRepository(gitStore git.GitStore) domain.BluePrintRepository {
+	return &bluePrintRepository{
+    gitStore: gitStore,
+  }
 }
 
 func (br *bluePrintRepository) GetAll(c context.Context) ([]domain.BluePrint, error) {
