@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/TranThang-2804/infrastructure-engine/internal/api/route"
 	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
-	"github.com/TranThang-2804/infrastructure-engine/internal/controller"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -40,8 +40,7 @@ func main() {
 	})
 	r.Use(cors.Handler)
 
-
-	controller.Setup(env, timeout, r)
+	route.Setup(env, timeout, r)
 
 	log.Logger.Info("Starting server...", "on port", env.ServerAddress)
 	http.ListenAndServe(env.ServerAddress, r)

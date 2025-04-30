@@ -1,7 +1,7 @@
 package bootstrap
 
 type Application struct {
-	Env   *Env
+	Env *Env
 	// Mongo mongo.Client
 }
 

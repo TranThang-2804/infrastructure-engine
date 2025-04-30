@@ -1,7 +1,7 @@
 [build]
   # Working directory
   # . means the current directory
-  cmd = "go build -o ./tmp/main ."
+  cmd = "go build -o ./tmp/main ./cmd/server/main.go"
   bin = "./tmp/main"
   full_bin = "APP_ENV=dev APP_USER=air LOG_LEVEL=DEBUG ./tmp/main"
   # Watch these filename extensions

@@ -1,8 +1,8 @@
 package bootstrap
 
 import (
-	"github.com/spf13/viper"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/spf13/viper"
 )
 
 type Env struct {
@@ -30,7 +30,7 @@ func NewEnv() *Env {
 	}
 
 	if env.AppEnv == "development" {
-	  log.Logger.Info("The App is running in development env")
+		log.Logger.Info("The App is running in development env")
 	}
 
 	return &env

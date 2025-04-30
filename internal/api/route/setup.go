@@ -1,10 +1,10 @@
-package controller 
+package route
 
 import (
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
@@ -17,6 +17,8 @@ func Setup(env *bootstrap.Env, timeout time.Duration, r *chi.Mux) {
 
 	// Public APIs
 	r.Group(func(r chi.Router) {
+		NewHealthCheckRouter(env, timeout, r)
+		NewBluePrintRouter(env, timeout, r)
 		// NewSignupRouter(env, timeout, db, r)
 		// NewLoginRouter(env, timeout, db, r)
 		// NewRefreshTokenRouter(env, timeout, db, r)
