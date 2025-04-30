@@ -58,7 +58,7 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
     yamlString,
   )
   if err != nil {
-    log.Logger.Error("Error adding file", "error", err)
+    log.Logger.Error("Error creating file", "error", err)
     return compositeResource, err
   }
 
