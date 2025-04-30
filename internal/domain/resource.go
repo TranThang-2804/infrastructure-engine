@@ -6,7 +6,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
 )
 
-type Resource struct {
+type resource struct {
 	Name           string                  `json:"name"`
 	Id             string                  `json:"id"`
 	Status         constant.ResourceStatus `json:"status"`
@@ -29,7 +29,12 @@ type CompositeResource struct {
 	LastModifiedBy string                  `json:"lastModifiedBy"`
 	Spec           string                  `json:"spec"`
 	Status         constant.ResourceStatus `json:"status"`
-	ResourceIds    []string                `json:"resourceIds"`
+	Resources      []resource              `json:"resources"`
+}
+
+type CompositeResourceRepository interface {
+	Create(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
+	GetAll(c context.Context) ([]CompositeResource, error)
 }
 
 type CompositeResourceUsecase interface {

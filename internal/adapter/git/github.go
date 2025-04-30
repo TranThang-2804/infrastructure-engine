@@ -83,12 +83,6 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 				return nil, err
 			}
 
-			// Decode the file content (GitHub API returns it as base64-encoded)
-			if err != nil {
-				log.Logger.Error("Error decoding file content:", "file", content.GetPath(), "err", err)
-				return nil, err
-			}
-
 			// Append the decoded content to the result
 			fileContents = append(fileContents, fileContent)
 		}
@@ -97,4 +91,29 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 	// Log and return the file contents
 	log.Logger.Debug("File contents in directory", "path", path, "fileContents", fileContents)
 	return fileContents, nil
+}
+
+func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath string, content string) error {
+	// Create a GitHub client
+	client := github.NewClient(nil)
+	// Create the file content
+	fileContent := &github.RepositoryContentFileOptions{
+		Message: github.String("Create " + filePath),
+		Content: []byte(content),
+		Branch:  github.String(branch),
+	}
+	// Create the file in the repository
+	_, _, err := client.Repositories.CreateFile(
+		context.Background(),
+		owner,
+		repo,
+		filePath,
+		fileContent,
+	)
+	if err != nil {
+		log.Logger.Error("Error creating file:", "err", err)
+		return err
+	}
+	log.Logger.Debug("File created successfully", "fileName", filePath)
+	return nil
 }
