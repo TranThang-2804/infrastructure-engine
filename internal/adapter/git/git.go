@@ -1,10 +1,5 @@
 package git
 
-import ()
-
-type GitStore struct {}
-
-type GitAction interface {
-  CheckRepoExist() (bool, error)
-  CheckConnection() (bool, error)
+type GitStore interface {
+  ReadFileContent(path string, owner string, repo string, branch string) (string, error)
 }
