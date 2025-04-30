@@ -3,15 +3,29 @@ package domain
 import "context"
 
 type BluePrint struct {
-	Name                 string `json:"name"`
-	Version              string `json:"version"`
-	JsonSchema           string `json:"jsonSchema"`
-	JsonSchemaForEditing string `json:"jsonSchemaForEditing"`
-	UiSchema             string `json:"uiSchema"`
-	Template             string `json:"template"`
-	Description          string `json:"description"`
-	Provider             string `json:"provider"`
-	IconImageUrl         string `json:"iconImageUrl"`
+	Name         string        `json:"name" yaml:"Name"`
+	Description  string        `json:"description" yaml:"Description"`
+	Provider     string        `json:"provider" yaml:"Provider"`
+	IconImageUrl string        `json:"iconImageUrl" yaml:"IconImageUrl"`
+	Versions     []VersionInfo `json:"versions" yaml:"versions"` // Changed to a slice to match the format
+}
+
+type VersionInfo struct {
+	Name                 string      `json:"name" yaml:"name"`
+	JsonSchema           string      `json:"jsonSchema" yaml:"jsonSchema"`
+	JsonSchemaForEditing string      `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
+	UISchema             interface{} `json:"uiSchema" yaml:"uiSchema"` // Use interface{} for null or other types
+	Template             Template    `json:"template" yaml:"template"`
+}
+
+type Template struct {
+	TemplateRef []TemplateRef `json:"templateRef" yaml:"template-ref"`
+}
+
+type TemplateRef struct {
+	Template string `json:"template" yaml:"template"`
+	Version  string `json:"version" yaml:"version"`
+	Value    string `json:"value" yaml:"value"`
 }
 
 type BluePrintRepository interface {

@@ -3,6 +3,7 @@ package git
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/google/go-github/v50/github"
@@ -10,7 +11,7 @@ import (
 
 type GitHub struct{}
 
-func (gh *GitHub) ReadFileContent(path string, owner string, repo string, branch string) (string, error) {
+func (gh *GitHub) ReadFileContent(owner string, repo string, branch string, path string) (string, error) {
 	// Create a GitHub client
 	client := github.NewClient(nil)
 
@@ -27,6 +28,12 @@ func (gh *GitHub) ReadFileContent(path string, owner string, repo string, branch
 		return "", err
 	}
 
+	// Check if the path is a file
+	if rawFileContent == nil || rawFileContent.GetType() != "file" {
+		log.Logger.Error("The provided path is not a file:", "path", path)
+		return "", fmt.Errorf("the provided path is not a file: %s", path)
+	}
+
 	// Decode the file content (GitHub API returns it as base64-encoded)
 	content, err := base64.StdEncoding.DecodeString(*rawFileContent.Content)
 	if err != nil {
@@ -35,7 +42,59 @@ func (gh *GitHub) ReadFileContent(path string, owner string, repo string, branch
 	}
 
 	// Print the file content
-  fileContent := string(content)
-  log.Logger.Info("File Content", "content", fileContent)
-  return fileContent, nil
+	fileContent := string(content)
+	log.Logger.Debug("File Content", "content", fileContent)
+	return fileContent, nil
+}
+
+func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branch string, path string) ([]string, error) {
+	// Create a GitHub client
+	client := github.NewClient(nil)
+
+	// Fetch the directory content
+	_, directoryContent, _, err := client.Repositories.GetContents(
+		context.Background(),
+		owner,
+		repo,
+		path,
+		&github.RepositoryContentGetOptions{Ref: branch},
+	)
+	if err != nil {
+		log.Logger.Error("Error fetching directory content:", "err", err)
+		return nil, err
+	}
+
+  fmt.Print("Directory Content: ", directoryContent)
+
+	// Check if the path is a directory
+	if directoryContent == nil {
+		log.Logger.Error("The provided path is not a directory", "path", path)
+		return nil, fmt.Errorf("the provided path is not a directory or is empty: %s", path)
+	}
+
+	// Collect file contents
+	var fileContents []string
+	for _, content := range directoryContent {
+		if content.GetType() == "file" {
+			// Fetch the file content
+      fileContent, err := gh.ReadFileContent(owner, repo, branch, content.GetPath())
+      if err != nil {
+				log.Logger.Error("Error fetching file content:", "file", content.GetPath(), "err", err)
+				return nil, err
+			}
+
+			// Decode the file content (GitHub API returns it as base64-encoded)
+			if err != nil {
+				log.Logger.Error("Error decoding file content:", "file", content.GetPath(), "err", err)
+				return nil, err
+			}
+
+			// Append the decoded content to the result
+			fileContents = append(fileContents, fileContent)
+		}
+	}
+
+	// Log and return the file contents
+	log.Logger.Debug("File contents in directory", "path", path, "fileContents", fileContents)
+	return fileContents, nil
 }

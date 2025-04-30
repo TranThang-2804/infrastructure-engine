@@ -1,5 +1,6 @@
 package git
 
 type GitStore interface {
-  ReadFileContent(path string, owner string, repo string, branch string) (string, error)
+  ReadFileContent(owner string, repo string, branch string, path string) (string, error)
+  GetAllFileContentsInDirectory(owner string, repo string, branch string, path string) ([]string, error)
 }
