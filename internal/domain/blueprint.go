@@ -1,13 +1,17 @@
 package domain
 
-import "context"
+import (
+	"context"
+
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
+)
 
 type BluePrint struct {
-	Name         string        `json:"name" yaml:"Name"`
-	Description  string        `json:"description" yaml:"Description"`
-	Provider     string        `json:"provider" yaml:"Provider"`
-	IconImageUrl string        `json:"iconImageUrl" yaml:"IconImageUrl"`
-	Versions     []VersionInfo `json:"versions" yaml:"versions"` // Changed to a slice to match the format
+	Name         string            `json:"name" yaml:"Name"`
+	Description  string            `json:"description" yaml:"Description"`
+	Provider     constant.Provider `json:"provider" yaml:"Provider"`
+	IconImageUrl string            `json:"iconImageUrl" yaml:"IconImageUrl"`
+	Versions     []VersionInfo     `json:"versions" yaml:"versions"` // Changed to a slice to match the format
 }
 
 type VersionInfo struct {
