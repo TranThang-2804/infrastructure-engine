@@ -43,9 +43,8 @@ func main() {
 
 	controller.Setup(env, timeout, r)
 
+	log.Logger.Info("Starting server...", "on port", env.ServerAddress)
 	http.ListenAndServe(env.ServerAddress, r)
-
-	log.Logger.Info("Starting server on :%s...", env.ServerAddress)
 }
 
 func chatRouter() http.Handler {
