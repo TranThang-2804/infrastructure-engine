@@ -7,11 +7,13 @@ import (
 )
 
 type BluePrint struct {
-	Name         string            `json:"name" yaml:"Name"`
-	Description  string            `json:"description" yaml:"Description"`
-	Provider     constant.Provider `json:"provider" yaml:"Provider"`
-	IconImageUrl string            `json:"iconImageUrl" yaml:"IconImageUrl"`
-	Versions     []VersionInfo     `json:"versions" yaml:"versions"` // Changed to a slice to match the format
+	Name            string            `json:"name" yaml:"Name"`
+	Description     string            `json:"description" yaml:"Description"`
+	Provider        constant.Provider `json:"provider" yaml:"Provider"`
+	IconImageUrl    string            `json:"iconImageUrl" yaml:"IconImageUrl"`
+	Versions        []VersionInfo     `json:"versions" yaml:"versions"` // Changed to a slice to match the format
+	Valid           bool              `json:"valid,omitempty" yaml:"valid,omitempty"`
+	ValidationError string            `json:"validationError,omitempty" yaml:"validationError,omitempty"`
 }
 
 type VersionInfo struct {

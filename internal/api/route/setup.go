@@ -20,6 +20,7 @@ func Setup(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, r *
 	r.Group(func(r chi.Router) {
 		NewHealthCheckRouter(env, timeout, r)
 		NewBluePrintRouter(env, gitStore, timeout, r)
+    NewIacTemplateRouter(env, gitStore, timeout, r)
 		// NewSignupRouter(env, timeout, db, r)
 		// NewLoginRouter(env, timeout, db, r)
 		// NewRefreshTokenRouter(env, timeout, db, r)

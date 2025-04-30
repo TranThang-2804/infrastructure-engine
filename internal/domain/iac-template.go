@@ -10,6 +10,10 @@ type IacTemplate struct {
 	Url         string `json:"url"`
 }
 
+type IacTemplateRepository interface {
+	GetAll(c context.Context) ([]IacTemplate, error)
+}
+
 type IacTemplateUsecase interface {
 	GetAll(c context.Context) ([]IacTemplate, error)
 }
