@@ -1,10 +1,14 @@
 package main
 
 import (
-	"github.com/TranThang-2804/infrastructure-engine/shared/log"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
+	"time"
+
+	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
+	"github.com/TranThang-2804/infrastructure-engine/internal/controller"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 func init() {
@@ -14,19 +18,34 @@ func init() {
 }
 
 func main() {
+
+	app := bootstrap.App()
+
+	env := app.Env
+
+	defer app.CloseDBConnection()
+
+	timeout := time.Duration(env.ContextTimeout) * time.Second
+
 	r := chi.NewRouter()
 
-	// Define middleware
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	// CORS middleware
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"}, // Use your allowed origins
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Origin", "X-Requested-With"},
+		ExposedHeaders:   []string{"Link", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	r.Use(cors.Handler)
 
-	r.Mount("/api", chatRouter())
 
-	http.ListenAndServe(":3000", r)
+	controller.Setup(env, timeout, r)
 
-	log.Logger.Info("Starting server on :8080...")
+	http.ListenAndServe(env.ServerAddress, r)
+
+	log.Logger.Info("Starting server on :%s...", env.ServerAddress)
 }
 
 func chatRouter() http.Handler {
