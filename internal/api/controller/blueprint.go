@@ -13,9 +13,16 @@ type BluePrintController struct {
 	Env              *bootstrap.Env
 }
 
-func (bp *BluePrintController) GetAll(w http.ResponseWriter, r *http.Request) {
+func (bc *BluePrintController) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	bluePrints, err := bc.BluePrintUsecase.GetAll(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-  emptyBlueprint := []domain.BluePrint{}
-	json.NewEncoder(w).Encode(emptyBlueprint)
+	json.NewEncoder(w).Encode(bluePrints)
 }

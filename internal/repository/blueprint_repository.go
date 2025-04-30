@@ -15,7 +15,7 @@ func NewBluePrintRepository() domain.BluePrintRepository {
 }
 
 func (br *bluePrintRepository) GetAll(c context.Context) ([]domain.BluePrint, error) {
-	var bluePrint []domain.BluePrint
+	var bluePrint []domain.BluePrint = []domain.BluePrint{}
 
 	var err error
 
