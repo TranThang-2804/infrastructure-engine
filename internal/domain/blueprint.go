@@ -21,7 +21,7 @@ type Version struct {
 	Name                 string              `json:"name" yaml:"name"`
 	JsonSchema           string              `json:"jsonSchema" yaml:"jsonSchema"`
 	JsonSchemaForEditing string              `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
-	UiSchema             string              `json:"uiSchema",omitempty yaml:"uiSchema,omitempty"`
+	UiSchema             string              `json:"uiSchema,omitempty" yaml:"uiSchema,omitempty"`
 	CompositeTemplate    []CompositeTemplate `json:"compositeTemplate" yaml:"compositeTemplate"`
 }
 
