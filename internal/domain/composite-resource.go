@@ -21,16 +21,22 @@ type resource struct {
 }
 
 type CompositeResource struct {
-	Name           string                  `json:"name"`
-	Id             string                  `json:"id"`
-	Description    string                  `json:"description"`
-	CreatedAt      string                  `json:"createdAt"`
-	CreatedBy      string                  `json:"createdBy"`
-	LastModifiedAt string                  `json:"lastModifiedAt"`
-	LastModifiedBy string                  `json:"lastModifiedBy"`
-	Spec           json.RawMessage         `json:"spec"`
-	Status         constant.ResourceStatus `json:"status"`
-	Resources      []resource              `json:"resources"`
+	Name           string                    `json:"name"`
+	Id             string                    `json:"id"`
+	Description    string                    `json:"description"`
+	CreatedAt      string                    `json:"createdAt"`
+	CreatedBy      string                    `json:"createdBy"`
+	LastModifiedAt string                    `json:"lastModifiedAt"`
+	LastModifiedBy string                    `json:"lastModifiedBy"`
+	Spec           json.RawMessage           `json:"spec"`
+	Status         constant.ResourceStatus   `json:"status"`
+	Resources      []resource                `json:"resources"`
+	Metadata       CompositeResourceMetadata `json:"metadata,omitempty"`
+}
+
+type CompositeResourceMetadata struct {
+	Group   string `json:"group"`
+	Project string `json:"project"`
 }
 
 type CompositeResourceRepository interface {
@@ -54,10 +60,11 @@ type GetCompositeResourceResponse struct {
 }
 
 type CreateCompositeResourceRequest struct {
-	Name          string          `json:"name" validate:"required"`
-	Description   string          `json:"description" validate:"required"`
-	Spec          json.RawMessage `json:"spec" validate:"required"`
-	BluePrintType string          `json:"bluePrintType" validate:"required"`
+	Name          string                    `json:"name" validate:"required"`
+	Description   string                    `json:"description" validate:"required"`
+	Spec          json.RawMessage           `json:"spec" validate:"required"`
+	BluePrintType string                    `json:"bluePrintType" validate:"required"`
+	MetaData      CompositeResourceMetadata `json:"metadata,omitempty"`
 }
 
 type CreateCompositeResourceResponse struct {

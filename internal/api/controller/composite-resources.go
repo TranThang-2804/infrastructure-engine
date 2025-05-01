@@ -34,7 +34,11 @@ func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Req
 func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Request) {
 	var request domain.CreateCompositeResourceRequest
 
-	err := json.NewDecoder(r.Body).Decode(&request)
+  // Parse request body
+  decoder := json.NewDecoder(r.Body)
+  decoder.DisallowUnknownFields()
+	err := decoder.Decode(&request)
+
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
 		log.Logger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
