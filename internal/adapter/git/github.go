@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/google/go-github/v50/github"
@@ -90,24 +91,44 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 }
 
 func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath string, content string) error {
-	// Create the file content
-	fileContent := &github.RepositoryContentFileOptions{
-		Message: github.String("Create " + filePath),
-		Content: []byte(content),
-		Branch:  github.String(branch),
-	}
-	// Create the file in the repository
-	_, _, err := gh.Client.Repositories.CreateFile(
+	// Check if the file already exists
+	fileContent, _, _, err := gh.Client.Repositories.GetContents(
 		context.Background(),
 		owner,
 		repo,
 		filePath,
-		fileContent,
+		&github.RepositoryContentGetOptions{Ref: branch},
+	)
+	if err == nil && fileContent != nil {
+		err := fmt.Errorf("file %s already exists in branch %s", filePath, branch)
+		log.Logger.Error("File already exists", "filePath", filePath, "branch", branch)
+		return err
+	}
+	if err != nil && !strings.Contains(err.Error(), "404") {
+		log.Logger.Error("Error checking file existence", "err", err)
+		return err
+	}
+
+	// Create the file content
+	fileContentOptions := &github.RepositoryContentFileOptions{
+		Message: github.String("Create " + filePath),
+		Content: []byte(content),
+		Branch:  github.String(branch),
+	}
+
+	// Create the file in the repository
+	_, _, err = gh.Client.Repositories.CreateFile(
+		context.Background(),
+		owner,
+		repo,
+		filePath,
+		fileContentOptions,
 	)
 	if err != nil {
 		log.Logger.Error("Error creating file:", "err", err)
 		return err
 	}
+
 	log.Logger.Debug("File created successfully", "fileName", filePath)
 	return nil
 }

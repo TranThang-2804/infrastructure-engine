@@ -32,6 +32,8 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
 	defer cancel()
 
+  // Validate Spec With JsonSchema
+
 	// Generate uuid
 	log.Logger.Debug("Generating uuidv7")
 	uuid, err := utils.GenerateUUIDv7()
@@ -59,6 +61,8 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 		Status:         constant.Pending,
 		Resources:      nil,
 	}
+
+  log.Logger.Debug("CompositeResourceUsecase", "compositeResource", compositeResource)
 
 	return cu.compositeResourceRepository.Create(ctx, compositeResource)
 }
