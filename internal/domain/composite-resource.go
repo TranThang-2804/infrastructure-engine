@@ -54,10 +54,10 @@ type GetCompositeResourceResponse struct {
 }
 
 type CreateCompositeResourceRequest struct {
-	Name          string `json:"name"`
-	Description   string
-	Spec          json.RawMessage `json:"spec"`
-	BluePrintType string          `json:"bluePrintType,omitempty"`
+	Name          string          `json:"name" validate:"required"`
+	Description   string          `json:"description" validate:"required"`
+	Spec          json.RawMessage `json:"spec" validate:"required"`
+	BluePrintType string          `json:"bluePrintType" validate:"required"`
 }
 
 type CreateCompositeResourceResponse struct {
