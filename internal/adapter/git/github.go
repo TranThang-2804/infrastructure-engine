@@ -10,7 +10,7 @@ import (
 )
 
 type GitHub struct {
-  Client *github.Client
+	Client *github.Client
 }
 
 func (gh *GitHub) ReadFileContent(owner string, repo string, branch string, path string) (string, error) {

@@ -40,7 +40,7 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-  compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
+	compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)

@@ -44,23 +44,23 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 	// Convert object to YAML
 	yamlBytes, err := yaml.Marshal(compositeResource)
 	if err != nil {
-    log.Logger.Error("Error converting to YAML:", "error", err)
+		log.Logger.Error("Error converting to YAML:", "error", err)
 		return compositeResource, err
 	}
 
 	// Convert YAML bytes to string
 	yamlString := string(yamlBytes)
-  err = cr.gitStore.CreateFile(
-    "TranThang-2804", 
-    "platform-iac-resource", 
-    "master", 
-    "template.yaml", 
-    yamlString,
-  )
-  if err != nil {
-    log.Logger.Error("Error creating file", "error", err)
-    return compositeResource, err
-  }
+	err = cr.gitStore.CreateFile(
+		"TranThang-2804",
+		"platform-iac-resource",
+		"master",
+		"templatee.yaml",
+		yamlString,
+	)
+	if err != nil {
+		log.Logger.Error("Error creating file", "error", err)
+		return compositeResource, err
+	}
 
 	return compositeResource, nil
 }

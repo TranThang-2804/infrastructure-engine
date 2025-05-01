@@ -5,6 +5,9 @@ import (
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
 
 type compositeResourceUsecase struct {
@@ -29,7 +32,33 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
 	defer cancel()
 
-  compositeResource := domain.CompositeResource{
-  }
+	// Generate uuid
+	log.Logger.Debug("Generating uuidv7")
+	uuid, err := utils.GenerateUUIDv7()
+	if err != nil {
+		log.Logger.Error("Error getting all composite resources", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
+
+	// Get current time
+	currentTime := time.Now()
+	currentDate := currentTime.Format("2006-01-02")
+
+	// Getting user created
+	createdBy := "anonymous"
+
+	compositeResource := domain.CompositeResource{
+		Name:           createCompositeResourceRequest.Name,
+		Description:    createCompositeResourceRequest.BluePrintType,
+		Id:             uuid,
+		CreatedAt:      currentDate,
+		CreatedBy:      createdBy,
+		LastModifiedAt: currentDate,
+		LastModifiedBy: createdBy,
+		Spec:           createCompositeResourceRequest.Spec,
+		Status:         constant.Pending,
+		Resources:      nil,
+	}
+
 	return cu.compositeResourceRepository.Create(ctx, compositeResource)
 }

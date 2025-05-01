@@ -15,7 +15,7 @@ func NewCompositeResourceRouter(env *bootstrap.Env, gitStore git.GitStore, timeo
 	cr := repository.NewCompositeResourceRepository(gitStore)
 	cp := &controller.CompositeResourceController{
 		CompositeResourceUseCase: usecase.NewCompositeResourceUsecase(cr, timeout),
-		Env:              env,
+		Env:                      env,
 	}
 	router.Get("/composite", cp.GetAll)
 	router.Post("/composite", cp.Create)
