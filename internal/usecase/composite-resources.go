@@ -32,7 +32,9 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
 	defer cancel()
 
-  // Validate Spec With JsonSchema
+  // Validate BluePrintId
+
+	// Validate Spec With JsonSchema
 
 	// Generate uuid
 	log.Logger.Debug("Generating uuidv7")
@@ -51,7 +53,8 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 
 	compositeResource := domain.CompositeResource{
 		Name:           createCompositeResourceRequest.Name,
-		Description:    createCompositeResourceRequest.BluePrintType,
+		Description:    createCompositeResourceRequest.Description,
+		BluePrintId:    createCompositeResourceRequest.BluePrintId,
 		Id:             uuid,
 		CreatedAt:      currentDate,
 		CreatedBy:      createdBy,
@@ -60,9 +63,10 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 		Spec:           createCompositeResourceRequest.Spec,
 		Status:         constant.Pending,
 		Resources:      nil,
+		Metadata:       createCompositeResourceRequest.MetaData,
 	}
 
-  log.Logger.Debug("CompositeResourceUsecase", "compositeResource", compositeResource)
+	log.Logger.Debug("CompositeResourceUsecase", "compositeResource", compositeResource)
 
 	return cu.compositeResourceRepository.Create(ctx, compositeResource)
 }

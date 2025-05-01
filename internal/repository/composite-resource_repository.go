@@ -50,11 +50,25 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 
 	// Convert YAML bytes to string
 	yamlString := string(yamlBytes)
+
+	// Get filepath from metadata
+	// default filepath if no metadata provided
+	filepath := ""
+	if compositeResource.Metadata.Project != "" {
+		filepath += compositeResource.Metadata.Project + "/"
+	} else {
+		filepath += "default/"
+	}
+	if compositeResource.Metadata.Group != "" {
+		filepath += compositeResource.Metadata.Group + "/"
+	}
+	filepath += compositeResource.BluePrintId + "/" + compositeResource.Id + ".yaml"
+
 	err = cr.gitStore.CreateFile(
 		"TranThang-2804",
 		"platform-iac-resource",
 		"master",
-		"templatee.yaml",
+		filepath,
 		yamlString,
 	)
 	if err != nil {
