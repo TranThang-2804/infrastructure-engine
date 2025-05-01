@@ -50,14 +50,14 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
     return
   }
 
-	// compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	log.Logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
-	// 	return
-	// }
+	compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
+	if err != nil {
+		http.Error(w, utils.JsonError(err.Error()), http.StatusInternalServerError)
+		log.Logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	// json.NewEncoder(w).Encode(compositeResource)
+	json.NewEncoder(w).Encode(compositeResource)
 }
