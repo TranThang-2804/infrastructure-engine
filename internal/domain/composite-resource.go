@@ -40,7 +40,7 @@ type CompositeResourceRepository interface {
 
 type CompositeResourceUsecase interface {
 	GetAll(c context.Context) ([]CompositeResource, error)
-	Create(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
+	Create(c context.Context, CreateCompositeResourceRequest CreateCompositeResourceRequest) (CompositeResource, error)
 }
 
 type GetCompositeResourceRequest struct {

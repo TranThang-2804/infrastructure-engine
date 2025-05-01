@@ -1,4 +1,4 @@
-package http
+package utils
 
 import (
 	"github.com/go-resty/resty/v2"

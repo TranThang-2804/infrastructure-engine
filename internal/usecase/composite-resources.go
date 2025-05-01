@@ -25,8 +25,11 @@ func (cu *compositeResourceUsecase) GetAll(c context.Context) ([]domain.Composit
 	return cu.compositeResourceRepository.GetAll(ctx)
 }
 
-func (cu *compositeResourceUsecase) Create(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeResourceRequest domain.CreateCompositeResourceRequest) (domain.CompositeResource, error) {
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
 	defer cancel()
+
+  compositeResource := domain.CompositeResource{
+  }
 	return cu.compositeResourceRepository.Create(ctx, compositeResource)
 }

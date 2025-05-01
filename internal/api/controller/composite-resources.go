@@ -7,6 +7,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
 
 type CompositeResourceController struct {
@@ -30,20 +31,23 @@ func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Req
 }
 
 func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var compositeResource domain.CompositeResource
-	err := json.NewDecoder(r.Body).Decode(&compositeResource)
+	var request domain.CreateCompositeResourceRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Logger.Error("Error parsing composite resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
+		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
+		log.Logger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
 		return
 	}
-	compositeResource, err = rc.CompositeResourceUseCase.Create(r.Context(), compositeResource)
+
+  compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(compositeResource)
 }
