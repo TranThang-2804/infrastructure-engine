@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
 )
@@ -16,7 +15,7 @@ type resource struct {
 	CreatedBy      string                  `json:"createdBy"`
 	LastModifiedAt string                  `json:"lastModifiedAt"`
 	LastModifiedBy string                  `json:"lastModifiedBy"`
-	Spec           json.RawMessage         `json:"spec"`
+	Spec           map[string]interface{}  `json:"spec"`
 	BluePrintName  string                  `json:"bluePrintName"`
 }
 
@@ -29,7 +28,7 @@ type CompositeResource struct {
 	CreatedBy      string                    `json:"createdBy"`
 	LastModifiedAt string                    `json:"lastModifiedAt"`
 	LastModifiedBy string                    `json:"lastModifiedBy"`
-	Spec           json.RawMessage           `json:"spec"`
+	Spec           map[string]interface{}    `json:"spec"`
 	Status         constant.ResourceStatus   `json:"status"`
 	Resources      []resource                `json:"resources"`
 	Metadata       CompositeResourceMetadata `json:"metadata,omitempty"`
@@ -63,7 +62,7 @@ type GetCompositeResourceResponse struct {
 type CreateCompositeResourceRequest struct {
 	Name             string                    `json:"name" validate:"required"`
 	Description      string                    `json:"description" validate:"required"`
-	Spec             json.RawMessage           `json:"spec" validate:"required"`
+	Spec             map[string]interface{}    `json:"spec" validate:"required"`
 	BluePrintId      string                    `json:"bluePrintId" validate:"required"`
 	BluePrintVersion string                    `json:"bluePrintVersion" validate:"required"`
 	MetaData         CompositeResourceMetadata `json:"metadata,omitempty"`

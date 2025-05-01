@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
@@ -50,7 +51,14 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	}
 
 	// Validate Spec With JsonSchema
-	err = utils.ValidateJsonSchema(createCompositeResourceRequest.Spec, selectedBluePrintVersion.JsonSchema)
+  resourceCreateSpecBytes, err := json.Marshal(createCompositeResourceRequest.Spec)
+  if err != nil {
+    log.Logger.Error("Error marshalling spec to json", "error", err.Error())
+    return domain.CompositeResource{}, err
+  }
+  resourceCreateSpec := string(resourceCreateSpecBytes)
+
+	err = utils.ValidateJsonSchema(resourceCreateSpec, selectedBluePrintVersion.JsonSchema)
 	if err != nil {
 		log.Logger.Error("Error validating json schema", "error", err.Error())
 		return domain.CompositeResource{}, err
