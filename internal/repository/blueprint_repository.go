@@ -39,3 +39,25 @@ func (br *bluePrintRepository) GetAll(c context.Context) ([]domain.BluePrint, er
 
 	return bluePrints, err
 }
+
+func (br *bluePrintRepository) GetById(c context.Context, id string) (domain.BluePrint, error) {
+	var bluePrint domain.BluePrint
+
+	fileContents, err := br.gitStore.GetAllFileContentsInDirectory("TranThang-2804", "platform-iac-template", "master", "blueprint")
+
+	for _, fileContent := range fileContents {
+		var bluePrint domain.BluePrint
+		err = yaml.Unmarshal([]byte(fileContent), &bluePrint)
+		if err != nil {
+			log.Logger.Error("Error unmarshalling YAML", "error", err)
+			return bluePrint, err
+		}
+    if bluePrint.Id == id {
+      bluePrint = bluePrint
+    }
+	}
+
+	log.Logger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
+
+	return bluePrint, err
+}

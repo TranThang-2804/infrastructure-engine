@@ -12,12 +12,14 @@ import (
 
 type compositeResourceUsecase struct {
 	compositeResourceRepository domain.CompositeResourceRepository
+	bluePrintUsecase            domain.BluePrintUsecase
 	contextTimeout              time.Duration
 }
 
-func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, timeout time.Duration) domain.CompositeResourceUsecase {
+func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, bluePrintUsecase domain.BluePrintUsecase, timeout time.Duration) domain.CompositeResourceUsecase {
 	return &compositeResourceUsecase{
 		compositeResourceRepository: compositeResourceRepository,
+		bluePrintUsecase:            bluePrintUsecase,
 		contextTimeout:              timeout,
 	}
 }
@@ -32,9 +34,15 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
 	defer cancel()
 
-  // Validate BluePrintId
+	// Validate BluePrintId
+	// bluePrint, err := cu.bluePrintUsecase.GetById(c, createCompositeResourceRequest.BluePrintId)
+	//  if err != nil {
+	//    log.Logger.Error("Error getting blueprint by id", "error", err.Error())
+	//    return domain.CompositeResource{}, err
+	//  }
 
 	// Validate Spec With JsonSchema
+
 
 	// Generate uuid
 	log.Logger.Debug("Generating uuidv7")

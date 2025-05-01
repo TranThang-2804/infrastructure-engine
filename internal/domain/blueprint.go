@@ -33,6 +33,7 @@ type BluePrintCompositeTemplate struct {
 
 type BluePrintRepository interface {
 	GetAll(c context.Context) ([]BluePrint, error)
+	GetById(c context.Context, id string) (BluePrint, error)
 }
 
 type GetBluePrintRequest struct {
@@ -43,4 +44,5 @@ type GetBluePrintResponse struct {
 
 type BluePrintUsecase interface {
 	GetAll(c context.Context) ([]BluePrint, error)
+	GetById(c context.Context, id string) (BluePrint, error)
 }

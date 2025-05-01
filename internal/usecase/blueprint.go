@@ -24,3 +24,9 @@ func (bp *bluePrintUsecase) GetAll(c context.Context) ([]domain.BluePrint, error
 	defer cancel()
 	return bp.bluePrintRepository.GetAll(ctx)
 }
+
+func (bp *bluePrintUsecase) GetById(c context.Context, id string) (domain.BluePrint, error) {
+  ctx, cancel := context.WithTimeout(c, bp.contextTimeout)
+  defer cancel()
+  return bp.bluePrintRepository.GetById(ctx, id)
+}
