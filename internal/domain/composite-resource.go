@@ -61,11 +61,12 @@ type GetCompositeResourceResponse struct {
 }
 
 type CreateCompositeResourceRequest struct {
-	Name        string                    `json:"name" validate:"required"`
-	Description string                    `json:"description" validate:"required"`
-	Spec        json.RawMessage           `json:"spec" validate:"required"`
-	BluePrintId string                    `json:"bluePrintId" validate:"required"`
-	MetaData    CompositeResourceMetadata `json:"metadata,omitempty"`
+	Name             string                    `json:"name" validate:"required"`
+	Description      string                    `json:"description" validate:"required"`
+	Spec             json.RawMessage           `json:"spec" validate:"required"`
+	BluePrintId      string                    `json:"bluePrintId" validate:"required"`
+	BluePrintVersion string                    `json:"bluePrintVersion" validate:"required"`
+	MetaData         CompositeResourceMetadata `json:"metadata,omitempty"`
 }
 
 type CreateCompositeResourceResponse struct {

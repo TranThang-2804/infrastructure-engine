@@ -35,14 +35,26 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	defer cancel()
 
 	// Validate BluePrintId
-	// bluePrint, err := cu.bluePrintUsecase.GetById(c, createCompositeResourceRequest.BluePrintId)
-	//  if err != nil {
-	//    log.Logger.Error("Error getting blueprint by id", "error", err.Error())
-	//    return domain.CompositeResource{}, err
-	//  }
+	bluePrint, err := cu.bluePrintUsecase.GetById(c, createCompositeResourceRequest.BluePrintId)
+	if err != nil {
+		log.Logger.Error("Error getting blueprint by id", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
+
+	var selectedBluePrintVersion domain.BluePrintVersion
+
+	for _, version := range bluePrint.Versions {
+		if version.Name == createCompositeResourceRequest.BluePrintVersion {
+			selectedBluePrintVersion = version
+		}
+	}
 
 	// Validate Spec With JsonSchema
-
+	err = utils.ValidateJsonSchema(createCompositeResourceRequest.Spec, selectedBluePrintVersion.JsonSchema)
+	if err != nil {
+		log.Logger.Error("Error validating json schema", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
 
 	// Generate uuid
 	log.Logger.Debug("Generating uuidv7")
