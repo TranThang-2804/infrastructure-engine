@@ -51,12 +51,12 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	}
 
 	// Validate Spec With JsonSchema
-  resourceCreateSpecBytes, err := json.Marshal(createCompositeResourceRequest.Spec)
-  if err != nil {
-    log.Logger.Error("Error marshalling spec to json", "error", err.Error())
-    return domain.CompositeResource{}, err
-  }
-  resourceCreateSpec := string(resourceCreateSpecBytes)
+	resourceCreateSpecBytes, err := json.Marshal(createCompositeResourceRequest.Spec)
+	if err != nil {
+		log.Logger.Error("Error marshalling spec to json", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
+	resourceCreateSpec := string(resourceCreateSpecBytes)
 
 	err = utils.ValidateJsonSchema(resourceCreateSpec, selectedBluePrintVersion.JsonSchema)
 	if err != nil {
@@ -80,18 +80,19 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	createdBy := "anonymous"
 
 	compositeResource := domain.CompositeResource{
-		Name:           createCompositeResourceRequest.Name,
-		Description:    createCompositeResourceRequest.Description,
-		BluePrintId:    createCompositeResourceRequest.BluePrintId,
-		Id:             uuid,
-		CreatedAt:      currentDate,
-		CreatedBy:      createdBy,
-		LastModifiedAt: currentDate,
-		LastModifiedBy: createdBy,
-		Spec:           createCompositeResourceRequest.Spec,
-		Status:         constant.Pending,
-		Resources:      nil,
-		Metadata:       createCompositeResourceRequest.MetaData,
+		Name:             createCompositeResourceRequest.Name,
+		Description:      createCompositeResourceRequest.Description,
+		BluePrintId:      createCompositeResourceRequest.BluePrintId,
+		BluePrintVersion: createCompositeResourceRequest.BluePrintVersion,
+		Id:               uuid,
+		CreatedAt:        currentDate,
+		CreatedBy:        createdBy,
+		LastModifiedAt:   currentDate,
+		LastModifiedBy:   createdBy,
+		Spec:             createCompositeResourceRequest.Spec,
+		Status:           constant.Pending,
+		Resources:        nil,
+		Metadata:         createCompositeResourceRequest.MetaData,
 	}
 
 	log.Logger.Debug("CompositeResourceUsecase", "compositeResource", compositeResource)
