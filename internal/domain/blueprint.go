@@ -7,7 +7,7 @@ import (
 )
 
 type BluePrint struct {
-	baseDomainStruct
+	BaseDomainStruct
 	Name            string             `json:"name" yaml:"name"`
 	Id              string             `json:"id" yaml:"id"`
 	Description     string             `json:"description" yaml:"description"`
@@ -19,7 +19,7 @@ type BluePrint struct {
 }
 
 type BluePrintVersion struct {
-	baseDomainStruct
+	BaseDomainStruct
 	Name                 string                       `json:"versionName" yaml:"versionName"`
 	JsonSchema           string                       `json:"jsonSchema" yaml:"jsonSchema"`
 	JsonSchemaForEditing string                       `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
@@ -28,18 +28,18 @@ type BluePrintVersion struct {
 }
 
 type BluePrintCompositeTemplate struct {
-	baseDomainStruct
+	BaseDomainStruct
 	TemplateId    string `json:"templateId" yaml:"templateId"`
 	Version       string `json:"version" yaml:"version"`
 	ValueTemplate string `json:"valueTemplate" yaml:"valueTemplate"`
 }
 
 type GetBluePrintRequest struct {
-  baseDomainStruct
+  BaseDomainStruct
 }
 
 type GetBluePrintResponse struct {
-  baseDomainStruct
+  BaseDomainStruct
 }
 
 type BluePrintRepository interface {
