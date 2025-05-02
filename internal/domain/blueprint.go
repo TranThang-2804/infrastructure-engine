@@ -7,6 +7,7 @@ import (
 )
 
 type BluePrint struct {
+	baseDomainStruct
 	Name            string             `json:"name" yaml:"name"`
 	Id              string             `json:"id" yaml:"id"`
 	Description     string             `json:"description" yaml:"description"`
@@ -18,6 +19,7 @@ type BluePrint struct {
 }
 
 type BluePrintVersion struct {
+	baseDomainStruct
 	Name                 string                       `json:"versionName" yaml:"versionName"`
 	JsonSchema           string                       `json:"jsonSchema" yaml:"jsonSchema"`
 	JsonSchemaForEditing string                       `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
@@ -26,20 +28,23 @@ type BluePrintVersion struct {
 }
 
 type BluePrintCompositeTemplate struct {
+	baseDomainStruct
 	TemplateId    string `json:"templateId" yaml:"templateId"`
 	Version       string `json:"version" yaml:"version"`
 	ValueTemplate string `json:"valueTemplate" yaml:"valueTemplate"`
 }
 
-type BluePrintRepository interface {
-	GetAll(c context.Context) ([]BluePrint, error)
-	GetById(c context.Context, id string) (BluePrint, error)
-}
-
 type GetBluePrintRequest struct {
+  baseDomainStruct
 }
 
 type GetBluePrintResponse struct {
+  baseDomainStruct
+}
+
+type BluePrintRepository interface {
+	GetAll(c context.Context) ([]BluePrint, error)
+	GetById(c context.Context, id string) (BluePrint, error)
 }
 
 type BluePrintUsecase interface {

@@ -41,6 +41,13 @@ func (cr *compositeResourceRepository) GetAll(c context.Context) ([]domain.Compo
 }
 
 func (cr *compositeResourceRepository) Create(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+	// Validate compositeResource
+	err := compositeResource.Validate()
+	if err != nil {
+		log.Logger.Error("Error validating composite resource", "error", err)
+		return compositeResource, err
+	}
+
 	// Convert object to YAML
 	yamlBytes, err := yaml.Marshal(compositeResource)
 	if err != nil {
@@ -75,6 +82,8 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 		log.Logger.Error("Error creating file", "error", err)
 		return compositeResource, err
 	}
+
+	// (Optional) Update index file
 
 	return compositeResource, nil
 }

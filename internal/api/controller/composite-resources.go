@@ -8,7 +8,6 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
-	"github.com/go-playground/validator/v10"
 )
 
 type CompositeResourceController struct {
@@ -38,7 +37,6 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
   decoder := json.NewDecoder(r.Body)
   decoder.DisallowUnknownFields()
 	err := decoder.Decode(&request)
-
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
 		log.Logger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
@@ -46,8 +44,7 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	}
 
   // Validate request
-  validate := validator.New()
-	err = validate.Struct(request)
+  err = request.Validate()
   if err != nil {
     http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
     log.Logger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)

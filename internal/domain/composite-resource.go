@@ -7,38 +7,69 @@ import (
 )
 
 type resource struct {
-	Name           string                  `json:"name"`
-	Id             string                  `json:"id"`
-	Status         constant.ResourceStatus `json:"status"`
-	Description    string                  `json:"description"`
-	CreatedAt      string                  `json:"createdAt"`
-	CreatedBy      string                  `json:"createdBy"`
-	LastModifiedAt string                  `json:"lastModifiedAt"`
-	LastModifiedBy string                  `json:"lastModifiedBy"`
-	Spec           map[string]interface{}  `json:"spec"`
-	BluePrintName  string                  `json:"bluePrintName"`
+  baseDomainStruct
+	Name           string                  `json:"name" validate:"required"`
+	Id             string                  `json:"id" validate:"required"`
+	Status         constant.ResourceStatus `json:"status" validate:"required"`
+	Description    string                  `json:"description" validate:"required"`
+	CreatedAt      string                  `json:"createdAt" validate:"required"`
+	CreatedBy      string                  `json:"createdBy" validate:"required"`
+	LastModifiedAt string                  `json:"lastModifiedAt" validate:"required"`
+	LastModifiedBy string                  `json:"lastModifiedBy" validate:"required"`
+	Spec           map[string]interface{}  `json:"spec" validate:"required"`
+	BluePrintName  string                  `json:"bluePrintName" validate:"required"`
 }
 
 type CompositeResource struct {
-	Name              string                    `json:"name"`
-	Id                string                    `json:"id"`
-	Description       string                    `json:"description"`
-	BluePrintId       string                    `json:"bluePrintId"`
-	BluePrintVersion  string                    `json:"bluePrintVersion"`
-	CreatedAt         string                    `json:"createdAt"`
-	CreatedBy         string                    `json:"createdBy"`
-	LastModifiedAt    string                    `json:"lastModifiedAt"`
-	LastModifiedBy    string                    `json:"lastModifiedBy"`
-	Spec              map[string]interface{}    `json:"spec"`
-	Status            constant.ResourceStatus   `json:"status"`
-	GeneratedTemplate string                    `json:"outputTemplate"`
-	Resources         []resource                `json:"resources"`
+  baseDomainStruct
+	Name              string                    `json:"name" validate:"required"`
+	Id                string                    `json:"id" validate:"required"`
+	Description       string                    `json:"description" validate:"required"`
+	BluePrintId       string                    `json:"bluePrintId" validate:"required"`
+	BluePrintVersion  string                    `json:"bluePrintVersion" validate:"required"`
+	CreatedAt         string                    `json:"createdAt" validate:"required"`
+	CreatedBy         string                    `json:"createdBy" validate:"required"`
+	LastModifiedAt    string                    `json:"lastModifiedAt" validate:"required"`
+	LastModifiedBy    string                    `json:"lastModifiedBy" validate:"required"`
+	Spec              map[string]interface{}    `json:"spec" validate:"required"`
+	Status            constant.ResourceStatus   `json:"status" validate:"required"`
+	GeneratedTemplate string                    `json:"outputTemplate" validate:"required"`
+	Resources         []resource                `json:"resources" validate:"required"`
 	Metadata          CompositeResourceMetadata `json:"metadata,omitempty"`
 }
 
 type CompositeResourceMetadata struct {
+  baseDomainStruct
 	Group   string `json:"group"`
 	Project string `json:"project"`
+}
+
+type GetCompositeResourceRequest struct {
+  baseDomainStruct
+	Name          string `json:"name,omitempty"`
+	BluePrintType string `json:"bluePrintType,omitempty"`
+	Id            string `json:"id,omitempty"`
+}
+
+type GetCompositeResourceResponse struct {
+  baseDomainStruct
+	CompositeResource []CompositeResource `json:"compositeResources"`
+}
+
+type CreateCompositeResourceRequest struct {
+  baseDomainStruct
+	Name             string                    `json:"name" validate:"required"`
+	Description      string                    `json:"description" validate:"required"`
+	Spec             map[string]interface{}    `json:"spec" validate:"required"`
+	BluePrintId      string                    `json:"bluePrintId" validate:"required"`
+	BluePrintVersion string                    `json:"bluePrintVersion" validate:"required"`
+	MetaData         CompositeResourceMetadata `json:"metadata,omitempty"`
+}
+
+type CreateCompositeResourceResponse struct {
+  baseDomainStruct
+	CompositeResource CompositeResource `json:"compositeResource"`
+	Status            string            `json:"status"`
 }
 
 type CompositeResourceRepository interface {
@@ -49,28 +80,4 @@ type CompositeResourceRepository interface {
 type CompositeResourceUsecase interface {
 	GetAll(c context.Context) ([]CompositeResource, error)
 	Create(c context.Context, CreateCompositeResourceRequest CreateCompositeResourceRequest) (CompositeResource, error)
-}
-
-type GetCompositeResourceRequest struct {
-	Name          string `json:"name,omitempty"`
-	BluePrintType string `json:"bluePrintType,omitempty"`
-	Id            string `json:"id,omitempty"`
-}
-
-type GetCompositeResourceResponse struct {
-	CompositeResource []CompositeResource `json:"compositeResources"`
-}
-
-type CreateCompositeResourceRequest struct {
-	Name             string                    `json:"name" validate:"required"`
-	Description      string                    `json:"description" validate:"required"`
-	Spec             map[string]interface{}    `json:"spec" validate:"required"`
-	BluePrintId      string                    `json:"bluePrintId" validate:"required"`
-	BluePrintVersion string                    `json:"bluePrintVersion" validate:"required"`
-	MetaData         CompositeResourceMetadata `json:"metadata,omitempty"`
-}
-
-type CreateCompositeResourceResponse struct {
-	CompositeResource CompositeResource `json:"compositeResource"`
-	Status            string            `json:"status"`
 }

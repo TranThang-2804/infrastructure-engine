@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+  "fmt"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
@@ -41,8 +42,6 @@ func (br *bluePrintRepository) GetAll(c context.Context) ([]domain.BluePrint, er
 }
 
 func (br *bluePrintRepository) GetById(c context.Context, id string) (domain.BluePrint, error) {
-	var bluePrint domain.BluePrint
-
 	fileContents, err := br.gitStore.GetAllFileContentsInDirectory("TranThang-2804", "platform-iac-template", "master", "blueprint")
 
 	for _, fileContent := range fileContents {
@@ -50,14 +49,13 @@ func (br *bluePrintRepository) GetById(c context.Context, id string) (domain.Blu
 		err = yaml.Unmarshal([]byte(fileContent), &bluePrint)
 		if err != nil {
 			log.Logger.Error("Error unmarshalling YAML", "error", err)
-			return bluePrint, err
+			return domain.BluePrint{}, err
 		}
     if bluePrint.Id == id {
-      bluePrint = bluePrint
+	    log.Logger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
+	    return bluePrint, nil
     }
 	}
 
-	log.Logger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
-
-	return bluePrint, err
+  return domain.BluePrint{}, fmt.Errorf("Blueprint not found with id: %s", id)
 }

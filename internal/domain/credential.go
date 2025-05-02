@@ -3,6 +3,7 @@ package domain
 import "context"
 
 type Credential struct {
+  baseDomainStruct
 	Name           string `json:"name"`
 	Id             string `json:"id"`
 	Description    string `json:"description"`
