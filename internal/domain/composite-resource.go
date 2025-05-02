@@ -13,6 +13,7 @@ type resource struct {
 	Description   string                  `json:"description" validate:"required"`
 	BluePrintName string                  `json:"bluePrintName" validate:"required"`
 	ResourceValue map[string]interface{}  `json:"spec" validate:"required"`
+	RunId         []string                `json:"runId"`
 }
 
 type CompositeResource struct {

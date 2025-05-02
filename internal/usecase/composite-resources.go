@@ -108,3 +108,7 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 
 	return cu.compositeResourceRepository.Create(ctx, compositeResource)
 }
+
+func createResource() {
+
+}
