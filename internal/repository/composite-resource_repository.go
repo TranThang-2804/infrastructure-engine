@@ -66,9 +66,13 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 	} else {
 		filepath += "default/"
 	}
+
 	if compositeResource.Metadata.Group != "" {
 		filepath += compositeResource.Metadata.Group + "/"
+	} else {
+		filepath += "default/"
 	}
+
 	filepath += compositeResource.BluePrintId + "/" + compositeResource.Id + ".yaml"
 
 	err = cr.gitStore.CreateFile(
