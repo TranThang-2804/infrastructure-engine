@@ -20,19 +20,20 @@ type resource struct {
 }
 
 type CompositeResource struct {
-	Name             string                    `json:"name"`
-	Id               string                    `json:"id"`
-	Description      string                    `json:"description"`
-	BluePrintId      string                    `json:"bluePrintId"`
-	BluePrintVersion string                    `json:"bluePrintVersion"`
-	CreatedAt        string                    `json:"createdAt"`
-	CreatedBy        string                    `json:"createdBy"`
-	LastModifiedAt   string                    `json:"lastModifiedAt"`
-	LastModifiedBy   string                    `json:"lastModifiedBy"`
-	Spec             map[string]interface{}    `json:"spec"`
-	Status           constant.ResourceStatus   `json:"status"`
-	Resources        []resource                `json:"resources"`
-	Metadata         CompositeResourceMetadata `json:"metadata,omitempty"`
+	Name              string                    `json:"name"`
+	Id                string                    `json:"id"`
+	Description       string                    `json:"description"`
+	BluePrintId       string                    `json:"bluePrintId"`
+	BluePrintVersion  string                    `json:"bluePrintVersion"`
+	CreatedAt         string                    `json:"createdAt"`
+	CreatedBy         string                    `json:"createdBy"`
+	LastModifiedAt    string                    `json:"lastModifiedAt"`
+	LastModifiedBy    string                    `json:"lastModifiedBy"`
+	Spec              map[string]interface{}    `json:"spec"`
+	Status            constant.ResourceStatus   `json:"status"`
+	GeneratedTemplate string                    `json:"outputTemplate"`
+	Resources         []resource                `json:"resources"`
+	Metadata          CompositeResourceMetadata `json:"metadata,omitempty"`
 }
 
 type CompositeResourceMetadata struct {

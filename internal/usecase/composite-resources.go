@@ -79,20 +79,30 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	// Getting user created
 	createdBy := "anonymous"
 
+	// Generate resource template
+	generatedTemplate, err := utils.GenerateGoTemplateOutput(resourceCreateSpec, selectedBluePrintVersion.CompositeTemplate[0].ValueTemplate)
+	if err != nil {
+		log.Logger.Error("Error generating template", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
+
+  // Generate resource
+
 	compositeResource := domain.CompositeResource{
-		Name:             createCompositeResourceRequest.Name,
-		Description:      createCompositeResourceRequest.Description,
-		BluePrintId:      createCompositeResourceRequest.BluePrintId,
-		BluePrintVersion: createCompositeResourceRequest.BluePrintVersion,
-		Id:               uuid,
-		CreatedAt:        currentDate,
-		CreatedBy:        createdBy,
-		LastModifiedAt:   currentDate,
-		LastModifiedBy:   createdBy,
-		Spec:             createCompositeResourceRequest.Spec,
-		Status:           constant.Pending,
-		Resources:        nil,
-		Metadata:         createCompositeResourceRequest.MetaData,
+		Name:              createCompositeResourceRequest.Name,
+		Description:       createCompositeResourceRequest.Description,
+		BluePrintId:       createCompositeResourceRequest.BluePrintId,
+		BluePrintVersion:  createCompositeResourceRequest.BluePrintVersion,
+		Id:                uuid,
+		CreatedAt:         currentDate,
+		CreatedBy:         createdBy,
+		LastModifiedAt:    currentDate,
+		LastModifiedBy:    createdBy,
+		Spec:              createCompositeResourceRequest.Spec,
+		Status:            constant.Pending,
+		GeneratedTemplate: generatedTemplate,
+		Resources:         nil,
+		Metadata:          createCompositeResourceRequest.MetaData,
 	}
 
 	log.Logger.Debug("CompositeResourceUsecase", "compositeResource", compositeResource)
