@@ -7,33 +7,28 @@ import (
 )
 
 type resource struct {
-	Name           string                  `json:"name" validate:"required"`
-	Id             string                  `json:"id" validate:"required"`
-	Status         constant.ResourceStatus `json:"status" validate:"required"`
-	Description    string                  `json:"description" validate:"required"`
-	CreatedAt      string                  `json:"createdAt" validate:"required"`
-	CreatedBy      string                  `json:"createdBy" validate:"required"`
-	LastModifiedAt string                  `json:"lastModifiedAt" validate:"required"`
-	LastModifiedBy string                  `json:"lastModifiedBy" validate:"required"`
-	Spec           map[string]interface{}  `json:"spec" validate:"required"`
-	BluePrintName  string                  `json:"bluePrintName" validate:"required"`
+	Name          string                  `json:"name" validate:"required"`
+	Id            string                  `json:"id" validate:"required"`
+	Status        constant.ResourceStatus `json:"status" validate:"required"`
+	Description   string                  `json:"description" validate:"required"`
+	BluePrintName string                  `json:"bluePrintName" validate:"required"`
+	ResourceValue map[string]interface{}  `json:"spec" validate:"required"`
 }
 
 type CompositeResource struct {
-	Name              string                    `json:"name" validate:"required"`
-	Id                string                    `json:"id" validate:"required"`
-	Description       string                    `json:"description" validate:"required"`
-	BluePrintId       string                    `json:"bluePrintId" validate:"required"`
-	BluePrintVersion  string                    `json:"bluePrintVersion" validate:"required"`
-	CreatedAt         string                    `json:"createdAt" validate:"required"`
-	CreatedBy         string                    `json:"createdBy" validate:"required"`
-	LastModifiedAt    string                    `json:"lastModifiedAt" validate:"required"`
-	LastModifiedBy    string                    `json:"lastModifiedBy" validate:"required"`
-	Spec              map[string]interface{}    `json:"spec" validate:"required"`
-	Status            constant.ResourceStatus   `json:"status" validate:"required"`
-	GeneratedTemplate string                    `json:"outputTemplate" validate:"required"`
-	Resources         []resource                `json:"resources" validate:"required"`
-	Metadata          CompositeResourceMetadata `json:"metadata,omitempty"`
+	Name             string                    `json:"name" validate:"required"`
+	Id               string                    `json:"id" validate:"required"`
+	Description      string                    `json:"description" validate:"required"`
+	BluePrintId      string                    `json:"bluePrintId" validate:"required"`
+	BluePrintVersion string                    `json:"bluePrintVersion" validate:"required"`
+	CreatedAt        string                    `json:"createdAt" validate:"required"`
+	CreatedBy        string                    `json:"createdBy" validate:"required"`
+	LastModifiedAt   string                    `json:"lastModifiedAt" validate:"required"`
+	LastModifiedBy   string                    `json:"lastModifiedBy" validate:"required"`
+	Spec             map[string]interface{}    `json:"spec" validate:"required"`
+	Status           constant.ResourceStatus   `json:"status" validate:"required"`
+	Resources        []resource                `json:"resources" validate:"required"`
+	Metadata         CompositeResourceMetadata `json:"metadata,omitempty"`
 }
 
 type CompositeResourceMetadata struct {

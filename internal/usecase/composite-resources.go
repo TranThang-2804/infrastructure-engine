@@ -80,11 +80,11 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	createdBy := "anonymous"
 
 	// Generate resource template
-	generatedTemplate, err := utils.GenerateGoTemplateOutput(resourceCreateSpec, selectedBluePrintVersion.CompositeTemplate[0].ValueTemplate)
-	if err != nil {
-		log.Logger.Error("Error generating template", "error", err.Error())
-		return domain.CompositeResource{}, err
-	}
+	// generatedTemplate, err := utils.GenerateGoTemplateOutput(resourceCreateSpec, selectedBluePrintVersion.CompositeTemplate[0].ValueTemplate)
+	// if err != nil {
+	// 	log.Logger.Error("Error generating template", "error", err.Error())
+	// 	return domain.CompositeResource{}, err
+	// }
 
   // Generate resource
 
@@ -100,7 +100,6 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 		LastModifiedBy:    createdBy,
 		Spec:              createCompositeResourceRequest.Spec,
 		Status:            constant.Pending,
-		GeneratedTemplate: generatedTemplate,
 		Resources:         nil,
 		Metadata:          createCompositeResourceRequest.MetaData,
 	}

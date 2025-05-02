@@ -43,6 +43,7 @@ func (cr *compositeResourceRepository) GetAll(c context.Context) ([]domain.Compo
 
 func (cr *compositeResourceRepository) Create(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
 	// Validate compositeResource
+  log.Logger.Debug("CompositeResource", "compositeResource", compositeResource)
 	err := utils.ValidateStruct(compositeResource)
 	if err != nil {
 		log.Logger.Error("Error validating composite resource", "error", err)
