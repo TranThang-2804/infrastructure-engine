@@ -6,6 +6,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -42,7 +43,7 @@ func (cr *compositeResourceRepository) GetAll(c context.Context) ([]domain.Compo
 
 func (cr *compositeResourceRepository) Create(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
 	// Validate compositeResource
-	err := compositeResource.Validate()
+	err := utils.ValidateStruct(compositeResource)
 	if err != nil {
 		log.Logger.Error("Error validating composite resource", "error", err)
 		return compositeResource, err

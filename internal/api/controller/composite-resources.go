@@ -44,7 +44,7 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	}
 
   // Validate request
-  err = request.Validate()
+  err = utils.ValidateStruct(request)
   if err != nil {
     http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
     log.Logger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)

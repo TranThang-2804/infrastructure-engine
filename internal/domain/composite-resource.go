@@ -7,7 +7,6 @@ import (
 )
 
 type resource struct {
-  BaseDomainStruct
 	Name           string                  `json:"name" validate:"required"`
 	Id             string                  `json:"id" validate:"required"`
 	Status         constant.ResourceStatus `json:"status" validate:"required"`
@@ -21,7 +20,6 @@ type resource struct {
 }
 
 type CompositeResource struct {
-  BaseDomainStruct
 	Name              string                    `json:"name" validate:"required"`
 	Id                string                    `json:"id" validate:"required"`
 	Description       string                    `json:"description" validate:"required"`
@@ -39,25 +37,21 @@ type CompositeResource struct {
 }
 
 type CompositeResourceMetadata struct {
-  BaseDomainStruct
 	Group   string `json:"group"`
 	Project string `json:"project"`
 }
 
 type GetCompositeResourceRequest struct {
-  BaseDomainStruct
 	Name          string `json:"name,omitempty"`
 	BluePrintType string `json:"bluePrintType,omitempty"`
 	Id            string `json:"id,omitempty"`
 }
 
 type GetCompositeResourceResponse struct {
-  BaseDomainStruct
 	CompositeResource []CompositeResource `json:"compositeResources"`
 }
 
 type CreateCompositeResourceRequest struct {
-  BaseDomainStruct
 	Name             string                    `json:"name" validate:"required"`
 	Description      string                    `json:"description" validate:"required"`
 	Spec             map[string]interface{}    `json:"spec" validate:"required"`
@@ -67,7 +61,6 @@ type CreateCompositeResourceRequest struct {
 }
 
 type CreateCompositeResourceResponse struct {
-  BaseDomainStruct
 	CompositeResource CompositeResource `json:"compositeResource"`
 	Status            string            `json:"status"`
 }
