@@ -13,7 +13,7 @@ type Resource struct {
 	Description        string                  `json:"description" validate:"required"`
 	IacTemplateId      string                  `json:"iacTemplateId" validate:"required"`
 	IacTemplateVersion string                  `json:"iacTemplateVersion" validate:"required"`
-	ResourceValue      map[string]interface{}  `json:"spec" validate:"required"`
+	ResourceValue      string                  `json:"spec" validate:"required"`
 	RunId              []string                `json:"runId"`
 }
 
