@@ -39,9 +39,9 @@ type CompositeResourceMetadata struct {
 }
 
 type GetCompositeResourceRequest struct {
-  Name          string `json:"name,omitempty" yaml:"name,omitempty" validate:"required"`
-  BluePrintType string `json:"bluePrintType,omitempty" yaml:"bluePrintType,omitempty" validate:"required"`
-  Id            string `json:"id,omitempty" yaml:"bluePrintType,omitempty" validate:"required"`
+	Name          string `json:"name,omitempty" yaml:"name,omitempty" validate:"required"`
+	BluePrintType string `json:"bluePrintType,omitempty" yaml:"bluePrintType,omitempty" validate:"required"`
+	Id            string `json:"id,omitempty" yaml:"bluePrintType,omitempty" validate:"required"`
 }
 
 type GetCompositeResourceResponse struct {
@@ -49,12 +49,12 @@ type GetCompositeResourceResponse struct {
 }
 
 type CreateCompositeResourceRequest struct {
-  Name             string                    `json:"name" yaml:"name" validate:"required"`
-  Description      string                    `json:"description" yaml:"description" validate:"required"`
-  Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
-  BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
-  BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
-  MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name             string                    `json:"name" yaml:"name" validate:"required"`
+	Description      string                    `json:"description" yaml:"description" validate:"required"`
+	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
+	BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
+	MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 }
 
 type CreateCompositeResourceResponse struct {

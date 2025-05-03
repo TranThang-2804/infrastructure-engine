@@ -26,7 +26,5 @@ func GenerateGoTemplateOutput(spec map[string]interface{}, templateStr string) (
 	}
 	log.Logger.Debug("Parsing template", "output", outputBuffer.String())
 
-
 	return outputBuffer.String(), nil
 }
-
