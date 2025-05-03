@@ -6,14 +6,15 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
 )
 
-type resource struct {
-	Name          string                  `json:"name" validate:"required"`
-	Id            string                  `json:"id" validate:"required"`
-	Status        constant.ResourceStatus `json:"status" validate:"required"`
-	Description   string                  `json:"description" validate:"required"`
-	BluePrintName string                  `json:"bluePrintName" validate:"required"`
-	ResourceValue map[string]interface{}  `json:"spec" validate:"required"`
-	RunId         []string                `json:"runId"`
+type Resource struct {
+	Name               string                  `json:"name" validate:"required"`
+	Id                 string                  `json:"id" validate:"required"`
+	Status             constant.ResourceStatus `json:"status" validate:"required"`
+	Description        string                  `json:"description" validate:"required"`
+	IacTemplateId      string                  `json:"iacTemplateId" validate:"required"`
+	IacTemplateVersion string                  `json:"iacTemplateVersion" validate:"required"`
+	ResourceValue      map[string]interface{}  `json:"spec" validate:"required"`
+	RunId              []string                `json:"runId"`
 }
 
 type CompositeResource struct {
@@ -28,7 +29,7 @@ type CompositeResource struct {
 	LastModifiedBy   string                    `json:"lastModifiedBy" validate:"required"`
 	Spec             map[string]interface{}    `json:"spec" validate:"required"`
 	Status           constant.ResourceStatus   `json:"status" validate:"required"`
-	Resources        []resource                `json:"resources" validate:"required"`
+	Resources        []Resource                `json:"resources" validate:"required"`
 	Metadata         CompositeResourceMetadata `json:"metadata,omitempty"`
 }
 

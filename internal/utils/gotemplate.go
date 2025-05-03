@@ -2,6 +2,6 @@ package utils
 
 import ()
 
-func GenerateGoTemplateOutput(spec string, schema string) (string, error) {
-  return "", nil
+func GenerateGoTemplateOutput(spec map[string]interface{}, template string) (map[string]interface{}, error) {
+  return nil, nil
 }

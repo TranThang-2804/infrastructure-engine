@@ -40,9 +40,11 @@ type GetBluePrintResponse struct {
 type BluePrintRepository interface {
 	GetAll(c context.Context) ([]BluePrint, error)
 	GetById(c context.Context, id string) (BluePrint, error)
+	GetByIdAndVersion(c context.Context, id string, version string) (BluePrintVersion, error)
 }
 
 type BluePrintUsecase interface {
 	GetAll(c context.Context) ([]BluePrint, error)
 	GetById(c context.Context, id string) (BluePrint, error)
+	GetByIdAndVersion(c context.Context, id string, version string) (BluePrintVersion, error)
 }
