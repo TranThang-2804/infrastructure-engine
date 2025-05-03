@@ -7,10 +7,13 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-func ValidateJsonSchema(spec string, schema string) error {
+func ValidateJsonSchema(spec map[string]interface{}, schema map[string]interface{}) error {
 	// Load the schema and spec as JSON loaders
-	schemaLoader := gojsonschema.NewStringLoader(schema)
-	specLoader := gojsonschema.NewStringLoader(spec)
+	schemaLoader := gojsonschema.NewGoLoader(schema)
+	specLoader := gojsonschema.NewGoLoader(spec)
+
+  log.Logger.Debug("ValidateJsonSchema", "schema", schema, "spec", spec)
+  log.Logger.Debug("ValidateJsonSchema", "schema", schemaLoader, "spec", specLoader)
 
 	// Validate the spec against the schema
 	result, err := gojsonschema.Validate(schemaLoader, specLoader)

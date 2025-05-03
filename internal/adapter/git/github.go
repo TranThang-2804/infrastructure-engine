@@ -61,8 +61,6 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 		return nil, err
 	}
 
-	fmt.Print("Directory Content: ", directoryContent)
-
 	// Check if the path is a directory
 	if directoryContent == nil {
 		log.Logger.Error("The provided path is not a directory", "path", path)

@@ -19,8 +19,8 @@ type BluePrint struct {
 
 type BluePrintVersion struct {
 	Name                 string                       `json:"versionName" yaml:"versionName"`
-	JsonSchema           string                       `json:"jsonSchema" yaml:"jsonSchema"`
-	JsonSchemaForEditing string                       `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
+	JsonSchema           map[string]interface{}       `json:"jsonSchema" yaml:"jsonSchema"`
+	JsonSchemaForEditing map[string]interface{}       `json:"jsonSchemaForEditing" yaml:"jsonSchemaForEditing"`
 	UiSchema             string                       `json:"uiSchema,omitempty" yaml:"uiSchema,omitempty"`
 	CompositeTemplate    []BluePrintCompositeTemplate `json:"compositeTemplate" yaml:"compositeTemplate"`
 }
