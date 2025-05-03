@@ -10,7 +10,7 @@ import (
 
 type BluePrintController struct {
 	BluePrintUsecase domain.BluePrintUsecase
-	Env              *bootstrap.Env
+	Env              *bootstrap.EnvConfig
 }
 
 func (bc *BluePrintController) GetAll(w http.ResponseWriter, r *http.Request) {

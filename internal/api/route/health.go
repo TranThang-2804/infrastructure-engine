@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewHealthCheckRouter(env *bootstrap.Env, timeout time.Duration, router chi.Router) {
+func NewHealthCheckRouter(env *bootstrap.EnvConfig, timeout time.Duration, router chi.Router) {
 	hc := &controller.HealthcheckController{}
 	router.Get("/health", hc.HealthCheck)
 }

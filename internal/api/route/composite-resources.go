@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewCompositeResourceRouter(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
+func NewCompositeResourceRouter(env *bootstrap.EnvConfig, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
 	cr := repository.NewCompositeResourceRepository(gitStore)
 	br := repository.NewBluePrintRepository(gitStore)
 	bu := usecase.NewBluePrintUsecase(br, timeout)

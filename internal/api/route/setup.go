@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func Setup(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, r *chi.Mux) {
+func Setup(env *bootstrap.EnvConfig, gitStore git.GitStore, timeout time.Duration, r *chi.Mux) {
 	// Define middleware
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)

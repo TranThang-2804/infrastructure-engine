@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewBluePrintRouter(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
+func NewBluePrintRouter(env *bootstrap.EnvConfig, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
 	br := repository.NewBluePrintRepository(gitStore)
 	bp := &controller.BluePrintController{
 		BluePrintUsecase: usecase.NewBluePrintUsecase(br, timeout),

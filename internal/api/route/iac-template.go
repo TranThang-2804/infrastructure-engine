@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewIacTemplateRouter(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
+func NewIacTemplateRouter(env *bootstrap.EnvConfig, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
 	ir := repository.NewIacTemplateRepository(gitStore)
 	ip := &controller.IacTemplateController{
 		IacTemplateUsecase: usecase.NewIacTemplateUsecase(ir, timeout),

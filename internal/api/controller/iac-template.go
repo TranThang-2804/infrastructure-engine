@@ -10,7 +10,7 @@ import (
 
 type IacTemplateController struct {
 	IacTemplateUsecase domain.IacTemplateUsecase
-	Env                *bootstrap.Env
+	Env                *bootstrap.EnvConfig
 }
 
 func (ic *IacTemplateController) GetAll(w http.ResponseWriter, r *http.Request) {

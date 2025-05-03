@@ -8,7 +8,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NewGitHubStore(env *Env) git.GitStore {
+func NewGitHubStore(env *EnvConfig) git.GitStore {
 	// Create an authenticated GitHub client using a personal access token
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: env.GitToken},

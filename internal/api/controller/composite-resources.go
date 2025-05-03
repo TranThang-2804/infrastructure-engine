@@ -12,7 +12,7 @@ import (
 
 type CompositeResourceController struct {
 	CompositeResourceUseCase domain.CompositeResourceUsecase
-	Env                      *bootstrap.Env
+	Env                      *bootstrap.EnvConfig
 }
 
 func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Request) {

@@ -3,7 +3,7 @@ package bootstrap
 import "github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 
 type Application struct {
-	Env      *Env
+	Env      *EnvConfig
 	GitStore git.GitStore
 }
 
