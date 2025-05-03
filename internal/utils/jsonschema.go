@@ -12,8 +12,8 @@ func ValidateJsonSchema(spec map[string]interface{}, schema map[string]interface
 	schemaLoader := gojsonschema.NewGoLoader(schema)
 	specLoader := gojsonschema.NewGoLoader(spec)
 
-  log.Logger.Debug("ValidateJsonSchema", "schema", schema, "spec", spec)
-  log.Logger.Debug("ValidateJsonSchema", "schema", schemaLoader, "spec", specLoader)
+	log.Logger.Debug("ValidateJsonSchema", "schema", schema, "spec", spec)
+	log.Logger.Debug("ValidateJsonSchema", "schema", schemaLoader, "spec", specLoader)
 
 	// Validate the spec against the schema
 	result, err := gojsonschema.Validate(schemaLoader, specLoader)

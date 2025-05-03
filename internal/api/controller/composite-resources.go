@@ -33,9 +33,9 @@ func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Req
 func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Request) {
 	var request domain.CreateCompositeResourceRequest
 
-  // Parse request body
-  decoder := json.NewDecoder(r.Body)
-  decoder.DisallowUnknownFields()
+	// Parse request body
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
@@ -43,13 +43,13 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-  // Validate request
-  err = utils.ValidateStruct(request)
-  if err != nil {
-    http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
-    log.Logger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)
-    return
-  }
+	// Validate request
+	err = utils.ValidateStruct(request)
+	if err != nil {
+		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
+		log.Logger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)
+		return
+	}
 
 	compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
 	if err != nil {

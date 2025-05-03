@@ -13,8 +13,8 @@ import (
 
 func NewCompositeResourceRouter(env *bootstrap.Env, gitStore git.GitStore, timeout time.Duration, router chi.Router) {
 	cr := repository.NewCompositeResourceRepository(gitStore)
-  br := repository.NewBluePrintRepository(gitStore)
-  bu := usecase.NewBluePrintUsecase(br, timeout)
+	br := repository.NewBluePrintRepository(gitStore)
+	bu := usecase.NewBluePrintUsecase(br, timeout)
 	cp := &controller.CompositeResourceController{
 		CompositeResourceUseCase: usecase.NewCompositeResourceUsecase(cr, bu, timeout),
 		Env:                      env,

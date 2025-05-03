@@ -10,4 +10,3 @@ const (
 	Done         ResourceStatus = "Done"
 	Failed       ResourceStatus = "Failed"
 )
-

@@ -26,13 +26,13 @@ func (bp *bluePrintUsecase) GetAll(c context.Context) ([]domain.BluePrint, error
 }
 
 func (bp *bluePrintUsecase) GetById(c context.Context, id string) (domain.BluePrint, error) {
-  ctx, cancel := context.WithTimeout(c, bp.contextTimeout)
-  defer cancel()
-  return bp.bluePrintRepository.GetById(ctx, id)
+	ctx, cancel := context.WithTimeout(c, bp.contextTimeout)
+	defer cancel()
+	return bp.bluePrintRepository.GetById(ctx, id)
 }
 
 func (bp *bluePrintUsecase) GetByIdAndVersion(c context.Context, id string, version string) (domain.BluePrintVersion, error) {
-  ctx, cancel := context.WithTimeout(c, bp.contextTimeout)
-  defer cancel()
-  return bp.bluePrintRepository.GetByIdAndVersion(ctx, id, version)
+	ctx, cancel := context.WithTimeout(c, bp.contextTimeout)
+	defer cancel()
+	return bp.bluePrintRepository.GetByIdAndVersion(ctx, id, version)
 }
