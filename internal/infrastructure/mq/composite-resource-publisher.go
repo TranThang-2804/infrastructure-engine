@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 )
 
 type CompositeResourcePublisher struct {
@@ -19,6 +20,7 @@ func NewCompositeResourcePublisher(mq MessageQueue) domain.CompositeResourceEven
 func (cr *CompositeResourcePublisher) PublishToPendingSubject(c context.Context, compositeResource domain.CompositeResource) error {
 	// Publish message to queue
 	cr.messageQueue.Publish("composite-resource.pending", compositeResource.Id)
+  log.Logger.Info("Publish to pending subject", "compositeResourceId", compositeResource.Id)
 	return nil
 }
 

@@ -19,6 +19,7 @@ type Application struct {
 	// Infrastructure Layer
 	gitStore                   git.GitStore
 	compositeResourcePublisher domain.CompositeResourceEventPublisher
+	mi                         mq.MessageQueue
 
 	// Rrepository Layer
 	compositeResourceRepository domain.CompositeResourceRepository
@@ -54,7 +55,8 @@ func App() Application {
 	if err != nil {
 		log.Logger.Fatal("Failed to connect to NATS", "error", err)
 	}
-	app.compositeResourcePublisher = mq.NewCompositeResourcePublisher(mi)
+  app.mi = mi
+	app.compositeResourcePublisher = mq.NewCompositeResourcePublisher(app.mi)
 
 	// Setting up the repositories
 	app.compositeResourceRepository = repository.NewCompositeResourceRepository(app.gitStore)
@@ -66,11 +68,11 @@ func App() Application {
 	app.iacTemplateUsecase = usecase.NewIacTemplateUsecase(app.iaCTemplateRepository)
 	app.compositeResourceUsecase = usecase.NewCompositeResourceUsecase(app.compositeResourceRepository, app.compositeResourcePublisher, app.bluePrintUsecase)
 
-  // Setting up the controllers
-  app.HealthController = controller.NewHealthController()
-  app.BluePrintController = controller.NewBluePrintController(app.bluePrintUsecase)
-  app.CompositeResourceController = controller.NewCompositeResourceController(app.compositeResourceUsecase)
-  app.IacTemplateController = controller.NewIacTemplateController(app.iacTemplateUsecase)
+	// Setting up the controllers
+	app.HealthController = controller.NewHealthController()
+	app.BluePrintController = controller.NewBluePrintController(app.bluePrintUsecase)
+	app.CompositeResourceController = controller.NewCompositeResourceController(app.compositeResourceUsecase)
+	app.IacTemplateController = controller.NewIacTemplateController(app.iacTemplateUsecase)
 
 	// Setting up required repositories pre-requisites
 	app.infraPipeline = NewInfraPipeline(app.gitStore)
@@ -79,5 +81,6 @@ func App() Application {
 }
 
 func (app *Application) CloseDBConnection() {
-	// CloseMongoDBConnection(app.Mongo)
+  // Close the message queue connection
+	app.mi.Close()
 }
