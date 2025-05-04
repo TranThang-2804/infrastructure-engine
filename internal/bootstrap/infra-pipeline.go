@@ -12,6 +12,12 @@ type InfraPipeline struct {
 	gitStore git.GitStore
 }
 
+func NewInfraPipeline(gitStore git.GitStore) *InfraPipeline {
+	return &InfraPipeline{
+		gitStore: gitStore,
+	}
+}
+
 func (ip *InfraPipeline) SettingInfraPipeline() error {
 	file, err := os.Open("iac-execution/Earthfile")
 	if err != nil {
