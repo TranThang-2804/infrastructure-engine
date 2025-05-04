@@ -30,6 +30,30 @@ func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 		conn.Close()
 		return nil, err
 	}
+	//
+	// Define the stream configuration
+	streamConfig := &nats.StreamConfig{
+		Name:     "COMPOSITE_RESOURCE_EVENTS",      // Stream name
+		Subjects: []string{"composite-resource.*"}, // Subject this stream listens to
+		Storage:  nats.FileStorage,                 // Storage type
+	}
+
+	// Check if the stream exists
+	_, err = js.StreamInfo(streamConfig.Name)
+	if err == nil {
+		// Stream exists, no need to create it again
+		log.Logger.Info("Stream already exists. Skipping creation.")
+	} else if err != nats.ErrStreamNotFound {
+		// Some other error occurred
+		log.Logger.Fatal("Jetstream queue has some error", "error", err)
+	} else {
+		// Stream does not exist, create it
+		_, err = js.AddStream(streamConfig)
+		if err != nil {
+			log.Logger.Fatal("Cannot create Jetstream queue", "error", err)
+		}
+		log.Logger.Info("Jetstream queue created successfully")
+	}
 
 	return &NatsMQ{
 		conn:         conn,
@@ -54,6 +78,7 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message string) error) 
 			// Don't ack to trigger retry after AckWait
 			return
 		}
+		log.Logger.Debug("Message handled successful")
 		msg.Ack()
 	}, nats.Durable("worker-"+subject),
 		nats.ManualAck(),
