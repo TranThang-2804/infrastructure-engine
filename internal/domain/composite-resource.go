@@ -62,6 +62,34 @@ type CreateCompositeResourceResponse struct {
 	Status            string            `json:"status" yaml:"status"`
 }
 
+type UpdateCompositeResourceRequest struct {
+	Name             string                    `json:"name" yaml:"name" validate:"required"`
+	Description      string                    `json:"description" yaml:"description" validate:"required"`
+	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
+	BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
+	MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+}
+
+type UpdateCompositeResourceResponse struct {
+	CompositeResource CompositeResource `json:"compositeResource" yaml:"compositeResource"`
+	Status            string            `json:"status" yaml:"status"`
+}
+
+type DeleteCompositeResourceRequest struct {
+	Name             string                    `json:"name" yaml:"name" validate:"required"`
+	Description      string                    `json:"description" yaml:"description" validate:"required"`
+	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
+	BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
+	MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+}
+
+type DeleteCompositeResourceResponse struct {
+	CompositeResource CompositeResource `json:"compositeResource" yaml:"compositeResource"`
+	Status            string            `json:"status" yaml:"status"`
+}
+
 type CompositeResourceRepository interface {
 	Create(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
 	GetAll(c context.Context) ([]CompositeResource, error)
@@ -70,4 +98,9 @@ type CompositeResourceRepository interface {
 type CompositeResourceUsecase interface {
 	GetAll(c context.Context) ([]CompositeResource, error)
 	Create(c context.Context, CreateCompositeResourceRequest CreateCompositeResourceRequest) (CompositeResource, error)
+	Update(c context.Context, CreateCompositeResourceRequest UpdateCompositeResourceRequest) (CompositeResource, error)
+	Delete(c context.Context, CreateCompositeResourceRequest DeleteCompositeResourceRequest) (CompositeResource, error)
+	HandlePending(message string) (error)
+	HandleProvisioning(message string) (error)
+	HandleDeleting(message string) (error)
 }

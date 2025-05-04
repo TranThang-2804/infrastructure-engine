@@ -117,3 +117,23 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 
 	return cu.compositeResourceRepository.Create(ctx, compositeResource)
 }
+
+func (cu *compositeResourceUsecase) Update(c context.Context, deleteCompositeResourceRequest domain.UpdateCompositeResourceRequest) (domain.CompositeResource, error) {
+  return domain.CompositeResource{}, nil
+}
+
+func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeResourceRequest domain.DeleteCompositeResourceRequest) (domain.CompositeResource, error) {
+  return domain.CompositeResource{}, nil
+}
+
+func (cu *compositeResourceUsecase) HandlePending(message string) (error) {
+  return nil
+}
+
+func (cu *compositeResourceUsecase) HandleProvisioning(message string) (error) {
+  return nil
+}
+
+func (cu *compositeResourceUsecase) HandleDeleting(message string) (error) {
+  return nil
+}

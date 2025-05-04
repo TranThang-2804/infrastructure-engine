@@ -20,6 +20,7 @@ type EnvConfig struct {
 	RefreshTokenSecret     string
 	GitToken               string
 	CI                     string
+	NATS_URL               string
 }
 
 func LoadEnv() {
@@ -34,6 +35,7 @@ func LoadEnv() {
 		RefreshTokenExpiryHour: getIntEnv("REFRESH_TOKEN_EXPIRY_HOUR", 72),
 		GitToken:               getEnvOrPanic("GIT_TOKEN"), // Required
 		CI:                     getEnv("CI_TYPE", "github"),
+		NATS_URL:               getEnv("NATS_URL", "nats://localhost:4222"),
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)

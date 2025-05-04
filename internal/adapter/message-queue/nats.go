@@ -1,4 +1,4 @@
-package messagequeue
+package mqadapter
 
 import (
 	"fmt"
@@ -7,43 +7,47 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-type NATSMessageQueue struct {
+type NatsMQConnection struct {
 	conn *nats.Conn
 }
 
-type NATSMessageQueueSubject struct {
-	subject    string
-	sub        *nats.Subscription
-	mu         sync.Mutex
-	messageIDs map[string]bool // Tracks acknowledged messages
+// NatsSubject represents a NATS subject with an active subscription.
+type NatsSubject struct {
+	name    string
+	sub     *nats.Subscription
+	mu      sync.Mutex
+	mq      *NatsMQConnection
 }
 
-// NewNATSMessageQueue creates a new NATS connection.
-func NewNATSMessageQueue(url string) (*NATSMessageQueue, error) {
+// NewMessageQueue creates a new connection to the NATS server.
+func NewNatsMQConnection(url string) (*NatsMQConnection, error) {
 	conn, err := nats.Connect(url)
 	if err != nil {
 		return nil, err
 	}
-	return &NATSMessageQueue{conn: conn}, nil
+	return &NatsMQConnection{conn: conn}, nil
 }
 
-// NewSubject creates a new subject for the given NATS connection.
-func (mq *NATSMessageQueue) NewSubject(subject string) *NATSMessageQueueSubject {
-	return &NATSMessageQueueSubject{
-		subject:    subject,
-		messageIDs: make(map[string]bool),
+// NewSubject creates a subject handler tied to this message queue.
+func (mq *NatsMQConnection) NewSubject(name string) *NatsSubject {
+	return &NatsSubject{
+		name: name,
+		mq:   mq,
 	}
 }
 
-// Subscribe registers a consumer for the subject.
-func (s *NATSMessageQueueSubject) Subscribe(conn *nats.Conn, consumer func(message string) error) error {
+// Subscribe sets up a subscription to the subject with a message handler.
+func (s *NatsSubject) Subscribe(handler func(message string) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	sub, err := conn.Subscribe(s.subject, func(msg *nats.Msg) {
-		err := consumer(string(msg.Data))
-		if err != nil {
-			fmt.Printf("Failed to process message: %s\n", err)
+	if s.sub != nil {
+		return fmt.Errorf("already subscribed to subject: %s", s.name)
+	}
+
+	sub, err := s.mq.conn.Subscribe(s.name, func(msg *nats.Msg) {
+		if err := handler(string(msg.Data)); err != nil {
+			fmt.Printf("Error processing message on '%s': %v\n", s.name, err)
 		}
 	})
 	if err != nil {
@@ -55,12 +59,12 @@ func (s *NATSMessageQueueSubject) Subscribe(conn *nats.Conn, consumer func(messa
 }
 
 // Publish sends a message to the subject.
-func (s *NATSMessageQueueSubject) Publish(conn *nats.Conn, message string) error {
-	return conn.Publish(s.subject, []byte(message))
+func (s *NatsSubject) Publish(message string) error {
+	return s.mq.conn.Publish(s.name, []byte(message))
 }
 
 // Close unsubscribes from the subject.
-func (s *NATSMessageQueueSubject) Close() error {
+func (s *NatsSubject) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -72,3 +76,4 @@ func (s *NATSMessageQueueSubject) Close() error {
 	}
 	return nil
 }
+

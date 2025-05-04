@@ -60,3 +60,21 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(compositeResource)
 }
+
+func (rc *CompositeResourceController) Delete(w http.ResponseWriter, r *http.Request) {
+}
+
+func (rc *CompositeResourceController) Update(w http.ResponseWriter, r *http.Request) {
+}
+
+func (rc *CompositeResourceController) HandlePending(message string) error {
+  return nil
+}
+
+func (rc *CompositeResourceController) HandleProvisioning(message string) error {
+  return nil
+}
+
+func (rc *CompositeResourceController) HandleDeleting(message string) error {
+  return nil
+}
