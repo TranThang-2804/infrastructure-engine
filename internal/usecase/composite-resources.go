@@ -145,6 +145,7 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 }
 
 func (cu *compositeResourceUsecase) HandlePending(message string) error {
+  log.Logger.Debug("Handling pending message", "message", message)
 	return nil
 }
 

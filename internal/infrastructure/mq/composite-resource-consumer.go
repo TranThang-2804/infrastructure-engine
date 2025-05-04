@@ -34,7 +34,7 @@ func (cc *compositeResourceConsumer) StartConsumer() error {
 
 func (cc *compositeResourceConsumer) subscribeToPendingSubject() error {
 	// Publish message to queue
-	return cc.messageQueue.Subscribe("composite-resource.pending", cc.compositeResourceUsecase.HandleProvisioning)
+	return cc.messageQueue.Subscribe("composite-resource.pending", cc.compositeResourceUsecase.HandlePending)
 }
 
 func (cc *compositeResourceConsumer) subscribeToProvisioningSubject() error {

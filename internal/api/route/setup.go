@@ -29,7 +29,7 @@ func SetupRoute(app bootstrap.Application) *chi.Mux {
 
 	// Public APIs
 	r.Group(func(r chi.Router) {
-		NewHealthCheckRouter(r)
+		NewHealthRouter(r, app.HealthController)
 		NewBluePrintRouter(r, app.BluePrintController)
 		NewIacTemplateRouter(r, app.IacTemplateController)
 		NewCompositeResourceRouter(r, app.CompositeResourceController)

@@ -5,7 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewHealthCheckRouter(router chi.Router) {
-	hc := &controller.HealthController{}
+func NewHealthRouter(router chi.Router, hc *controller.HealthController) {
 	router.Get("/health", hc.HealthCheck)
 }
