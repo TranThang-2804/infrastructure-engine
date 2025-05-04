@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
@@ -12,7 +11,6 @@ import (
 
 type CompositeResourceController struct {
 	CompositeResourceUseCase domain.CompositeResourceUsecase
-	Env                      *bootstrap.EnvConfig
 }
 
 func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Request) {

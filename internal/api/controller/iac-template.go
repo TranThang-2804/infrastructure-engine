@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 )
 
 type IacTemplateController struct {
 	IacTemplateUsecase domain.IacTemplateUsecase
-	Env                *bootstrap.EnvConfig
 }
 
 func (ic *IacTemplateController) GetAll(w http.ResponseWriter, r *http.Request) {

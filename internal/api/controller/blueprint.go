@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 )
 
 type BluePrintController struct {
 	BluePrintUsecase domain.BluePrintUsecase
-	Env              *bootstrap.EnvConfig
 }
 
 func (bc *BluePrintController) GetAll(w http.ResponseWriter, r *http.Request) {

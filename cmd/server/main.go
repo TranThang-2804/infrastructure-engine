@@ -7,12 +7,14 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/api/route"
 	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
 
 func init() {
 	log.Init()
+  env.LoadEnv()
 
 	log.Logger.Info("Starting the application - Author: Tommy Tran - tranthang.dev@gmail.com")
 }
@@ -21,13 +23,11 @@ func main() {
 
 	app := bootstrap.App()
 
-	env := app.Env
-
 	gitStore := app.GitStore
 
 	defer app.CloseDBConnection()
 
-	timeout := time.Duration(env.ContextTimeout) * time.Second
+	timeout := time.Duration(env.Env.ContextTimeout) * time.Second
 
 	r := chi.NewRouter()
 
@@ -42,10 +42,10 @@ func main() {
 	})
 	r.Use(cors.Handler)
 
-	route.Setup(env, gitStore, timeout, r)
+	route.Setup(gitStore, timeout, r)
 
-	log.Logger.Info("Starting server...", "on port", env.ServerAddress)
-	http.ListenAndServe(env.ServerAddress, r)
+	log.Logger.Info("Starting server...", "on port", env.Env.ServerAddress)
+	http.ListenAndServe(env.Env.ServerAddress, r)
 }
 
 func chatRouter() http.Handler {

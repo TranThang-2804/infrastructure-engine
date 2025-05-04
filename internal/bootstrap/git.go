@@ -4,14 +4,15 @@ import (
 	"context"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
 	"github.com/google/go-github/v50/github"
 	"golang.org/x/oauth2"
 )
 
-func NewGitHubStore(env *EnvConfig) git.GitStore {
+func NewGitHubStore() git.GitStore {
 	// Create an authenticated GitHub client using a personal access token
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: env.GitToken},
+		&oauth2.Token{AccessToken: env.Env.GitToken},
 	)
 	tc := oauth2.NewClient(context.Background(), ts)
 

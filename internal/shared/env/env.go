@@ -1,4 +1,4 @@
-package bootstrap
+package env
 
 import (
 	"os"
@@ -7,6 +7,8 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/joho/godotenv"
 )
+
+var Env *EnvConfig
 
 type EnvConfig struct {
 	AppEnv                 string
@@ -19,7 +21,7 @@ type EnvConfig struct {
 	GitToken               string
 }
 
-func NewEnv() *EnvConfig {
+func LoadEnv() {
 	// Load .env file first (won't override real env vars)
 	_ = godotenv.Load(".env")
 
@@ -33,7 +35,7 @@ func NewEnv() *EnvConfig {
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)
-	return env
+  Env = env
 }
 
 // getEnv gets an environment variable or returns a default value
