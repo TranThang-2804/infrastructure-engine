@@ -130,3 +130,28 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 	log.Logger.Debug("File created successfully", "fileName", filePath)
 	return nil
 }
+
+func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, filePath string, content string) error {
+	// Create the file content
+	fileContentOptions := &github.RepositoryContentFileOptions{
+		Message: github.String("Create " + filePath),
+		Content: []byte(content),
+		Branch:  github.String(branch),
+	}
+
+	// Create the file in the repository
+  _, _, err := gh.Client.Repositories.CreateFile(
+		context.Background(),
+		owner,
+		repo,
+		filePath,
+		fileContentOptions,
+	)
+	if err != nil {
+		log.Logger.Error("Error creating file:", "err", err)
+		return err
+	}
+
+	log.Logger.Debug("File created successfully", "fileName", filePath)
+	return nil
+}
