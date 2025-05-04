@@ -1,4 +1,4 @@
-package mqadapter
+package mq
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ type NatsMQ struct {
 }
 
 // NewMessageQueue creates a new connection to the NATS server.
-func NewNatsMQ(url string, subjectNames []string) (*NatsMQ, error) {
+func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 	conn, err := nats.Connect(url)
 	if err != nil {
 		return nil, err

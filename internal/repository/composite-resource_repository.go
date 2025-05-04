@@ -3,20 +3,20 @@ package repository
 import (
 	"context"
 
-	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
+	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
 type compositeResourceRepository struct {
-	gitStore     git.GitStore
+	gitStore git.GitStore
 }
 
 func NewCompositeResourceRepository(gitStore git.GitStore) domain.CompositeResourceRepository {
 	return &compositeResourceRepository{
-		gitStore:     gitStore,
+		gitStore: gitStore,
 	}
 }
 

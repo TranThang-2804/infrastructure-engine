@@ -1,13 +1,11 @@
 package route
 
 import (
-	"time"
-
 	"github.com/TranThang-2804/infrastructure-engine/internal/controller"
 	"github.com/go-chi/chi/v5"
 )
 
-func NewHealthCheckRouter(timeout time.Duration, router chi.Router) {
-	hc := &controller.HealthcheckController{}
+func NewHealthCheckRouter(router chi.Router) {
+	hc := &controller.HealthController{}
 	router.Get("/health", hc.HealthCheck)
 }

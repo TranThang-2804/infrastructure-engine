@@ -1,19 +1,10 @@
 package route
 
 import (
-	"time"
-
-	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/controller"
-	"github.com/TranThang-2804/infrastructure-engine/internal/repository"
-	"github.com/TranThang-2804/infrastructure-engine/internal/usecase"
 	"github.com/go-chi/chi/v5"
 )
 
-func NewIacTemplateRouter(gitStore git.GitStore, timeout time.Duration, router chi.Router) {
-	ir := repository.NewIacTemplateRepository(gitStore)
-	ip := &controller.IacTemplateController{
-		IacTemplateUsecase: usecase.NewIacTemplateUsecase(ir, timeout),
-	}
+func NewIacTemplateRouter(router chi.Router, ip *controller.IacTemplateController) {
 	router.Get("/iac-template", ip.GetAll)
 }

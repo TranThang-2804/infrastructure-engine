@@ -4,9 +4,13 @@ import (
 	"net/http"
 )
 
-type HealthcheckController struct{}
+type HealthController struct{}
 
-func (hc *HealthcheckController) HealthCheck(w http.ResponseWriter, r *http.Request) {
+func NewHealthController() *HealthController {
+  return &HealthController{}
+}
+
+func (hc *HealthController) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }

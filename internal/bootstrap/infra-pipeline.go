@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 )
@@ -49,8 +49,8 @@ var gitlabPipelineFileConfig = GitPipelineFileConfig{
 	},
 }
 
-func NewInfraPipeline(gitStore git.GitStore) *InfraPipeline {
-	return &InfraPipeline{
+func NewInfraPipeline(gitStore git.GitStore) InfraPipeline {
+	return InfraPipeline{
 		gitStore: gitStore,
 	}
 }

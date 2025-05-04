@@ -13,6 +13,12 @@ type CompositeResourceController struct {
 	CompositeResourceUseCase domain.CompositeResourceUsecase
 }
 
+func NewCompositeResourceController(compositeResourceUseCase domain.CompositeResourceUsecase) *CompositeResourceController {
+  return &CompositeResourceController{
+    CompositeResourceUseCase: compositeResourceUseCase,
+  }
+}
+
 func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

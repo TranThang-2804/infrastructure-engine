@@ -17,12 +17,12 @@ type compositeResourceUsecase struct {
 	contextTimeout                  time.Duration
 }
 
-func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, compositeResourceEventPublisher domain.CompositeResourceEventPublisher, bluePrintUsecase domain.BluePrintUsecase, timeout time.Duration) domain.CompositeResourceUsecase {
+func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, compositeResourceEventPublisher domain.CompositeResourceEventPublisher, bluePrintUsecase domain.BluePrintUsecase) domain.CompositeResourceUsecase {
 	return &compositeResourceUsecase{
 		compositeResourceRepository:     compositeResourceRepository,
 		compositeResourceEventPublisher: compositeResourceEventPublisher,
 		bluePrintUsecase:                bluePrintUsecase,
-		contextTimeout:                  timeout,
+		contextTimeout:                  utils.GetContextTimeout(),
 	}
 }
 

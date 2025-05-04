@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
 
 type iacTemplateUsecase struct {
@@ -12,10 +13,10 @@ type iacTemplateUsecase struct {
 	contextTimeout        time.Duration
 }
 
-func NewIacTemplateUsecase(iacTemplateRepository domain.IacTemplateRepository, timeout time.Duration) domain.IacTemplateUsecase {
+func NewIacTemplateUsecase(iacTemplateRepository domain.IacTemplateRepository) domain.IacTemplateUsecase {
 	return &iacTemplateUsecase{
 		iacTemplateRepository: iacTemplateRepository,
-		contextTimeout:        timeout,
+		contextTimeout:        utils.GetContextTimeout(),
 	}
 }
 

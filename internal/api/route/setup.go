@@ -1,14 +1,26 @@
 package route
 
 import (
-	"time"
-
-	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
-func Setup(gitStore git.GitStore, timeout time.Duration, r *chi.Mux) {
+func SetupRoute(app bootstrap.Application) *chi.Mux {
+	r := chi.NewRouter()
+
+	// CORS middleware
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"}, // Use your allowed origins
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Origin", "X-Requested-With"},
+		ExposedHeaders:   []string{"Link", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	r.Use(cors.Handler)
+
 	// Define middleware
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -17,19 +29,16 @@ func Setup(gitStore git.GitStore, timeout time.Duration, r *chi.Mux) {
 
 	// Public APIs
 	r.Group(func(r chi.Router) {
-		NewHealthCheckRouter(timeout, r)
-		NewBluePrintRouter(gitStore, timeout, r)
-		NewIacTemplateRouter(gitStore, timeout, r)
-		NewCompositeResourceRouter(gitStore, timeout, r)
-		// NewSignupRouter(env, timeout, db, r)
-		// NewLoginRouter(env, timeout, db, r)
-		// NewRefreshTokenRouter(env, timeout, db, r)
+		NewHealthCheckRouter(r)
+		NewBluePrintRouter(r, app.BluePrintController)
+		NewIacTemplateRouter(r, app.IacTemplateController)
+		NewCompositeResourceRouter(r, app.CompositeResourceController)
 	})
 
 	// Protected routes
 	r.Group(func(r chi.Router) {
 		// r.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))
-		// NewTaskRouter(env, timeout, db, r)
-		// NewProfileRouter(env, timeout, db, r)
 	})
+
+  return r
 }

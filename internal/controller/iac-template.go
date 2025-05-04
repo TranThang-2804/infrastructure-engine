@@ -11,6 +11,12 @@ type IacTemplateController struct {
 	IacTemplateUsecase domain.IacTemplateUsecase
 }
 
+func NewIacTemplateController(iacTemplateUsecase domain.IacTemplateUsecase) *IacTemplateController {
+  return &IacTemplateController{
+    IacTemplateUsecase: iacTemplateUsecase,
+  }
+}
+
 func (ic *IacTemplateController) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

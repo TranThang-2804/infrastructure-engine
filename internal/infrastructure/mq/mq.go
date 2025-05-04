@@ -1,4 +1,4 @@
-package mqadapter
+package mq
 
 // MessageQueue defines the interface for a message queue system.
 type MessageQueue interface {

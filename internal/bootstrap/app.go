@@ -1,20 +1,80 @@
 package bootstrap
 
 import (
-	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/controller"
+	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
+	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/mq"
+	"github.com/TranThang-2804/infrastructure-engine/internal/repository"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/usecase"
 )
 
 type Application struct {
-	GitStore      git.GitStore
-	InfraPipeline InfraPipeline
+	// System Prerequisites
+	infraPipeline InfraPipeline
+
+	// Infrastructure Layer
+	gitStore                   git.GitStore
+	compositeResourcePublisher domain.CompositeResourceEventPublisher
+
+	// Rrepository Layer
+	compositeResourceRepository domain.CompositeResourceRepository
+	bluePrintRepository         domain.BluePrintRepository
+	iaCTemplateRepository       domain.IacTemplateRepository
+
+	// Usecase/Service Layer
+	compositeResourceUsecase domain.CompositeResourceUsecase
+	bluePrintUsecase         domain.BluePrintUsecase
+	iacTemplateUsecase       domain.IacTemplateUsecase
+
+	// Controller/Handler Layer
+	CompositeResourceController *controller.CompositeResourceController
+	BluePrintController         *controller.BluePrintController
+	IacTemplateController       *controller.IacTemplateController
+	HealthController            *controller.HealthController
 }
 
 func App() Application {
-	app := &Application{}
-	app.GitStore = NewGitHubStore()
-	app.InfraPipeline = *NewInfraPipeline(app.GitStore)
+	mqSubjectList := []string{
+		string(constant.ToPending),
+		string(constant.ToProvisioning),
+		string(constant.ToDeleting),
+	}
 
-	app.InfraPipeline.SettingInfraPipeline()
+	// Initiate the application
+	app := &Application{}
+
+	// Setting up infrastructure instances
+	app.gitStore = NewGitHubStore()
+	// Create a mq infra type of NATS connection
+	mi, err := mq.NewNatsMQ(env.Env.NATS_URL, mqSubjectList)
+	if err != nil {
+		log.Logger.Fatal("Failed to connect to NATS", "error", err)
+	}
+	app.compositeResourcePublisher = mq.NewCompositeResourcePublisher(mi)
+
+	// Setting up the repositories
+	app.compositeResourceRepository = repository.NewCompositeResourceRepository(app.gitStore)
+	app.bluePrintRepository = repository.NewBluePrintRepository(app.gitStore)
+	app.iaCTemplateRepository = repository.NewIacTemplateRepository(app.gitStore)
+
+	// Setting up the usecases
+	app.bluePrintUsecase = usecase.NewBluePrintUsecase(app.bluePrintRepository)
+	app.iacTemplateUsecase = usecase.NewIacTemplateUsecase(app.iaCTemplateRepository)
+	app.compositeResourceUsecase = usecase.NewCompositeResourceUsecase(app.compositeResourceRepository, app.compositeResourcePublisher, app.bluePrintUsecase)
+
+  // Setting up the controllers
+  app.HealthController = controller.NewHealthController()
+  app.BluePrintController = controller.NewBluePrintController(app.bluePrintUsecase)
+  app.CompositeResourceController = controller.NewCompositeResourceController(app.compositeResourceUsecase)
+  app.IacTemplateController = controller.NewIacTemplateController(app.iacTemplateUsecase)
+
+	// Setting up required repositories pre-requisites
+	app.infraPipeline = NewInfraPipeline(app.gitStore)
+	app.infraPipeline.SettingInfraPipeline()
 	return *app
 }
 

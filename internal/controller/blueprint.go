@@ -11,6 +11,12 @@ type BluePrintController struct {
 	BluePrintUsecase domain.BluePrintUsecase
 }
 
+func NewBluePrintController(bluePrintUsecase domain.BluePrintUsecase) *BluePrintController {
+  return &BluePrintController{
+    BluePrintUsecase: bluePrintUsecase,
+  }
+}
+
 func (bc *BluePrintController) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

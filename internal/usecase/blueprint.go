@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
 
 type bluePrintUsecase struct {
@@ -12,10 +13,10 @@ type bluePrintUsecase struct {
 	contextTimeout      time.Duration
 }
 
-func NewBluePrintUsecase(bluePrintRepository domain.BluePrintRepository, timeout time.Duration) domain.BluePrintUsecase {
+func NewBluePrintUsecase(bluePrintRepository domain.BluePrintRepository) domain.BluePrintUsecase {
 	return &bluePrintUsecase{
 		bluePrintRepository: bluePrintRepository,
-		contextTimeout:      timeout,
+		contextTimeout:      utils.GetContextTimeout(),
 	}
 }
 
