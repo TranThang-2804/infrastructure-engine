@@ -11,16 +11,18 @@ import (
 )
 
 type compositeResourceUsecase struct {
-	compositeResourceRepository domain.CompositeResourceRepository
-	bluePrintUsecase            domain.BluePrintUsecase
-	contextTimeout              time.Duration
+	compositeResourceRepository     domain.CompositeResourceRepository
+	compositeResourceEventPublisher domain.CompositeResourceEventPublisher
+	bluePrintUsecase                domain.BluePrintUsecase
+	contextTimeout                  time.Duration
 }
 
-func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, bluePrintUsecase domain.BluePrintUsecase, timeout time.Duration) domain.CompositeResourceUsecase {
+func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, compositeResourceEventPublisher domain.CompositeResourceEventPublisher, bluePrintUsecase domain.BluePrintUsecase, timeout time.Duration) domain.CompositeResourceUsecase {
 	return &compositeResourceUsecase{
-		compositeResourceRepository: compositeResourceRepository,
-		bluePrintUsecase:            bluePrintUsecase,
-		contextTimeout:              timeout,
+		compositeResourceRepository:     compositeResourceRepository,
+		compositeResourceEventPublisher: compositeResourceEventPublisher,
+		bluePrintUsecase:                bluePrintUsecase,
+		contextTimeout:                  timeout,
 	}
 }
 
@@ -125,7 +127,7 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	log.Logger.Debug("Created composite resource", "compositeResource", compositeResourceCreated)
 
 	// Push message to message queue to Provision
-	_, err = cu.compositeResourceRepository.PublishMessageToQueue(ctx, compositeResourceCreated)
+	err = cu.compositeResourceEventPublisher.PublishToPendingSubject(c, compositeResourceCreated)
 	if err != nil {
 		log.Logger.Error("Error pushing message to queue", "error", err.Error())
 		return domain.CompositeResource{}, err

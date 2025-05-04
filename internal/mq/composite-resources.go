@@ -7,35 +7,29 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/message-queue"
 	"github.com/TranThang-2804/infrastructure-engine/internal/controller"
 	"github.com/TranThang-2804/infrastructure-engine/internal/repository"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/TranThang-2804/infrastructure-engine/internal/usecase"
 )
 
 func SetupMQController(gitStore git.GitStore, timeout time.Duration) {
+	mqSubjectList := []string{
+		string(constant.ToPending),
+		string(constant.ToProvisioning),
+		string(constant.ToDeleting),
+	}
+
+	// Create a NATS connection
+	mq, err := mqadapter.NewNatsMQ(env.Env.NATS_URL, mqSubjectList)
+	if err != nil {
+		log.Logger.Fatal("Failed to connect to NATS", "error", err)
+	}
+
 	cr := repository.NewCompositeResourceRepository(gitStore)
 	br := repository.NewBluePrintRepository(gitStore)
 	bu := usecase.NewBluePrintUsecase(br, timeout)
 	cp := &controller.CompositeResourceController{
 		CompositeResourceUseCase: usecase.NewCompositeResourceUsecase(cr, bu, timeout),
-	}
-
-	// Create a NATS connection
-	mq, err := mqadapter.NewNatsMQConnection(env.Env.NATS_URL)
-	if err != nil {
-		log.Logger.Fatal("Failed to connect to NATS", "error", err)
-	}
-
-	// Create a subject
-	compositeResourcePendingSubject := mq.NewSubject("composite-resource.pending")
-	compositeResourceProvisioningSubject := mq.NewSubject("composite-resource.provisioning")
-	compositeResourceDeletingSubject := mq.NewSubject("composite-resource.deleteing")
-
-	// Subscribe to the subject
-	err = compositeResourcePendingSubject.Subscribe(cp.HandlePending)
-	err = compositeResourceProvisioningSubject.Subscribe(cp.HandleProvisioning)
-	err = compositeResourceDeletingSubject.Subscribe(cp.HandleDeleting)
-	if err != nil {
-		log.Logger.Fatal("Failed to subscribe message-queue", "error", err)
 	}
 }

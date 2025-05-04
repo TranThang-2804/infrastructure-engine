@@ -95,7 +95,12 @@ type CompositeResourceRepository interface {
 	Create(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
 	Update(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
 	Delete(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
-  PublishMessageToQueue(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
+}
+
+type CompositeResourceEventPublisher interface {
+  PublishToPendingSubject(c context.Context, compositeResource CompositeResource) (error)
+  PublishToProvisioningSubject(c context.Context, compositeResource CompositeResource) (error)
+  PublishToDeletingSubject(c context.Context, compositeResource CompositeResource) (error)
 }
 
 type CompositeResourceUsecase interface {

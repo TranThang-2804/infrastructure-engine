@@ -7,47 +7,38 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-type NatsMQConnection struct {
-	conn *nats.Conn
-}
-
 // NatsSubject represents a NATS subject with an active subscription.
-type NatsSubject struct {
-	name    string
-	sub     *nats.Subscription
-	mu      sync.Mutex
-	mq      *NatsMQConnection
+type NatsMQ struct {
+	conn         *nats.Conn
+	subjectNames []string
+	sub          *nats.Subscription
+	mu           sync.Mutex
 }
 
 // NewMessageQueue creates a new connection to the NATS server.
-func NewNatsMQConnection(url string) (*NatsMQConnection, error) {
+func NewNatsMQ(url string, subjectNames []string) (*NatsMQ, error) {
 	conn, err := nats.Connect(url)
 	if err != nil {
 		return nil, err
 	}
-	return &NatsMQConnection{conn: conn}, nil
-}
-
-// NewSubject creates a subject handler tied to this message queue.
-func (mq *NatsMQConnection) NewSubject(name string) *NatsSubject {
-	return &NatsSubject{
-		name: name,
-		mq:   mq,
-	}
+	return &NatsMQ{
+		conn:         conn,
+		subjectNames: subjectNames,
+	}, nil
 }
 
 // Subscribe sets up a subscription to the subject with a message handler.
-func (s *NatsSubject) Subscribe(handler func(message string) error) error {
+func (s *NatsMQ) Subscribe(subject string, handler func(message string) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.sub != nil {
-		return fmt.Errorf("already subscribed to subject: %s", s.name)
+		return fmt.Errorf("already subscribed to subject: %s", subject)
 	}
 
-	sub, err := s.mq.conn.Subscribe(s.name, func(msg *nats.Msg) {
+	sub, err := s.conn.Subscribe(subject, func(msg *nats.Msg) {
 		if err := handler(string(msg.Data)); err != nil {
-			fmt.Printf("Error processing message on '%s': %v\n", s.name, err)
+			fmt.Printf("Error processing message on '%s': %v\n", subject, err)
 		}
 	})
 	if err != nil {
@@ -59,12 +50,12 @@ func (s *NatsSubject) Subscribe(handler func(message string) error) error {
 }
 
 // Publish sends a message to the subject.
-func (s *NatsSubject) Publish(message string) error {
-	return s.mq.conn.Publish(s.name, []byte(message))
+func (s *NatsMQ) Publish(subject string, message string) error {
+	return s.conn.Publish(subject, []byte(message))
 }
 
 // Close unsubscribes from the subject.
-func (s *NatsSubject) Close() error {
+func (s *NatsMQ) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -76,4 +67,3 @@ func (s *NatsSubject) Close() error {
 	}
 	return nil
 }
-

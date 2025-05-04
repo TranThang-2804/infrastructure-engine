@@ -11,12 +11,12 @@ import (
 )
 
 type compositeResourceRepository struct {
-	gitStore git.GitStore
+	gitStore     git.GitStore
 }
 
 func NewCompositeResourceRepository(gitStore git.GitStore) domain.CompositeResourceRepository {
 	return &compositeResourceRepository{
-		gitStore: gitStore,
+		gitStore:     gitStore,
 	}
 }
 
@@ -95,14 +95,9 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 }
 
 func (cr *compositeResourceRepository) Update(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
-  return compositeResource, nil
+	return compositeResource, nil
 }
 
 func (cr *compositeResourceRepository) Delete(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
-  return compositeResource, nil
-}
-
-func (cr *compositeResourceRepository) PublishMessageToQueue(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
-
-  return compositeResource, nil
+	return compositeResource, nil
 }

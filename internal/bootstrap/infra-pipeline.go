@@ -25,11 +25,11 @@ type GitPipelineFileConfig struct {
 
 var githubPipelineFileConfig = GitPipelineFileConfig{
 	pipelineConfigurationFiles: []PipelineFileMapping{
-		PipelineFileMapping{
+		{
 			filePath:       "iac-execution/Earthfile",
 			remoteFilePath: "Earthfile",
 		},
-		PipelineFileMapping{
+		{
 			filePath:       "iac-execution/github/.github/workflows/action.yml",
 			remoteFilePath: ".github/workflows/action.yml",
 		},
@@ -38,11 +38,11 @@ var githubPipelineFileConfig = GitPipelineFileConfig{
 
 var gitlabPipelineFileConfig = GitPipelineFileConfig{
 	pipelineConfigurationFiles: []PipelineFileMapping{
-		PipelineFileMapping{
+		{
 			filePath:       "iac-execution/Earthfile",
 			remoteFilePath: "Earthfile",
 		},
-		PipelineFileMapping{
+		{
 			filePath:       "iac-execution/gitlab/.gitlab-ci.yml",
 			remoteFilePath: ".gitlab-ci.yml",
 		},
