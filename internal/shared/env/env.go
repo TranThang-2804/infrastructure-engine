@@ -31,8 +31,6 @@ func LoadEnv() {
 		AppEnv:                 getEnv("APP_ENV", "development"),
 		ServerAddress:          getEnv("SERVER_ADDRESS", ":8080"),
 		ContextTimeout:         getIntEnv("CONTEXT_TIMEOUT", 30),
-		AccessTokenExpiryHour:  getIntEnv("ACCESS_TOKEN_EXPIRY_HOUR", 1),
-		RefreshTokenExpiryHour: getIntEnv("REFRESH_TOKEN_EXPIRY_HOUR", 72),
 		GitToken:               getEnvOrPanic("GIT_TOKEN"), // Required
 		CI:                     getEnv("CI_TYPE", "github"),
 		NATS_URL:               getEnv("NATS_URL", "nats://localhost:4222"),
