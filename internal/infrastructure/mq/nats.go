@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"time"
+  "strings"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/nats-io/nats.go"
@@ -80,7 +81,7 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message string) error) 
 		}
 		log.Logger.Debug("Message handled successful")
 		msg.Ack()
-	}, nats.Durable("worker-"+subject),
+	}, nats.Durable("worker-" + strings.ReplaceAll(subject, ".", "-")),
 		nats.ManualAck(),
 		nats.AckWait(30*time.Second), // Visibility timeout
 		nats.MaxDeliver(5),           // Max retry attempts
