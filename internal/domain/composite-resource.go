@@ -103,6 +103,12 @@ type CompositeResourceEventPublisher interface {
   PublishToDeletingSubject(c context.Context, compositeResource CompositeResource) (error)
 }
 
+type CompositeResourceEventConsumer interface {
+  SubscribeToPendingSubject(c context.Context) (error)
+  SubscribeToProvisioningSubject(c context.Context) (error)
+  SubscribeToDeletingSubject(c context.Context) (error)
+}
+
 type CompositeResourceUsecase interface {
 	GetAll(c context.Context) ([]CompositeResource, error)
 	Create(c context.Context, CreateCompositeResourceRequest CreateCompositeResourceRequest) (CompositeResource, error)
