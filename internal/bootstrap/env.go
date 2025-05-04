@@ -4,8 +4,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/joho/godotenv"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/joho/godotenv"
 )
 
 type EnvConfig struct {
@@ -23,27 +23,41 @@ func NewEnv() *EnvConfig {
 	// Load .env file first (won't override real env vars)
 	_ = godotenv.Load(".env")
 
-	// Helper to get int env
-	getInt := func(key string, defaultVal int) int {
-		val := os.Getenv(key)
-		if i, err := strconv.Atoi(val); err == nil {
-			return i
-		}
-		return defaultVal
-	}
-
 	env := &EnvConfig{
-		AppEnv:                 os.Getenv("APP_ENV"),
-		ServerAddress:          os.Getenv("SERVER_ADDRESS"),
-		ContextTimeout:         getInt("CONTEXT_TIMEOUT", 30),
-		AccessTokenExpiryHour:  getInt("ACCESS_TOKEN_EXPIRY_HOUR", 1),
-		RefreshTokenExpiryHour: getInt("REFRESH_TOKEN_EXPIRY_HOUR", 72),
-		AccessTokenSecret:      os.Getenv("ACCESS_TOKEN_SECRET"),
-		RefreshTokenSecret:     os.Getenv("REFRESH_TOKEN_SECRET"),
-		GitToken:               os.Getenv("GIT_TOKEN"),
+		AppEnv:                 getEnv("APP_ENV", "development"),
+		ServerAddress:          getEnv("SERVER_ADDRESS", ":8080"),
+		ContextTimeout:         getIntEnv("CONTEXT_TIMEOUT", 30),
+		AccessTokenExpiryHour:  getIntEnv("ACCESS_TOKEN_EXPIRY_HOUR", 1),
+		RefreshTokenExpiryHour: getIntEnv("REFRESH_TOKEN_EXPIRY_HOUR", 72),
+		GitToken:               getEnvOrPanic("GIT_TOKEN"), // Required
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)
 	return env
 }
 
+// getEnv gets an environment variable or returns a default value
+func getEnv(key, defaultVal string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return defaultVal
+}
+
+func getIntEnv(key string, defaultVal int) int {
+	if val := os.Getenv(key); val != "" {
+		if i, err := strconv.Atoi(val); err == nil {
+			return i
+		}
+	}
+	return defaultVal
+}
+
+// getEnvOrPanic gets an environment variable or panics if not set
+func getEnvOrPanic(key string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	log.Logger.Fatal("Required environment variable missing", "key", key)
+	return ""
+}
