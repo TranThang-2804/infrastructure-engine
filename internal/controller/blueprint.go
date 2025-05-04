@@ -12,9 +12,9 @@ type BluePrintController struct {
 }
 
 func NewBluePrintController(bluePrintUsecase domain.BluePrintUsecase) *BluePrintController {
-  return &BluePrintController{
-    BluePrintUsecase: bluePrintUsecase,
-  }
+	return &BluePrintController{
+		BluePrintUsecase: bluePrintUsecase,
+	}
 }
 
 func (bc *BluePrintController) GetAll(w http.ResponseWriter, r *http.Request) {

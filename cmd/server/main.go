@@ -21,7 +21,7 @@ func main() {
 
 	defer app.CloseDBConnection()
 
-  r := route.SetupRoute(app)
+	r := route.SetupRoute(app)
 
 	log.Logger.Info("Starting server...", "on port", env.Env.ServerAddress)
 

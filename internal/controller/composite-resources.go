@@ -14,9 +14,9 @@ type CompositeResourceController struct {
 }
 
 func NewCompositeResourceController(compositeResourceUseCase domain.CompositeResourceUsecase) *CompositeResourceController {
-  return &CompositeResourceController{
-    CompositeResourceUseCase: compositeResourceUseCase,
-  }
+	return &CompositeResourceController{
+		CompositeResourceUseCase: compositeResourceUseCase,
+	}
 }
 
 func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -74,13 +74,13 @@ func (rc *CompositeResourceController) Update(w http.ResponseWriter, r *http.Req
 }
 
 func (rc *CompositeResourceController) HandlePending(message string) error {
-  return nil
+	return nil
 }
 
 func (rc *CompositeResourceController) HandleProvisioning(message string) error {
-  return nil
+	return nil
 }
 
 func (rc *CompositeResourceController) HandleDeleting(message string) error {
-  return nil
+	return nil
 }

@@ -7,7 +7,7 @@ import (
 type HealthController struct{}
 
 func NewHealthController() *HealthController {
-  return &HealthController{}
+	return &HealthController{}
 }
 
 func (hc *HealthController) HealthCheck(w http.ResponseWriter, r *http.Request) {

@@ -40,5 +40,5 @@ func SetupRoute(app bootstrap.Application) *chi.Mux {
 		// r.Use(middleware.JwtAuthMiddleware(env.AccessTokenSecret))
 	})
 
-  return r
+	return r
 }

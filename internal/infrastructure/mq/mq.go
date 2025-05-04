@@ -12,4 +12,3 @@ type MessageQueue interface {
 	// Close shuts down the queue and cleans up resources.
 	Close() error
 }
-

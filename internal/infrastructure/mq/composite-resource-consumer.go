@@ -17,19 +17,19 @@ func NewCompositeResourceConsumer(mq MessageQueue, compositeResourceUsecase doma
 }
 
 func (cc *compositeResourceConsumer) StartConsumer() error {
-  // Subscribe to the pending subject
-  if err := cc.subscribeToPendingSubject(); err != nil {
-    return err
-  }
-  // Subscribe to the provisioning subject
-  if err := cc.subscribeToProvisioningSubject(); err != nil {
-    return err
-  }
-  // Subscribe to the deleting subject
-  if err := cc.subscribeToDeletingSubject(); err != nil {
-    return err
-  }
-  return nil
+	// Subscribe to the pending subject
+	if err := cc.subscribeToPendingSubject(); err != nil {
+		return err
+	}
+	// Subscribe to the provisioning subject
+	if err := cc.subscribeToProvisioningSubject(); err != nil {
+		return err
+	}
+	// Subscribe to the deleting subject
+	if err := cc.subscribeToDeletingSubject(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (cc *compositeResourceConsumer) subscribeToPendingSubject() error {

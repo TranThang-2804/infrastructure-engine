@@ -75,9 +75,9 @@ func App() Application {
 	app.CompositeResourceController = controller.NewCompositeResourceController(app.compositeResourceUsecase)
 	app.IacTemplateController = controller.NewIacTemplateController(app.iacTemplateUsecase)
 
-  // Setting up the consumer
-  app.compositeResourceConsumer = mq.NewCompositeResourceConsumer(app.mi, app.compositeResourceUsecase)
-  app.compositeResourceConsumer.StartConsumer()
+	// Setting up the consumer
+	app.compositeResourceConsumer = mq.NewCompositeResourceConsumer(app.mi, app.compositeResourceUsecase)
+	app.compositeResourceConsumer.StartConsumer()
 
 	// Setting up required repositories pre-requisites
 	app.infraPipeline = NewInfraPipeline(app.gitStore)
