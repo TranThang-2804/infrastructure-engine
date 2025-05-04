@@ -91,8 +91,11 @@ type DeleteCompositeResourceResponse struct {
 }
 
 type CompositeResourceRepository interface {
-	Create(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
 	GetAll(c context.Context) ([]CompositeResource, error)
+	Create(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
+	Update(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
+	Delete(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
+  PublishMessageToQueue(c context.Context, compositeResource CompositeResource) (CompositeResource, error)
 }
 
 type CompositeResourceUsecase interface {

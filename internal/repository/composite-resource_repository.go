@@ -93,3 +93,16 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 
 	return compositeResource, nil
 }
+
+func (cr *compositeResourceRepository) Update(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+  return compositeResource, nil
+}
+
+func (cr *compositeResourceRepository) Delete(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+  return compositeResource, nil
+}
+
+func (cr *compositeResourceRepository) PublishMessageToQueue(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+
+  return compositeResource, nil
+}

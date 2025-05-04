@@ -12,7 +12,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/usecase"
 )
 
-func NewCompositeResourceMQController(gitStore git.GitStore, timeout time.Duration) {
+func SetupMQController(gitStore git.GitStore, timeout time.Duration) {
 	cr := repository.NewCompositeResourceRepository(gitStore)
 	br := repository.NewBluePrintRepository(gitStore)
 	bu := usecase.NewBluePrintUsecase(br, timeout)

@@ -115,25 +115,41 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 		compositeResource.Resources = append(compositeResource.Resources, resourceConfig)
 	}
 
-	return cu.compositeResourceRepository.Create(ctx, compositeResource)
+	// Store the composite resource
+	compositeResourceCreated, err := cu.compositeResourceRepository.Create(ctx, compositeResource)
+
+	if err != nil {
+		log.Logger.Error("Error creating composite resource", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
+	log.Logger.Debug("Created composite resource", "compositeResource", compositeResourceCreated)
+
+	// Push message to message queue to Provision
+	_, err = cu.compositeResourceRepository.PublishMessageToQueue(ctx, compositeResourceCreated)
+	if err != nil {
+		log.Logger.Error("Error pushing message to queue", "error", err.Error())
+		return domain.CompositeResource{}, err
+	}
+
+	return compositeResource, nil
 }
 
 func (cu *compositeResourceUsecase) Update(c context.Context, deleteCompositeResourceRequest domain.UpdateCompositeResourceRequest) (domain.CompositeResource, error) {
-  return domain.CompositeResource{}, nil
+	return domain.CompositeResource{}, nil
 }
 
 func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeResourceRequest domain.DeleteCompositeResourceRequest) (domain.CompositeResource, error) {
-  return domain.CompositeResource{}, nil
+	return domain.CompositeResource{}, nil
 }
 
-func (cu *compositeResourceUsecase) HandlePending(message string) (error) {
-  return nil
+func (cu *compositeResourceUsecase) HandlePending(message string) error {
+	return nil
 }
 
-func (cu *compositeResourceUsecase) HandleProvisioning(message string) (error) {
-  return nil
+func (cu *compositeResourceUsecase) HandleProvisioning(message string) error {
+	return nil
 }
 
-func (cu *compositeResourceUsecase) HandleDeleting(message string) (error) {
-  return nil
+func (cu *compositeResourceUsecase) HandleDeleting(message string) error {
+	return nil
 }
