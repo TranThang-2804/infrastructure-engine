@@ -1,0 +1,53 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "earthly@latest": {
+      "last_modified": "2025-03-11T17:52:14Z",
+      "resolved": "github:NixOS/nixpkgs/0d534853a55b5d02a4ababa1d71921ce8f0aee4c#earthly",
+      "source": "devbox-search",
+      "version": "0.8.15",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/lkf4wjk985y1ca1hvf9nhn0bi90p7qy7-earthly-0.8.15",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/lkf4wjk985y1ca1hvf9nhn0bi90p7qy7-earthly-0.8.15"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/l01ln0f6nl44qvh919ndzqny1sr4znmr-earthly-0.8.15",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/l01ln0f6nl44qvh919ndzqny1sr4znmr-earthly-0.8.15"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/925jwhdk9pvyfb0r2ka6cixv07zb62ik-earthly-0.8.15",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/925jwhdk9pvyfb0r2ka6cixv07zb62ik-earthly-0.8.15"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2r5ygaz3cmp7nc2g1vg669zlvk8h4246-earthly-0.8.15",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2r5ygaz3cmp7nc2g1vg669zlvk8h4246-earthly-0.8.15"
+        }
+      }
+    }
+  }
+}
