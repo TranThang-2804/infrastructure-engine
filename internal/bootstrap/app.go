@@ -19,6 +19,7 @@ type Application struct {
 	// Infrastructure Layer
 	gitStore                   git.GitStore
 	compositeResourcePublisher domain.CompositeResourceEventPublisher
+	compositeResourceConsumer  domain.CompositeResourceEventConsumer
 	mi                         mq.MessageQueue
 
 	// Rrepository Layer
@@ -55,7 +56,7 @@ func App() Application {
 	if err != nil {
 		log.Logger.Fatal("Failed to connect to NATS", "error", err)
 	}
-  app.mi = mi
+	app.mi = mi
 	app.compositeResourcePublisher = mq.NewCompositeResourcePublisher(app.mi)
 
 	// Setting up the repositories
@@ -74,6 +75,10 @@ func App() Application {
 	app.CompositeResourceController = controller.NewCompositeResourceController(app.compositeResourceUsecase)
 	app.IacTemplateController = controller.NewIacTemplateController(app.iacTemplateUsecase)
 
+  // Setting up the consumer
+  app.compositeResourceConsumer = mq.NewCompositeResourceConsumer(app.mi, app.compositeResourceUsecase)
+  app.compositeResourceConsumer.StartConsumer()
+
 	// Setting up required repositories pre-requisites
 	app.infraPipeline = NewInfraPipeline(app.gitStore)
 	app.infraPipeline.SettingInfraPipeline()
@@ -81,6 +86,6 @@ func App() Application {
 }
 
 func (app *Application) CloseDBConnection() {
-  // Close the message queue connection
+	// Close the message queue connection
 	app.mi.Close()
 }

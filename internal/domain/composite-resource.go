@@ -104,9 +104,7 @@ type CompositeResourceEventPublisher interface {
 }
 
 type CompositeResourceEventConsumer interface {
-  SubscribeToPendingSubject(c context.Context) (error)
-  SubscribeToProvisioningSubject(c context.Context) (error)
-  SubscribeToDeletingSubject(c context.Context) (error)
+  StartConsumer() (error)
 }
 
 type CompositeResourceUsecase interface {
