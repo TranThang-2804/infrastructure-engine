@@ -140,7 +140,7 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 	}
 
 	// Create the file in the repository
-  _, _, err := gh.Client.Repositories.CreateFile(
+	_, _, err := gh.Client.Repositories.CreateFile(
 		context.Background(),
 		owner,
 		repo,
