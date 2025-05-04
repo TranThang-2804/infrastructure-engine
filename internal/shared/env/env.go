@@ -35,7 +35,7 @@ func LoadEnv() {
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)
-  Env = env
+	Env = env
 }
 
 // getEnv gets an environment variable or returns a default value
