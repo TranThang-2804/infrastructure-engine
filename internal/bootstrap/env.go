@@ -1,36 +1,49 @@
 package bootstrap
 
 import (
+	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
-	"github.com/spf13/viper"
 )
 
 type EnvConfig struct {
-	AppEnv                 string `mapstructure:"APP_ENV"`
-	ServerAddress          string `mapstructure:"SERVER_ADDRESS"`
-	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
-	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
-	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
-	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
-	RefreshTokenSecret     string `mapstructure:"REFRESH_TOKEN_SECRET"`
-	GitToken               string `mapstructure:"GIT_TOKEN"`
+	AppEnv                 string
+	ServerAddress          string
+	ContextTimeout         int
+	AccessTokenExpiryHour  int
+	RefreshTokenExpiryHour int
+	AccessTokenSecret      string
+	RefreshTokenSecret     string
+	GitToken               string
 }
 
 func NewEnv() *EnvConfig {
-	env := EnvConfig{}
-	viper.SetConfigFile(".env")
+	// Load .env file first (won't override real env vars)
+	_ = godotenv.Load(".env")
 
-	viper.AutomaticEnv()
-
-	// Unmarshal the configuration into the Env struct
-	if err := viper.Unmarshal(&env); err != nil {
-		log.Logger.Fatal("Environment can't be loaded: ", "err", err)
+	// Helper to get int env
+	getInt := func(key string, defaultVal int) int {
+		val := os.Getenv(key)
+		if i, err := strconv.Atoi(val); err == nil {
+			return i
+		}
+		return defaultVal
 	}
 
-	// Log the environment mode
-	if env.AppEnv == "development" {
-		log.Logger.Info("The App is running in development env")
+	env := &EnvConfig{
+		AppEnv:                 os.Getenv("APP_ENV"),
+		ServerAddress:          os.Getenv("SERVER_ADDRESS"),
+		ContextTimeout:         getInt("CONTEXT_TIMEOUT", 30),
+		AccessTokenExpiryHour:  getInt("ACCESS_TOKEN_EXPIRY_HOUR", 1),
+		RefreshTokenExpiryHour: getInt("REFRESH_TOKEN_EXPIRY_HOUR", 72),
+		AccessTokenSecret:      os.Getenv("ACCESS_TOKEN_SECRET"),
+		RefreshTokenSecret:     os.Getenv("REFRESH_TOKEN_SECRET"),
+		GitToken:               os.Getenv("GIT_TOKEN"),
 	}
 
-	return &env
+	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)
+	return env
 }
+
