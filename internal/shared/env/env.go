@@ -19,6 +19,7 @@ type EnvConfig struct {
 	AccessTokenSecret      string
 	RefreshTokenSecret     string
 	GitToken               string
+	CI                     string
 }
 
 func LoadEnv() {
@@ -32,6 +33,7 @@ func LoadEnv() {
 		AccessTokenExpiryHour:  getIntEnv("ACCESS_TOKEN_EXPIRY_HOUR", 1),
 		RefreshTokenExpiryHour: getIntEnv("REFRESH_TOKEN_EXPIRY_HOUR", 72),
 		GitToken:               getEnvOrPanic("GIT_TOKEN"), // Required
+		CI:                     getEnv("CI_TYPE", "github"),
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)

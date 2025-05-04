@@ -6,10 +6,47 @@ import (
 	"os"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/adapter/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 )
 
 type InfraPipeline struct {
 	gitStore git.GitStore
+}
+
+type PipelineFileMapping struct {
+	filePath       string
+	remoteFilePath string
+}
+
+type GitPipelineFileConfig struct {
+	pipelineConfigurationFiles []PipelineFileMapping
+}
+
+var githubPipelineFileConfig = GitPipelineFileConfig{
+	pipelineConfigurationFiles: []PipelineFileMapping{
+		PipelineFileMapping{
+			filePath:       "iac-execution/Earthfile",
+			remoteFilePath: "Earthfile",
+		},
+		PipelineFileMapping{
+			filePath:       "iac-execution/github/.github/workflows/action.yml",
+			remoteFilePath: ".github/workflows/action.yml",
+		},
+	},
+}
+
+var gitlabPipelineFileConfig = GitPipelineFileConfig{
+	pipelineConfigurationFiles: []PipelineFileMapping{
+		PipelineFileMapping{
+			filePath:       "iac-execution/Earthfile",
+			remoteFilePath: "Earthfile",
+		},
+		PipelineFileMapping{
+			filePath:       "iac-execution/gitlab/.gitlab-ci.yml",
+			remoteFilePath: ".gitlab-ci.yml",
+		},
+	},
 }
 
 func NewInfraPipeline(gitStore git.GitStore) *InfraPipeline {
@@ -19,19 +56,34 @@ func NewInfraPipeline(gitStore git.GitStore) *InfraPipeline {
 }
 
 func (ip *InfraPipeline) SettingInfraPipeline() error {
-	file, err := os.Open("iac-execution/Earthfile")
-	if err != nil {
-		fmt.Printf("Error opening file: %v\n", err)
-		return err
-	}
-	defer file.Close()
+	log.Logger.Info("Setting up infrastructure pipeline...")
 
-	content, err := io.ReadAll(file)
-	if err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
-		return nil
+	var pipelineFileConfig GitPipelineFileConfig
+
+	switch env.Env.CI {
+	case "github":
+		pipelineFileConfig = githubPipelineFileConfig
+	case "gitlab":
+		pipelineFileConfig = gitlabPipelineFileConfig
+	default:
+		log.Logger.Fatal("Unsupported CI/CD platform: ", env.Env.CI)
 	}
 
-	ip.gitStore.CreateOrUpdateFile("TranThang-2804", "platform-iac-template", "master", "Earthfile", string(content))
+	for _, fileMapping := range pipelineFileConfig.pipelineConfigurationFiles {
+		file, err := os.Open(fileMapping.filePath)
+		if err != nil {
+			fmt.Printf("Error opening file: %v\n", err)
+			return err
+		}
+		defer file.Close()
+
+		content, err := io.ReadAll(file)
+		if err != nil {
+			fmt.Printf("Error reading file: %v\n", err)
+			return nil
+		}
+
+		ip.gitStore.CreateOrUpdateFile("TranThang-2804", "platform-iac-resource", "master", fileMapping.remoteFilePath, string(content))
+	}
 	return nil
 }

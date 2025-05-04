@@ -132,15 +132,66 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 }
 
 func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, filePath string, content string) error {
-	// Create the file content
+	// Check if the file exists
+	fileContent, _, _, err := gh.Client.Repositories.GetContents(
+		context.Background(),
+		owner,
+		repo,
+		filePath,
+		&github.RepositoryContentGetOptions{Ref: branch},
+	)
+	if err != nil && !strings.Contains(err.Error(), "404") {
+		log.Logger.Error("Error checking file existence:", "err", err)
+		return err
+	}
+
+	// If the file exists, compare its content
+	if fileContent != nil {
+		decodedContent, decodeErr := fileContent.GetContent()
+		if decodeErr != nil {
+			log.Logger.Error("Error decoding file content:", "err", decodeErr)
+			return decodeErr
+		}
+
+		// Compare the existing content with the new content
+		if decodedContent == content {
+			log.Logger.Info("File content is identical, no update needed", "fileName", filePath)
+			return nil
+		}
+
+		// Prepare the file content options for update
+		fileContentOptions := &github.RepositoryContentFileOptions{
+			Message: github.String("Update " + filePath),
+			Content: []byte(content),
+			Branch:  github.String(branch),
+			SHA:     github.String(fileContent.GetSHA()),
+		}
+
+		// Update the file in the repository
+		_, _, err = gh.Client.Repositories.UpdateFile(
+			context.Background(),
+			owner,
+			repo,
+			filePath,
+			fileContentOptions,
+		)
+		if err != nil {
+			log.Logger.Error("Error updating file:", "err", err)
+			return err
+		}
+
+		log.Logger.Debug("File updated successfully", "fileName", filePath)
+		return nil
+	}
+
+	// If the file does not exist, create it
 	fileContentOptions := &github.RepositoryContentFileOptions{
 		Message: github.String("Create " + filePath),
 		Content: []byte(content),
 		Branch:  github.String(branch),
 	}
 
-	// Create the file in the repository
-	_, _, err := gh.Client.Repositories.CreateFile(
+	_, _, err = gh.Client.Repositories.CreateFile(
 		context.Background(),
 		owner,
 		repo,
