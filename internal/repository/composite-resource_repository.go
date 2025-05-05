@@ -51,16 +51,82 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 	}
 
 	// Convert object to YAML
-	yamlBytes, err := yaml.Marshal(compositeResource)
+	yamlString, err := convertToYaml(compositeResource)
 	if err != nil {
 		log.Logger.Error("Error converting to YAML:", "error", err)
 		return compositeResource, err
 	}
 
-	// Convert YAML bytes to string
-	yamlString := string(yamlBytes)
+	// Get filepath from metadata
+	filepath := generateFilePath(compositeResource)
+
+	err = cr.gitStore.CreateFile(
+		"TranThang-2804",
+		"platform-iac-resource",
+		"master",
+		filepath,
+		yamlString,
+	)
+	if err != nil {
+		log.Logger.Error("Error creating file", "error", err)
+		return compositeResource, err
+	}
+
+	return compositeResource, nil
+}
+
+func (cr *compositeResourceRepository) Update(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+	// Validate compositeResource
+	log.Logger.Debug("CompositeResource", "compositeResource", compositeResource)
+	err := utils.ValidateStruct(compositeResource)
+	if err != nil {
+		log.Logger.Error("Error validating composite resource", "error", err)
+		return compositeResource, err
+	}
+
+	// Convert object to YAML
+	yamlString, err := convertToYaml(compositeResource)
+	if err != nil {
+		log.Logger.Error("Error converting to YAML:", "error", err)
+		return compositeResource, err
+	}
 
 	// Get filepath from metadata
+	filepath := generateFilePath(compositeResource)
+
+	// Check if current file exists
+	_, err = cr.gitStore.ReadFileContent(
+		"TranThang-2804",
+		"platform-iac-resource",
+		"master",
+		filepath,
+	)
+	if err != nil {
+		log.Logger.Error("Error reading current file content", "error", err)
+		return compositeResource, err
+	}
+
+  // Update file
+	err = cr.gitStore.CreateOrUpdateFile(
+		"TranThang-2804",
+		"platform-iac-resource",
+		"master",
+		filepath,
+		yamlString,
+	)
+	if err != nil {
+		log.Logger.Error("Error creating file", "error", err)
+		return compositeResource, err
+	}
+
+	return compositeResource, nil
+}
+
+func (cr *compositeResourceRepository) Delete(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+	return compositeResource, nil
+}
+
+func generateFilePath(compositeResource domain.CompositeResource) string {
 	// default filepath if no metadata provided
 	filepath := ""
 	if compositeResource.Metadata.Project != "" {
@@ -76,28 +142,17 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 	}
 
 	filepath += compositeResource.BluePrintId + "/" + compositeResource.Id + ".yaml"
+	return filepath
+}
 
-	err = cr.gitStore.CreateFile(
-		"TranThang-2804",
-		"platform-iac-resource",
-		"master",
-		filepath,
-		yamlString,
-	)
+func convertToYaml(compositeResource domain.CompositeResource) (string, error) {
+	yamlBytes, err := yaml.Marshal(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error creating file", "error", err)
-		return compositeResource, err
+		log.Logger.Error("Error converting to YAML:", "error", err)
+		return "", err
 	}
 
-	// (Optional) Update index file
-
-	return compositeResource, nil
-}
-
-func (cr *compositeResourceRepository) Update(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
-	return compositeResource, nil
-}
-
-func (cr *compositeResourceRepository) Delete(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
-	return compositeResource, nil
+	// Convert YAML bytes to string
+	yamlString := string(yamlBytes)
+	return yamlString, nil
 }
