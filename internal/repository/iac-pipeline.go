@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
@@ -18,6 +19,21 @@ func NewIacPipelineRepository(gitStore git.GitStore) domain.IacPipelineRepositor
 }
 
 func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipeline, error) {
+	pipelineData := map[string]interface{}{
+		"action":   iacPipeline.Action,
+		"filepath": iacPipeline.Name,
+	}
+	pipelinePayload, err := json.Marshal(pipelineData)
+	if err != nil {
+		return domain.IacPipeline{}, err
+	}
+
+  // Trigger pipeline
+	ir.gitStore.TriggerPipeline(
+		"TranThang-2804",
+		"platform-iac-resource",
+		pipelinePayload,
+	)
 	return iacPipeline, nil
 }
 

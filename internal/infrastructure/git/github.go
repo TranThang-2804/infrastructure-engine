@@ -3,6 +3,7 @@ package git
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -205,4 +206,27 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 
 	log.Logger.Debug("File created successfully", "fileName", filePath)
 	return nil
+}
+
+func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelinePayload []byte) (string, error) {
+	// Create a context
+	ctx := context.Background()
+
+	// Create a repository dispatch request
+	dispatchRequest := &github.DispatchRequestOptions{
+		EventType:     "trigger-pipeline", // Custom event type
+		ClientPayload: (*json.RawMessage)(&pipelinePayload),
+	}
+
+	// Trigger the repository dispatch event
+	_, _, err := gh.Client.Repositories.Dispatch(ctx, owner, repo, *dispatchRequest)
+	if err != nil {
+		return "", fmt.Errorf("failed to trigger pipeline: %w", err)
+	}
+
+	return "Pipeline triggered successfully", nil
+}
+
+func (gh *GitHub) GetPipelineOutput(owner string, repo string, pipeline string) (string, error) {
+	return "", nil
 }
