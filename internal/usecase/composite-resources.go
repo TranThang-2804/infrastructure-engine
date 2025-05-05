@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
@@ -145,7 +146,25 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 }
 
 func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
-	log.Logger.Debug("Handling pending message", "message", message)
+	var compositeResource domain.CompositeResource
+
+	// Unmarshal the message into the composite resource struct
+	err := json.Unmarshal(message, &compositeResource)
+	if err != nil {
+		log.Logger.Error("Error unmarshalling message", "error", err.Error())
+		return err
+	}
+
+	// Validate the composite resource
+	err = utils.ValidateStruct(compositeResource)
+	if err != nil {
+		log.Logger.Error("Error validating composite resource", "error", err.Error())
+		return err
+	}
+
+  // Logic for handling the pending message
+
+	log.Logger.Debug("Handling pending message", "message", compositeResource)
 	return nil
 }
 
