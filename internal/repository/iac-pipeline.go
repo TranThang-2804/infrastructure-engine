@@ -17,10 +17,10 @@ func NewIacPipelineRepository(gitStore git.GitStore) domain.IacPipelineRepositor
 	}
 }
 
-func (ir *iacPipelineRepository) Trigger(c context.Context) (domain.IacPipeline, error) {
+func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipeline, error) {
 	return domain.IacPipeline{}, nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context) (domain.IacPipelineOutput, error) {
+func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipelineOutput, error) {
 	return domain.IacPipelineOutput{}, nil
 }

@@ -4,7 +4,7 @@ import "context"
 
 type IacPipeline struct {
 	Name        string `json:"name" yaml:"name"`
-	Id          string `json:"id" yaml:"id"`
+	Id          int    `json:"id" yaml:"id"`
 	Action      string `json:"action" yaml:"action"`
 	GitProvider string `json:"provider" yaml:"provider"`
 	URL         string `json:"url" yaml:"url"`
@@ -16,11 +16,11 @@ type IacPipelineOutput struct {
 }
 
 type IacPipelineRepository interface {
-	Trigger(c context.Context) (IacPipeline, error)
-	GetPipelineOutputByUrl(c context.Context) (IacPipelineOutput, error)
+	Trigger(c context.Context, iacPipeline IacPipeline) (IacPipeline, error)
+	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) (IacPipelineOutput, error)
 }
 
 type IacPipelineUsecase interface {
-	Trigger(c context.Context) (IacPipeline, error)
-	GetPipelineOutputByUrl(c context.Context) (IacPipelineOutput, error)
+	Trigger(c context.Context, iacPipeline IacPipeline) (IacPipeline, error)
+	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) (IacPipelineOutput, error)
 }

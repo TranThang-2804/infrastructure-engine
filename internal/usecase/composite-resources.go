@@ -7,6 +7,7 @@ import (
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
@@ -15,6 +16,7 @@ type compositeResourceUsecase struct {
 	compositeResourceRepository     domain.CompositeResourceRepository
 	compositeResourceEventPublisher domain.CompositeResourceEventPublisher
 	bluePrintUsecase                domain.BluePrintUsecase
+	iacPipelineUsecase              domain.IacPipelineUsecase
 	contextTimeout                  time.Duration
 }
 
@@ -146,6 +148,8 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 }
 
 func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
+	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
+	defer cancel()
 	var compositeResource domain.CompositeResource
 
 	// Unmarshal the message into the composite resource struct
@@ -162,7 +166,38 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 		return err
 	}
 
-  // Logic for handling the pending message
+	// Logic for handling the pending message
+	for _, resource := range compositeResource.Resources {
+		// Logic to handle each resource
+		log.Logger.Debug("Handling resource", "resource", resource)
+
+		newPipelineRun := domain.IacPipeline{
+			Name:        resource.Name,
+			Id:          len(resource.RunIds) + 1,
+			Action:      "apply",
+			GitProvider: env.Env.CI,
+			URL:         "",
+		}
+
+		// Trigger the pipeline to create the resource
+		newPipelineRun, err = cu.iacPipelineUsecase.Trigger(ctx, newPipelineRun)
+		if err != nil {
+			log.Logger.Error("Error triggering pipeline", "error", err.Error())
+			return err
+		}
+
+    // Add the new pipeline run to the resource
+    resource.RunIds = append(resource.RunIds, newPipelineRun)
+	}
+
+  // Save the new status
+  compositeResource.Status = constant.Provisioning
+
+  // Always update the new status
+  defer cu.compositeResourceRepository.Update(ctx, compositeResource)
+
+  // Publish the message to the provisioning subject
+  cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
 
 	log.Logger.Debug("Handling pending message", "message", compositeResource)
 	return nil

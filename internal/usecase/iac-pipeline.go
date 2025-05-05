@@ -20,14 +20,14 @@ func NewIacPipelineUsecase(iacPipelineRepository domain.IacPipelineRepository) d
 	}
 }
 
-func (iu *iacPipelineUsecase) Trigger(c context.Context) (domain.IacPipeline, error) {
+func (iu *iacPipelineUsecase) Trigger(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipeline, error) {
 	ctx, cancel := context.WithTimeout(c, iu.contextTimeout)
 	defer cancel()
-	return iu.iacPipelineRepository.Trigger(ctx)
+	return iu.iacPipelineRepository.Trigger(ctx, iacPipeline)
 }
 
-func (iu *iacPipelineUsecase) GetPipelineOutputByUrl(c context.Context) (domain.IacPipelineOutput, error) {
+func (iu *iacPipelineUsecase) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipelineOutput, error) {
 	ctx, cancel := context.WithTimeout(c, iu.contextTimeout)
 	defer cancel()
-	return iu.iacPipelineRepository.GetPipelineOutputByUrl(ctx)
+	return iu.iacPipelineRepository.GetPipelineOutputByUrl(ctx, iacPipeline)
 }
