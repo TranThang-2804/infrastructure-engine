@@ -223,10 +223,11 @@ func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelinePayload []b
 	if err != nil {
 		return "", fmt.Errorf("failed to trigger pipeline: %w", err)
 	}
+  log.Logger.Info("hi", "response", res.Status)
 
-	url, err := res.Location()
+  // Get url
 
-	return url.String(), nil
+	return "", nil
 }
 
 func (gh *GitHub) GetPipelineOutput(owner string, repo string, pipeline string) (string, error) {

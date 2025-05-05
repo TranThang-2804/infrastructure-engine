@@ -53,6 +53,11 @@ func App() Application {
 
 	// Setting up infrastructure instances
 	app.gitStore = NewGitHubStore()
+
+	// Setting up required repositories pre-requisites
+	app.infraPipeline = NewInfraPipeline(app.gitStore)
+	app.infraPipeline.SettingInfraPipeline()
+
 	// Create a mq infra type of NATS connection
 	mi, err := mq.NewNatsMQ(env.Env.NATS_URL, mqSubjectList)
 	if err != nil {
@@ -83,9 +88,6 @@ func App() Application {
 	app.compositeResourceConsumer = mq.NewCompositeResourceConsumer(app.mi, app.compositeResourceUsecase)
 	app.compositeResourceConsumer.StartConsumer()
 
-	// Setting up required repositories pre-requisites
-	app.infraPipeline = NewInfraPipeline(app.gitStore)
-	app.infraPipeline.SettingInfraPipeline()
 	return *app
 }
 

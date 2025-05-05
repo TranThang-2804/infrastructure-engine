@@ -16,11 +16,11 @@ type IacPipelineOutput struct {
 }
 
 type IacPipelineRepository interface {
-	Trigger(c context.Context, iacPipeline IacPipeline) (IacPipeline, error)
-	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) (IacPipelineOutput, error)
+	Trigger(c context.Context, iacPipeline IacPipeline) (string, error)
+	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) ([]byte, error)
 }
 
 type IacPipelineUsecase interface {
-	Trigger(c context.Context, iacPipeline IacPipeline) (IacPipeline, error)
-	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) (IacPipelineOutput, error)
+	Trigger(c context.Context, iacPipeline IacPipeline) (string, error)
+	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) ([]byte, error)
 }

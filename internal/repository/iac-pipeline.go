@@ -19,14 +19,14 @@ func NewIacPipelineRepository(gitStore git.GitStore) domain.IacPipelineRepositor
 	}
 }
 
-func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipeline, error) {
+func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.IacPipeline) (string, error) {
 	pipelineData := map[string]interface{}{
 		"action":   iacPipeline.Action,
 		"filepath": iacPipeline.Name,
 	}
 	pipelinePayload, err := json.Marshal(pipelineData)
 	if err != nil {
-		return domain.IacPipeline{}, err
+		return "", err
 	}
 
 	// Trigger pipeline
@@ -37,14 +37,13 @@ func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.I
 	)
 	if err != nil {
 		log.Logger.Error("Error Triggering pipeline", "error", err)
-		return domain.IacPipeline{}, nil
+		return "", err
 	}
 
 	// Get Pipeline URL and attach it
-	iacPipeline.URL = pipelineUrl
-	return iacPipeline, nil
+	return pipelineUrl, nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) (domain.IacPipelineOutput, error) {
-	return domain.IacPipelineOutput{}, nil
+func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
+	return []byte{}, nil
 }
