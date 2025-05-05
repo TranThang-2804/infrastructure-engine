@@ -180,7 +180,7 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 		}
 
 		// Trigger the pipeline to create the resource
-		newPipelineRun, err = cu.iacPipelineUsecase.Trigger(ctx, newPipelineRun)
+		// newPipelineRun, err = cu.iacPipelineUsecase.Trigger(ctx, newPipelineRun)
 		if err != nil {
 			log.Logger.Error("Error triggering pipeline", "error", err.Error())
 			return err
@@ -188,6 +188,9 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 
     // Add the new pipeline run to the resource
     resource.RunIds = append(resource.RunIds, newPipelineRun)
+
+    // Set resource status
+    resource.Status = constant.Provisioning
 	}
 
   // Save the new status
