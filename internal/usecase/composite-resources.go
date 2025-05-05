@@ -155,11 +155,6 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 	defer cancel()
 
-	// Always update the new status
-	defer func() {
-		cu.compositeResourceRepository.Update(ctx, compositeResource)
-	}()
-
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
 	if err != nil {
@@ -210,6 +205,11 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	// Save the new status
 	compositeResource.Status = constant.Provisioning
 
+	_, err = cu.compositeResourceRepository.Update(ctx, compositeResource)
+	if err != nil {
+		return err
+	}
+
 	// Publish the message to the provisioning subject
 	cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
 
@@ -225,11 +225,6 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 
 	defer cancel()
-
-	// Always update to the latest status
-	defer func() {
-		cu.compositeResourceRepository.Update(ctx, compositeResource)
-	}()
 
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
@@ -316,9 +311,16 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 
 	compositeResource.Status = finalResourceStatus
 
+	_, err = cu.compositeResourceRepository.Update(ctx, compositeResource)
+	if err != nil {
+		return err
+	}
+
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
-		cu.compositeResourceEventPublisher.RePublishToProvisioningSubject(ctx, compositeResource)
+		if err = cu.compositeResourceEventPublisher.RePublishToProvisioningSubject(ctx, compositeResource); err != nil {
+			return err
+		}
 		return nil
 	}
 

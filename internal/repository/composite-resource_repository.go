@@ -115,7 +115,7 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 		yamlString,
 	)
 	if err != nil {
-		log.Logger.Error("Error creating file", "error", err)
+		log.Logger.Error("Error updating file", "error", err)
 		return compositeResource, err
 	}
 

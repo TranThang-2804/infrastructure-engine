@@ -38,8 +38,7 @@ func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(c context.Con
 		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
 		return err
 	}
-	cr.messageQueue.Publish("composite-resource.provisioning", messageData)
-	return nil
+	return cr.messageQueue.Publish("composite-resource.provisioning", messageData)
 }
 
 func (cr *CompositeResourcePublisher) RePublishToProvisioningSubject(c context.Context, compositeResource domain.CompositeResource) error {
@@ -53,8 +52,7 @@ func (cr *CompositeResourcePublisher) RePublishToProvisioningSubject(c context.C
 	// Re-publish message to queue
 	hdr := nats.Header{}
 	hdr.Set("Nats-Delay", "30s")
-	cr.messageQueue.Publish("composite-resource.provisioning", messageData, nats.Header(hdr))
-	return nil
+	return cr.messageQueue.Publish("composite-resource.provisioning", messageData, nats.Header(hdr))
 }
 
 func (cr *CompositeResourcePublisher) PublishToDeletingSubject(c context.Context, compositeResource domain.CompositeResource) error {
@@ -64,6 +62,5 @@ func (cr *CompositeResourcePublisher) PublishToDeletingSubject(c context.Context
 		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
 		return err
 	}
-	cr.messageQueue.Publish("composite-resource.deleting", messageData)
-	return nil
+	return cr.messageQueue.Publish("composite-resource.deleting", messageData)
 }
