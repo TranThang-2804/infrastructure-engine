@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
@@ -305,10 +304,10 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 
 	compositeResource.Status = finalResourceStatus
 
-	// If composite resource is still in progress (not done or failed) -> return error to retry
+	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
-		cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
-    return fmt.Errorf("Composite resource is still in progress")
+		cu.compositeResourceEventPublisher.RePublishToProvisioningSubject(ctx, compositeResource)
+    return nil
 	}
 
 	log.Logger.Info("Composite Resource finished provisioning", "message", compositeResource.Status)

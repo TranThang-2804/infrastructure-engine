@@ -6,6 +6,7 @@ import (
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/nats-io/nats.go"
 )
 
 type CompositeResourcePublisher struct {
@@ -38,6 +39,21 @@ func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(c context.Con
 		return err
 	}
 	cr.messageQueue.Publish("composite-resource.provisioning", messageData)
+	return nil
+}
+
+func (cr *CompositeResourcePublisher) RePublishToProvisioningSubject(c context.Context, compositeResource domain.CompositeResource) error {
+	// Publish message to queue
+	messageData, err := json.Marshal(compositeResource)
+	if err != nil {
+		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
+		return err
+	}
+
+	// Re-publish message to queue
+	hdr := nats.Header{}
+	hdr.Set("Nats-Delay", "30s")
+	cr.messageQueue.Publish("composite-resource.provisioning", messageData, nats.Header(hdr))
 	return nil
 }
 

@@ -95,8 +95,19 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 }
 
 // Publish sends a message using JetStream (persistent).
-func (mq *NatsMQ) Publish(subject string, message []byte) error {
-	_, err := mq.js.Publish(subject, message)
+func (mq *NatsMQ) Publish(subject string, message []byte, opts ...interface{}) error {
+	// Convert opts to []nats.PubOpt
+	var pubOpts []nats.PubOpt
+	for _, opt := range opts {
+		if pubOpt, ok := opt.(nats.PubOpt); ok {
+			pubOpts = append(pubOpts, pubOpt)
+		} else {
+			return fmt.Errorf("invalid publish option type: %T", opt)
+		}
+	}
+
+	// Call the JetStream Publish method
+	_, err := mq.js.Publish(subject, message, pubOpts...)
 	return err
 }
 
