@@ -5,6 +5,7 @@ import "context"
 type IacPipeline struct {
 	Name        string `json:"name" yaml:"name"`
 	Id          string `json:"id" yaml:"id"`
+	Action      string `json:"action" yaml:"action"`
 	GitProvider string `json:"provider" yaml:"provider"`
 	URL         string `json:"url" yaml:"url"`
 }

@@ -14,7 +14,7 @@ type Resource struct {
 	IacTemplateId      string                  `json:"iacTemplateId" yaml:"iacTemplateId" validate:"required"`
 	IacTemplateVersion string                  `json:"iacTemplateVersion" yaml:"iacTemplateVersion" validate:"required"`
 	ResourceValue      string                  `json:"spec" yaml:"spec" validate:"required"`
-	RunId              []string                `json:"runId" yaml:"runId"`
+	RunIds             []IacPipeline           `json:"runIds" yaml:"runIds"`
 }
 
 type CompositeResource struct {

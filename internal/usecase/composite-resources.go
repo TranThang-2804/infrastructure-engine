@@ -111,7 +111,7 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 			IacTemplateId:      template.TemplateId,
 			IacTemplateVersion: template.Version,
 			ResourceValue:      resourceValue,
-			RunId:              []string{},
+			RunIds:             []domain.IacPipeline{},
 		}
 
 		compositeResource.Resources = append(compositeResource.Resources, resourceConfig)
@@ -145,7 +145,7 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 }
 
 func (cu *compositeResourceUsecase) HandlePending(message string) error {
-  log.Logger.Debug("Handling pending message", "message", message)
+	log.Logger.Debug("Handling pending message", "message", message)
 	return nil
 }
 
