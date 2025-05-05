@@ -65,7 +65,7 @@ func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 }
 
 // Subscribe uses JetStream to create a durable consumer with manual ack and ack wait.
-func (mq *NatsMQ) Subscribe(subject string, handler func(message string) error) error {
+func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) error {
 	mq.mu.Lock()
 	defer mq.mu.Unlock()
 
@@ -74,7 +74,7 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message string) error) 
 	}
 
 	sub, err := mq.js.Subscribe(subject, func(msg *nats.Msg) {
-		if err := handler(string(msg.Data)); err != nil {
+		if err := handler(msg.Data); err != nil {
 			log.Logger.Error("❌ Error processing message on '%s': %v\n", subject, err)
 			// Don't ack to trigger retry after AckWait
 			return
@@ -95,8 +95,8 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message string) error) 
 }
 
 // Publish sends a message using JetStream (persistent).
-func (mq *NatsMQ) Publish(subject string, message string) error {
-	_, err := mq.js.Publish(subject, []byte(message))
+func (mq *NatsMQ) Publish(subject string, message []byte) error {
+	_, err := mq.js.Publish(subject, message)
 	return err
 }
 

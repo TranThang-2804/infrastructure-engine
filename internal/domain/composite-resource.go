@@ -112,7 +112,7 @@ type CompositeResourceUsecase interface {
 	Create(c context.Context, CreateCompositeResourceRequest CreateCompositeResourceRequest) (CompositeResource, error)
 	Update(c context.Context, CreateCompositeResourceRequest UpdateCompositeResourceRequest) (CompositeResource, error)
 	Delete(c context.Context, CreateCompositeResourceRequest DeleteCompositeResourceRequest) (CompositeResource, error)
-	HandlePending(message string) error
-	HandleProvisioning(message string) error
-	HandleDeleting(message string) error
+	HandlePending(message []byte) error
+	HandleProvisioning(message []byte) error
+	HandleDeleting(message []byte) error
 }

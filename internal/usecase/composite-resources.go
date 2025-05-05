@@ -144,15 +144,15 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 	return domain.CompositeResource{}, nil
 }
 
-func (cu *compositeResourceUsecase) HandlePending(message string) error {
+func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	log.Logger.Debug("Handling pending message", "message", message)
 	return nil
 }
 
-func (cu *compositeResourceUsecase) HandleProvisioning(message string) error {
+func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	return nil
 }
 
-func (cu *compositeResourceUsecase) HandleDeleting(message string) error {
+func (cu *compositeResourceUsecase) HandleDeleting(message []byte) error {
 	return nil
 }
