@@ -47,3 +47,11 @@ func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.I
 func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
 	return []byte{}, nil
 }
+
+func (ir *iacPipelineRepository) GetPipelineStatus(c context.Context, iacIacPipeline domain.IacPipeline) (string, error) {
+	return "", nil
+}
+
+func (ir *iacPipelineRepository) GetPipelineLog(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
+	return []byte{}, nil
+}

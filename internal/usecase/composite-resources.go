@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
@@ -149,9 +150,12 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 }
 
 func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
+	var compositeResource domain.CompositeResource
+
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 	defer cancel()
-	var compositeResource domain.CompositeResource
+	// Always update the new status
+	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
 
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
@@ -202,9 +206,6 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 
 	// Save the new status
 	compositeResource.Status = constant.Provisioning
-
-	// Always update the new status
-	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
 
 	// Publish the message to the provisioning subject
 	cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
@@ -214,9 +215,11 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 }
 
 func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
+	var compositeResource domain.CompositeResource
+
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 	defer cancel()
-	var compositeResource domain.CompositeResource
+	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
 
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
@@ -235,46 +238,80 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	// Logic for handling the pending message
 	for i, _ := range compositeResource.Resources {
 		currentResource := &compositeResource.Resources[i]
-		// Logic to handle each resource
-		log.Logger.Debug("Handling resource", "resource", currentResource)
 
-		newPipelineRun := domain.IacPipeline{
-			Name:              currentResource.Name,
-			Id:                len(currentResource.RunIds) + 1,
-			Action:            "apply",
-			GitProvider:       env.Env.CI,
-			URL:               "",
-			IacPipelineOutput: domain.IacPipelineOutput{},
+		// Check if no pipeline exists -> mark resource as done
+		if len(currentResource.RunIds) == 0 {
+			currentResource.Status = constant.Done
 		}
 
-		// Trigger the pipeline to create the resource
-		pipelineUrl, err := cu.iacPipelineUsecase.Trigger(ctx, newPipelineRun)
+		currentPipeline := currentResource.RunIds[len(currentResource.RunIds)-1]
+
+		pipelineStatus, err := cu.iacPipelineUsecase.GetPipelineStatus(ctx, currentPipeline)
 		if err != nil {
-			log.Logger.Error("Error triggering pipeline", "error", err.Error())
+			log.Logger.Error("Error getting pipeline status", "error", err.Error())
 			return err
 		}
-		newPipelineRun.URL = pipelineUrl
-		log.Logger.Info("newPipelineRun", "pipeline", newPipelineRun)
 
-		// Add the new pipeline run to the resource
-		currentResource.RunIds = append(currentResource.RunIds, newPipelineRun)
+		switch pipelineStatus {
+		case "Running":
+			// If pipeline still in running -> skip this resource
+			continue
+		case "Success":
+			// If pipeline success -> Mark resource as done and get output
+			currentResource.Status = constant.Done
 
-		// Set resource status
-		currentResource.Status = constant.Provisioning
+			// Getting pipeline output
+			pipelineOutputByte, err := cu.iacPipelineUsecase.GetPipelineOutputByUrl(ctx, currentPipeline)
+			if err != nil {
+				log.Logger.Error("Error getting pipeline output", "error", err)
+				continue
+			}
 
-		log.Logger.Debug("Handled resource", "resource", currentResource)
+			var pipelineOutput map[string]interface{}
+			err = json.Unmarshal(pipelineOutputByte, pipelineOutput)
+			if err != nil {
+				log.Logger.Error("Error unmarshalling pipeline output", "error", err)
+			}
+
+			currentPipeline.IacPipelineOutput.OuputValue = pipelineOutput
+			break
+		case "Failed":
+			// If pipeline success -> Mark resource as done and get output
+			currentResource.Status = constant.Failed
+			break
+		default:
+			log.Logger.Error("Unknown pipeline status", "resource", currentResource, "pipeline status", pipelineStatus)
+			break
+		}
 	}
 
-	// Save the new status
-	compositeResource.Status = constant.Provisioning
+	// Default status
+	finalResourceStatus := constant.Done
 
-	// Always update the new status
-	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
+	// Checking the composite resource status based on sub resources status
+	for _, resource := range compositeResource.Resources {
+		switch resource.Status {
+		case constant.Done:
+			// if this sub resource is done, continue
+			continue
+		case constant.Failed:
+			// if one sub resource is failed, set the composite resource status to failed
+			finalResourceStatus = constant.Failed
+		case constant.Provisioning:
+			// if one sub resource is provisioning, set the composite resource status to provisioning
+			finalResourceStatus = constant.Provisioning
+		}
+	}
 
-	// Publish the message to the provisioning subject
-	cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
+	compositeResource.Status = finalResourceStatus
 
-	log.Logger.Info("Handling pending message successful", "message", compositeResource)
+	// If composite resource is still in progress (not done or failed) -> return error to retry
+	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
+		cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
+    return fmt.Errorf("Composite resource is still in progress")
+	}
+
+	log.Logger.Info("Composite Resource finished provisioning", "message", compositeResource.Status)
 	return nil
 }
 
