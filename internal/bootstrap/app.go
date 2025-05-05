@@ -25,12 +25,14 @@ type Application struct {
 	// Rrepository Layer
 	compositeResourceRepository domain.CompositeResourceRepository
 	bluePrintRepository         domain.BluePrintRepository
-	iaCTemplateRepository       domain.IacTemplateRepository
+	iacTemplateRepository       domain.IacTemplateRepository
+	iacPipelineRepository       domain.IacPipelineRepository
 
 	// Usecase/Service Layer
 	compositeResourceUsecase domain.CompositeResourceUsecase
 	bluePrintUsecase         domain.BluePrintUsecase
 	iacTemplateUsecase       domain.IacTemplateUsecase
+	iacPipelineUsecase       domain.IacPipelineUsecase
 
 	// Controller/Handler Layer
 	CompositeResourceController *controller.CompositeResourceController
@@ -62,12 +64,14 @@ func App() Application {
 	// Setting up the repositories
 	app.compositeResourceRepository = repository.NewCompositeResourceRepository(app.gitStore)
 	app.bluePrintRepository = repository.NewBluePrintRepository(app.gitStore)
-	app.iaCTemplateRepository = repository.NewIacTemplateRepository(app.gitStore)
+	app.iacTemplateRepository = repository.NewIacTemplateRepository(app.gitStore)
+	app.iacPipelineRepository = repository.NewIacPipelineRepository(app.gitStore)
 
 	// Setting up the usecases
 	app.bluePrintUsecase = usecase.NewBluePrintUsecase(app.bluePrintRepository)
-	app.iacTemplateUsecase = usecase.NewIacTemplateUsecase(app.iaCTemplateRepository)
-	app.compositeResourceUsecase = usecase.NewCompositeResourceUsecase(app.compositeResourceRepository, app.compositeResourcePublisher, app.bluePrintUsecase)
+	app.iacTemplateUsecase = usecase.NewIacTemplateUsecase(app.iacTemplateRepository)
+	app.iacPipelineUsecase = usecase.NewIacPipelineUsecase(app.iacPipelineRepository)
+	app.compositeResourceUsecase = usecase.NewCompositeResourceUsecase(app.compositeResourceRepository, app.compositeResourcePublisher, app.bluePrintUsecase, app.iacPipelineUsecase)
 
 	// Setting up the controllers
 	app.HealthController = controller.NewHealthController()

@@ -28,12 +28,12 @@ func LoadEnv() {
 	_ = godotenv.Load(".env")
 
 	env := &EnvConfig{
-		AppEnv:                 getEnv("APP_ENV", "development"),
-		ServerAddress:          getEnv("SERVER_ADDRESS", ":8080"),
-		ContextTimeout:         getIntEnv("CONTEXT_TIMEOUT", 30),
-		GitToken:               getEnvOrPanic("GIT_TOKEN"), // Required
-		CI:                     getEnv("CI_TYPE", "github"),
-		NATS_URL:               getEnv("NATS_URL", "nats://localhost:4222"),
+		AppEnv:         getEnv("APP_ENV", "development"),
+		ServerAddress:  getEnv("SERVER_ADDRESS", ":8080"),
+		ContextTimeout: getIntEnv("CONTEXT_TIMEOUT", 30),
+		GitToken:       getEnvOrPanic("GIT_TOKEN"), // Required
+		CI:             getEnv("CI_TYPE", "github"),
+		NATS_URL:       getEnv("NATS_URL", "nats://localhost:4222"),
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)

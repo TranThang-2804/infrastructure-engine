@@ -20,11 +20,12 @@ type compositeResourceUsecase struct {
 	contextTimeout                  time.Duration
 }
 
-func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, compositeResourceEventPublisher domain.CompositeResourceEventPublisher, bluePrintUsecase domain.BluePrintUsecase) domain.CompositeResourceUsecase {
+func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, compositeResourceEventPublisher domain.CompositeResourceEventPublisher, bluePrintUsecase domain.BluePrintUsecase, iacPiacPipelineUsecase domain.IacPipelineUsecase) domain.CompositeResourceUsecase {
 	return &compositeResourceUsecase{
 		compositeResourceRepository:     compositeResourceRepository,
 		compositeResourceEventPublisher: compositeResourceEventPublisher,
 		bluePrintUsecase:                bluePrintUsecase,
+		iacPipelineUsecase:              iacPiacPipelineUsecase,
 		contextTimeout:                  utils.GetContextTimeout(),
 	}
 }
@@ -185,22 +186,23 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 			log.Logger.Error("Error triggering pipeline", "error", err.Error())
 			return err
 		}
+		log.Logger.Info("newPipelineRun", "pipeline", newPipelineRun)
 
-    // Add the new pipeline run to the resource
-    resource.RunIds = append(resource.RunIds, newPipelineRun)
+		// Add the new pipeline run to the resource
+		resource.RunIds = append(resource.RunIds, newPipelineRun)
 
-    // Set resource status
-    resource.Status = constant.Provisioning
+		// Set resource status
+		resource.Status = constant.Provisioning
 	}
 
-  // Save the new status
-  compositeResource.Status = constant.Provisioning
+	// Save the new status
+	compositeResource.Status = constant.Provisioning
 
-  // Always update the new status
-  defer cu.compositeResourceRepository.Update(ctx, compositeResource)
+	// Always update the new status
+	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
 
-  // Publish the message to the provisioning subject
-  cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
+	// Publish the message to the provisioning subject
+	cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
 
 	log.Logger.Debug("Handling pending message", "message", compositeResource)
 	return nil

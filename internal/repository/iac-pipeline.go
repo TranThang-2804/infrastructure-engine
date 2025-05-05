@@ -6,6 +6,7 @@ import (
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 )
 
 type iacPipelineRepository struct {
@@ -28,12 +29,19 @@ func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.I
 		return domain.IacPipeline{}, err
 	}
 
-  // Trigger pipeline
-	ir.gitStore.TriggerPipeline(
+	// Trigger pipeline
+	pipelineUrl, err := ir.gitStore.TriggerPipeline(
 		"TranThang-2804",
 		"platform-iac-resource",
 		pipelinePayload,
 	)
+	if err != nil {
+		log.Logger.Error("Error Triggering pipeline", "error", err)
+		return domain.IacPipeline{}, nil
+	}
+
+	// Get Pipeline URL and attach it
+	iacPipeline.URL = pipelineUrl
 	return iacPipeline, nil
 }
 

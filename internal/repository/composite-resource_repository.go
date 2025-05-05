@@ -106,7 +106,7 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 		return compositeResource, err
 	}
 
-  // Update file
+	// Update file
 	err = cr.gitStore.CreateOrUpdateFile(
 		"TranThang-2804",
 		"platform-iac-resource",

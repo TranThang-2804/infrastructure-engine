@@ -219,12 +219,14 @@ func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelinePayload []b
 	}
 
 	// Trigger the repository dispatch event
-	_, _, err := gh.Client.Repositories.Dispatch(ctx, owner, repo, *dispatchRequest)
+	_, res, err := gh.Client.Repositories.Dispatch(ctx, owner, repo, *dispatchRequest)
 	if err != nil {
 		return "", fmt.Errorf("failed to trigger pipeline: %w", err)
 	}
 
-	return "Pipeline triggered successfully", nil
+	url, err := res.Location()
+
+	return url.String(), nil
 }
 
 func (gh *GitHub) GetPipelineOutput(owner string, repo string, pipeline string) (string, error) {
