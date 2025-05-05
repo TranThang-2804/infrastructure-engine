@@ -19,13 +19,13 @@ type IacPipelineOutput struct {
 type IacPipelineRepository interface {
 	Trigger(c context.Context, iacPipeline IacPipeline) (string, error)
 	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) ([]byte, error)
-  GetPipelineStatus(c context.Context, iacIacPipeline IacPipeline) (string, error)
-  GetPipelineLog(c context.Context, iacPipeline IacPipeline) ([]byte, error)
+	GetPipelineStatus(c context.Context, iacIacPipeline IacPipeline) (string, error)
+	GetPipelineLog(c context.Context, iacPipeline IacPipeline) ([]byte, error)
 }
 
 type IacPipelineUsecase interface {
 	Trigger(c context.Context, iacPipeline IacPipeline) (string, error)
 	GetPipelineOutputByUrl(c context.Context, iacPipeline IacPipeline) ([]byte, error)
-  GetPipelineStatus(c context.Context, iacIacPipeline IacPipeline) (string, error)
-  GetPipelineLog(c context.Context, iacPipeline IacPipeline) ([]byte, error)
+	GetPipelineStatus(c context.Context, iacIacPipeline IacPipeline) (string, error)
+	GetPipelineLog(c context.Context, iacPipeline IacPipeline) ([]byte, error)
 }

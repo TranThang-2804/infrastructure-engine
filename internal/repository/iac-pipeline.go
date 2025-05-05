@@ -49,7 +49,7 @@ func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context, iacPi
 }
 
 func (ir *iacPipelineRepository) GetPipelineStatus(c context.Context, iacIacPipeline domain.IacPipeline) (string, error) {
-	return "", nil
+	return "Running", nil
 }
 
 func (ir *iacPipelineRepository) GetPipelineLog(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {

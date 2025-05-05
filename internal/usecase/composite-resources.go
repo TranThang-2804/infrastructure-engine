@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
@@ -153,8 +154,11 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 	defer cancel()
+
 	// Always update the new status
-	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
+	defer func() {
+		cu.compositeResourceRepository.Update(ctx, compositeResource)
+	}()
 
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
@@ -216,9 +220,16 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	var compositeResource domain.CompositeResource
 
+	log.Logger.Debug("Start handling message provisioning")
+
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
+
 	defer cancel()
-	defer cu.compositeResourceRepository.Update(ctx, compositeResource)
+
+	// Always update to the latest status
+	defer func() {
+		cu.compositeResourceRepository.Update(ctx, compositeResource)
+	}()
 
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
@@ -263,13 +274,14 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 			pipelineOutputByte, err := cu.iacPipelineUsecase.GetPipelineOutputByUrl(ctx, currentPipeline)
 			if err != nil {
 				log.Logger.Error("Error getting pipeline output", "error", err)
-				continue
+				return fmt.Errorf("Error getting pipeline output: %s", err)
 			}
 
 			var pipelineOutput map[string]interface{}
 			err = json.Unmarshal(pipelineOutputByte, pipelineOutput)
 			if err != nil {
 				log.Logger.Error("Error unmarshalling pipeline output", "error", err)
+				return fmt.Errorf("Error unmarshalling pipeline output: %s", err)
 			}
 
 			currentPipeline.IacPipelineOutput.OuputValue = pipelineOutput
@@ -307,10 +319,10 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
 		cu.compositeResourceEventPublisher.RePublishToProvisioningSubject(ctx, compositeResource)
-    return nil
+		return nil
 	}
 
-	log.Logger.Info("Composite Resource finished provisioning", "message", compositeResource.Status)
+	log.Logger.Info("Handle Provisioning Message Successful", "message", compositeResource.Status)
 	return nil
 }
 
