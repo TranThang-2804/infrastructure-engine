@@ -318,9 +318,9 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
-    // Execute this in a go routine
+		// Execute this in a go routine
 		go func(ctx context.Context, resource domain.CompositeResource) {
-      // add a sleep time before sending the message to the queue
+			// add a sleep time before sending the message to the queue
 			time.Sleep(15 * time.Second)
 			if err := cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, resource); err != nil {
 				// Handle the error (e.g., log it)
