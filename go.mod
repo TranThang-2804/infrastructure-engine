@@ -10,6 +10,7 @@ require (
 	github.com/google/go-github/v50 v50.2.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.42.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.uber.org/zap v1.27.0
