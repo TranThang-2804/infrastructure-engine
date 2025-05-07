@@ -170,7 +170,7 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	}
 
 	// Logic for handling the pending message
-	for i, _ := range compositeResource.Resources {
+	for i := range compositeResource.Resources {
 		currentResource := &compositeResource.Resources[i]
 		// Logic to handle each resource
 		log.Logger.Debug("Handling resource", "resource", currentResource)
@@ -241,7 +241,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	}
 
 	// Logic for handling the pending message
-	for i, _ := range compositeResource.Resources {
+	for i := range compositeResource.Resources {
 		currentResource := &compositeResource.Resources[i]
 
 		// Check if no pipeline exists -> mark resource as done
@@ -273,7 +273,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 			}
 
 			var pipelineOutput map[string]interface{}
-			err = json.Unmarshal(pipelineOutputByte, pipelineOutput)
+			err = json.Unmarshal(pipelineOutputByte, &pipelineOutput)
 			if err != nil {
 				log.Logger.Error("Error unmarshalling pipeline output", "error", err)
 				return fmt.Errorf("Error unmarshalling pipeline output: %s", err)
@@ -316,17 +316,17 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 		return err
 	}
 
+  // Todo: Should have a function to publish to the provisioning subject after a dalayed
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
 		// Execute this in a go routine
-		go func(ctx context.Context, resource domain.CompositeResource) {
+		go func() {
 			// add a sleep time before sending the message to the queue
 			time.Sleep(15 * time.Second)
-			if err := cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, resource); err != nil {
-				// Handle the error (e.g., log it)
+			if err := cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource); err != nil {
 				log.Logger.Error("Failed to publish to provisioning subject: %v", err)
 			}
-		}(ctx, compositeResource) // Pass variables to the goroutine to avoid capturing them
+		}()
 	}
 
 	log.Logger.Info("Handle Provisioning Message Successful", "message", compositeResource.Status)
