@@ -100,7 +100,6 @@ type CompositeResourceRepository interface {
 type CompositeResourceEventPublisher interface {
 	PublishToPendingSubject(c context.Context, compositeResource CompositeResource) error
 	PublishToProvisioningSubject(c context.Context, compositeResource CompositeResource) error
-	RePublishToProvisioningSubject(c context.Context, compositeResource CompositeResource) error
 	PublishToDeletingSubject(c context.Context, compositeResource CompositeResource) error
 }
 
