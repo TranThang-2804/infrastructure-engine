@@ -17,4 +17,10 @@ jobs:
       - name: RUN_TERRAFORM
         run: |
           earthly --ci +terraform \
-            --GIT_TOKEN="$GIT_TOKEN"
+            --TEMPLATE_PATH="$TEMPLATE_PATH" \
+            --TEMPLATE_GIT_URI="$TEMPLATE_PATH_URI" \
+            --TEMPLATE_GIT_BRANCH="$TEMPLATE_GIT_BRANCH" \
+            --GIT_USERNAME="$GIT_USERNAME" \
+            --GIT_TOKEN="$GIT_TOKEN" \
+            --ACTION="$ACTION" \
+            --ENCODED_VALUE="$ENCODED_VALUE"

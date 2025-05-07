@@ -1,4 +1,5 @@
 .env
+.arg
 
 ./tmp/**
 /tmp/main
