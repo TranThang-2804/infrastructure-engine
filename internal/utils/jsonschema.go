@@ -3,22 +3,17 @@ package utils
 import (
 	"errors"
 
-	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/xeipuuv/gojsonschema"
 )
 
-func ValidateJsonSchema(spec map[string]interface{}, schema map[string]interface{}) error {
+func ValidateJsonSchema(spec map[string]any, schema map[string]any) error {
 	// Load the schema and spec as JSON loaders
 	schemaLoader := gojsonschema.NewGoLoader(schema)
 	specLoader := gojsonschema.NewGoLoader(spec)
 
-	log.BaseLogger.Debug("ValidateJsonSchema", "schema", schema, "spec", spec)
-	log.BaseLogger.Debug("ValidateJsonSchema", "schema", schemaLoader, "spec", specLoader)
-
 	// Validate the spec against the schema
 	result, err := gojsonschema.Validate(schemaLoader, specLoader)
 	if err != nil {
-		log.BaseLogger.Error("ValidateJsonSchema", "err", "Error validating JSON schema:", "err detail", err)
 		return err // Return error if validation process fails
 	}
 
