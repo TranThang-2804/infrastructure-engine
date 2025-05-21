@@ -21,6 +21,8 @@ type NatsMQ struct {
 
 // NewNatsMQ initializes the JetStream context and connects to NATS.
 func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
+	logger := log.BaseLogger.WithFields("infrastructure", "NatsMQ", "action", "creating NatsMQ instance")
+
 	conn, err := nats.Connect(url)
 	if err != nil {
 		return nil, err
@@ -43,17 +45,17 @@ func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 	_, err = js.StreamInfo(streamConfig.Name)
 	if err == nil {
 		// Stream exists, no need to create it again
-		log.BaseLogger.Info("Stream already exists. Skipping creation.")
+		logger.Info("Stream already exists. Skipping creation.")
 	} else if err != nats.ErrStreamNotFound {
 		// Some other error occurred
-		log.BaseLogger.Fatal("Jetstream queue has some error", "error", err)
+		logger.Fatal("Jetstream queue has some error", "error", err)
 	} else {
 		// Stream does not exist, create it
 		_, err = js.AddStream(streamConfig)
 		if err != nil {
-			log.BaseLogger.Fatal("Cannot create Jetstream queue", "error", err)
+			logger.Fatal("Cannot create Jetstream queue", "error", err)
 		}
-		log.BaseLogger.Info("Jetstream queue created successfully")
+		logger.Info("Jetstream queue created successfully")
 	}
 
 	return &NatsMQ{
@@ -66,6 +68,7 @@ func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 
 // Subscribe uses JetStream to create a durable consumer with manual ack and ack wait.
 func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) error {
+	logger := log.BaseLogger.WithFields("infrastructure", "NatsMQ", "action", "subscribing to subject", "subject", subject)
 	mq.mu.Lock()
 	defer mq.mu.Unlock()
 
@@ -78,11 +81,11 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 
 	sub, err := mq.js.QueueSubscribe(subject, queueName, func(msg *nats.Msg) {
 		if err := handler(msg.Data); err != nil {
-			log.BaseLogger.Error("❌ Error processing message", "subject", subject, "error", err)
+			logger.Error("❌ Error processing message", "error", err)
 			// Don't ack to trigger retry after AckWait
 			return
 		}
-		log.BaseLogger.Debug("Message handled successful")
+		logger.Debug("Message handled successful")
 		msg.Ack()
 	}, nats.Durable(durableName),
 		nats.ManualAck(),
@@ -115,6 +118,7 @@ func (mq *NatsMQ) Publish(subject string, message []byte, opts ...any) error {
 }
 
 func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.Duration) error {
+	logger := log.BaseLogger.WithFields("infrastructure", "NatsMQ", "action", "publising after delay", "subject", subject)
 	go func() {
 		// Sleep for the given delay
 		time.Sleep(delay)
@@ -122,9 +126,9 @@ func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.D
 		// Publish the message after the delay
 		_, err := mq.js.Publish(subject, message)
 		if err != nil {
-			log.BaseLogger.Error("❌ Failed to publish delayed message to", "subject", subject, "error", err)
+			logger.Error("❌ Failed to publish delayed message to", "error", err)
 		} else {
-			log.BaseLogger.Info("✅ Delayed message published to %s", "subject", subject)
+			logger.Info("✅ Delayed message published to %s")
 		}
 	}()
 	return nil
