@@ -1,6 +1,7 @@
 package route
 
 import (
+	"github.com/TranThang-2804/infrastructure-engine/internal/api/middleware"
 	"github.com/TranThang-2804/infrastructure-engine/internal/bootstrap"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -22,9 +23,8 @@ func SetupRoute(app bootstrap.Application) *chi.Mux {
 	r.Use(cors.Handler)
 
 	// Define middleware
-	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
+	r.Use(custommiddleware.LoggingMiddleware)
 	r.Use(middleware.Recoverer)
 
 	// Public APIs
