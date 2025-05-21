@@ -6,6 +6,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,23 +20,25 @@ func NewIacTemplateRepository(gitStore git.GitStore) domain.IacTemplateRepositor
 	}
 }
 
-func (ir *iacTemplateRepository) GetAll(c context.Context) ([]domain.IacTemplate, error) {
+func (ir *iacTemplateRepository) GetAll(ctx context.Context) ([]domain.IacTemplate, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(ir))
+	ctx = logger.WithCtx(ctx)
 	var iacTemplates []domain.IacTemplate
 
-	fileContents, err := ir.gitStore.GetAllFileContentsInDirectory("TranThang-2804", "platform-iac-template", "master", "template")
+	fileContents, err := ir.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-template", "master", "template")
 
 	for _, fileContent := range fileContents {
 		var iacTemplate domain.IacTemplate
 		err = yaml.Unmarshal([]byte(fileContent), &iacTemplate)
 		if err != nil {
-			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
+			logger.Error("Error unmarshalling YAML", "error", err)
 			return nil, err
 		}
 
 		iacTemplates = append(iacTemplates, iacTemplate)
 	}
 
-	log.BaseLogger.Debug("Blueprints Content", "content", iacTemplates)
+	logger.Debug("Blueprints Content", "content", iacTemplates)
 
 	return iacTemplates, err
 }

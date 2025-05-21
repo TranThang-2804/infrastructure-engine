@@ -20,40 +20,46 @@ func NewCompositeResourceRepository(gitStore git.GitStore) domain.CompositeResou
 	}
 }
 
-func (cr *compositeResourceRepository) GetAll(c context.Context) ([]domain.CompositeResource, error) {
+func (cr *compositeResourceRepository) GetAll(ctx context.Context) ([]domain.CompositeResource, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(cr))
+	ctx = logger.WithCtx(ctx)
+
 	var compositeResources []domain.CompositeResource
 
-	compositeResourceContents, err := cr.gitStore.GetAllFileContentsInDirectory("TranThang-2804", "platform-iac-resource", "master", "template")
+	compositeResourceContents, err := cr.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-resource", "master", "template")
 
 	for _, fileContent := range compositeResourceContents {
 		var compositeResource domain.CompositeResource
 		err = yaml.Unmarshal([]byte(fileContent), &compositeResource)
 		if err != nil {
-			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
+			logger.Error("Error unmarshalling YAML", "error", err)
 			return nil, err
 		}
 
 		compositeResources = append(compositeResources, compositeResource)
 	}
 
-	log.BaseLogger.Debug("Blueprints Content", "content", compositeResources)
+	logger.Debug("Blueprints Content", "content", compositeResources)
 
 	return compositeResources, err
 }
 
-func (cr *compositeResourceRepository) Create(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+func (cr *compositeResourceRepository) Create(ctx context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(cr))
+	ctx = logger.WithCtx(ctx)
+
 	// Validate compositeResource
-	log.BaseLogger.Debug("CompositeResource", "compositeResource", compositeResource)
+	logger.Debug("CompositeResource", "compositeResource", compositeResource)
 	err := utils.ValidateStruct(compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error validating composite resource", "error", err)
+		logger.Error("Error validating composite resource", "error", err)
 		return compositeResource, err
 	}
 
 	// Convert object to YAML
-	yamlString, err := convertToYaml(compositeResource)
+	yamlString, err := convertToYaml(ctx, compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error converting to YAML:", "error", err)
+		logger.Error("Error converting to YAML:", "error", err)
 		return compositeResource, err
 	}
 
@@ -61,6 +67,7 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 	filepath := generateFilePath(compositeResource)
 
 	err = cr.gitStore.CreateFile(
+		ctx,
 		"TranThang-2804",
 		"platform-iac-resource",
 		"master",
@@ -68,26 +75,29 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 		yamlString,
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error creating file", "error", err)
+		logger.Error("Error creating file", "error", err)
 		return compositeResource, err
 	}
 
 	return compositeResource, nil
 }
 
-func (cr *compositeResourceRepository) Update(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+func (cr *compositeResourceRepository) Update(ctx context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(cr))
+	ctx = logger.WithCtx(ctx)
+
 	// Validate compositeResource
-	log.BaseLogger.Debug("CompositeResource", "compositeResource", compositeResource)
+	logger.Debug("CompositeResource", "compositeResource", compositeResource)
 	err := utils.ValidateStruct(compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error validating composite resource", "error", err)
+		logger.Error("Error validating composite resource", "error", err)
 		return compositeResource, err
 	}
 
 	// Convert object to YAML
-	yamlString, err := convertToYaml(compositeResource)
+	yamlString, err := convertToYaml(ctx, compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error converting to YAML:", "error", err)
+		logger.Error("Error converting to YAML:", "error", err)
 		return compositeResource, err
 	}
 
@@ -96,18 +106,20 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 
 	// Check if current file exists
 	_, err = cr.gitStore.ReadFileContent(
+		ctx,
 		"TranThang-2804",
 		"platform-iac-resource",
 		"master",
 		filepath,
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error reading current file content", "error", err)
+		logger.Error("Error reading current file content", "error", err)
 		return compositeResource, err
 	}
 
 	// Update file
 	err = cr.gitStore.CreateOrUpdateFile(
+		ctx,
 		"TranThang-2804",
 		"platform-iac-resource",
 		"master",
@@ -115,7 +127,7 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 		yamlString,
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error updating file", "error", err)
+		logger.Error("Error updating file", "error", err)
 		return compositeResource, err
 	}
 
@@ -123,6 +135,7 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 }
 
 func (cr *compositeResourceRepository) Delete(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+
 	return compositeResource, nil
 }
 
@@ -145,10 +158,12 @@ func generateFilePath(compositeResource domain.CompositeResource) string {
 	return filepath
 }
 
-func convertToYaml(compositeResource domain.CompositeResource) (string, error) {
+func convertToYaml(ctx context.Context, compositeResource domain.CompositeResource) (string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "convertToYaml")
+
 	yamlBytes, err := yaml.Marshal(compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error converting to YAML:", "error", err)
+		logger.Error("Error converting to YAML:", "error", err)
 		return "", err
 	}
 

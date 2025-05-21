@@ -6,6 +6,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
+	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
 
 type iacPipelineRepository struct {
@@ -18,7 +19,10 @@ func NewIacPipelineRepository(gitStore git.GitStore) domain.IacPipelineRepositor
 	}
 }
 
-func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.IacPipeline) (string, error) {
+func (ir *iacPipelineRepository) Trigger(ctx context.Context, iacPipeline domain.IacPipeline) (string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(ir))
+	ctx = logger.WithCtx(ctx)
+
 	pipelineData := map[string]any{
 		"action":   iacPipeline.Action,
 		"filepath": iacPipeline.Name,
@@ -26,12 +30,13 @@ func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.I
 
 	// Trigger pipeline
 	pipelineUrl, err := ir.gitStore.TriggerPipeline(
+		ctx,
 		"dev2die",
 		"platform-iac-resource",
 		pipelineData,
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error Triggering pipeline", "error", err)
+		logger.Error("Error Triggering pipeline", "error", err)
 		return "", err
 	}
 
@@ -39,14 +44,14 @@ func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.I
 	return pipelineUrl, nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
+func (ir *iacPipelineRepository) GetPipelineOutputByUrl(ctx context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineStatus(c context.Context, iacIacPipeline domain.IacPipeline) (string, error) {
+func (ir *iacPipelineRepository) GetPipelineStatus(ctx context.Context, iacIacPipeline domain.IacPipeline) (string, error) {
 	return "Running", nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineLog(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
+func (ir *iacPipelineRepository) GetPipelineLog(ctx context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
 	return []byte{}, nil
 }

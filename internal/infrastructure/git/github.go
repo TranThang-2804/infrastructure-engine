@@ -15,56 +15,62 @@ type GitHub struct {
 	Client *github.Client
 }
 
-func (gh *GitHub) ReadFileContent(owner string, repo string, branch string, path string) (string, error) {
+func (gh *GitHub) ReadFileContent(ctx context.Context, owner string, repo string, branch string, path string) (string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "ReadFileContent", "owner", owner, "repo", repo, "branch", branch, "path", path)
+	ctx = logger.WithCtx(ctx)
+
 	// Fetch the file content
 	rawFileContent, _, _, err := gh.Client.Repositories.GetContents(
-		context.Background(),
+		ctx,
 		owner,
 		repo,
 		path,
 		&github.RepositoryContentGetOptions{Ref: branch},
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error fetching file content:", "err", err)
+		logger.Error("Error fetching file content:", "err", err)
 		return "", err
 	}
 
 	// Check if the path is a file
 	if rawFileContent == nil || rawFileContent.GetType() != "file" {
-		log.BaseLogger.Error("The provided path is not a file:", "path", path)
+		logger.Error("The provided path is not a file:", "path", path)
 		return "", fmt.Errorf("the provided path is not a file: %s", path)
 	}
 
 	// Decode the file content (GitHub API returns it as base64-encoded)
 	content, err := base64.StdEncoding.DecodeString(*rawFileContent.Content)
 	if err != nil {
-		log.BaseLogger.Error("Error decoding file content:", "err", err)
+		logger.Error("Error decoding file content:", "err", err)
 		return "", err
 	}
 
 	// Print the file content
 	fileContent := string(content)
-	log.BaseLogger.Debug("File Content", "content", fileContent)
+	logger.Debug("File Content", "content", fileContent)
 	return fileContent, nil
 }
 
-func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branch string, path string) ([]string, error) {
+func (gh *GitHub) GetAllFileContentsInDirectory(ctx context.Context, owner string, repo string, branch string, path string) ([]string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "GetAllFileContentsInDirectory", "owner", owner, "repo", repo, "branch", branch, "path", path)
+	ctx = logger.WithCtx(ctx)
+
 	// Fetch the directory content
 	_, directoryContent, _, err := gh.Client.Repositories.GetContents(
-		context.Background(),
+		ctx,
 		owner,
 		repo,
 		path,
 		&github.RepositoryContentGetOptions{Ref: branch},
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error fetching directory content:", "err", err)
+		logger.Error("Error fetching directory content:", "err", err)
 		return nil, err
 	}
 
 	// Check if the path is a directory
 	if directoryContent == nil {
-		log.BaseLogger.Error("The provided path is not a directory", "path", path)
+		logger.Error("The provided path is not a directory")
 		return nil, fmt.Errorf("the provided path is not a directory or is empty: %s", path)
 	}
 
@@ -73,9 +79,9 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 	for _, content := range directoryContent {
 		if content.GetType() == "file" {
 			// Fetch the file content
-			fileContent, err := gh.ReadFileContent(owner, repo, branch, content.GetPath())
+			fileContent, err := gh.ReadFileContent(ctx, owner, repo, branch, content.GetPath())
 			if err != nil {
-				log.BaseLogger.Error("Error fetching file content:", "file", content.GetPath(), "err", err)
+				logger.Error("Error fetching file content:", "file", content.GetPath(), "err", err)
 				return nil, err
 			}
 
@@ -85,14 +91,17 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 	}
 
 	// Log and return the file contents
-	log.BaseLogger.Debug("File contents in directory", "path", path, "fileContents", fileContents)
+	logger.Debug("File contents in directory", "fileContents", fileContents)
 	return fileContents, nil
 }
 
-func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath string, content string) error {
+func (gh *GitHub) CreateFile(ctx context.Context, owner string, repo string, branch string, filePath string, content string) error {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "GetAllFileContentsInDirectory", "owner", owner, "repo", repo, "branch", branch, "path", filePath)
+	ctx = logger.WithCtx(ctx)
+
 	// Check if the file already exists
 	fileContent, _, _, err := gh.Client.Repositories.GetContents(
-		context.Background(),
+		ctx,
 		owner,
 		repo,
 		filePath,
@@ -100,11 +109,11 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 	)
 	if err == nil && fileContent != nil {
 		err := fmt.Errorf("file %s already exists in branch %s", filePath, branch)
-		log.BaseLogger.Error("File already exists", "filePath", filePath, "branch", branch)
+		logger.Error("File already exists")
 		return err
 	}
 	if err != nil && !strings.Contains(err.Error(), "404") {
-		log.BaseLogger.Error("Error checking file existence", "err", err)
+		logger.Error("Error checking file existence", "err", err)
 		return err
 	}
 
@@ -117,32 +126,35 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 
 	// Create the file in the repository
 	_, _, err = gh.Client.Repositories.CreateFile(
-		context.Background(),
+		ctx,
 		owner,
 		repo,
 		filePath,
 		fileContentOptions,
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error creating file:", "err", err)
+		logger.Error("Error creating file:", "err", err)
 		return err
 	}
 
-	log.BaseLogger.Debug("File created successfully", "fileName", filePath)
+	logger.Debug("File created successfully")
 	return nil
 }
 
-func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, filePath string, content string) error {
+func (gh *GitHub) CreateOrUpdateFile(ctx context.Context, owner string, repo string, branch string, filePath string, content string) error {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "CreateOrUpdateFile", "owner", owner, "repo", repo, "branch", branch, "path", filePath)
+	ctx = logger.WithCtx(ctx)
+
 	// Check if the file exists
 	fileContent, _, _, err := gh.Client.Repositories.GetContents(
-		context.Background(),
+		ctx,
 		owner,
 		repo,
 		filePath,
 		&github.RepositoryContentGetOptions{Ref: branch},
 	)
 	if err != nil && !strings.Contains(err.Error(), "404") {
-		log.BaseLogger.Error("Error checking file existence:", "err", err)
+		logger.Error("Error checking file existence:", "err", err)
 		return err
 	}
 
@@ -150,13 +162,13 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 	if fileContent != nil {
 		decodedContent, decodeErr := fileContent.GetContent()
 		if decodeErr != nil {
-			log.BaseLogger.Error("Error decoding file content:", "err", decodeErr)
+			logger.Error("Error decoding file content:", "err", decodeErr)
 			return decodeErr
 		}
 
 		// Compare the existing content with the new content
 		if decodedContent == content {
-			log.BaseLogger.Info("File content is identical, no update needed", "fileName", filePath)
+			logger.Info("File content is identical, no update needed")
 			return nil
 		}
 
@@ -170,18 +182,18 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 
 		// Update the file in the repository
 		_, _, err = gh.Client.Repositories.UpdateFile(
-			context.Background(),
+			ctx,
 			owner,
 			repo,
 			filePath,
 			fileContentOptions,
 		)
 		if err != nil {
-			log.BaseLogger.Error("Error updating file:", "err", err)
+			logger.Error("Error updating file:", "err", err)
 			return err
 		}
 
-		log.BaseLogger.Debug("File updated successfully", "fileName", filePath)
+		logger.Debug("File updated successfully")
 		return nil
 	}
 
@@ -193,31 +205,31 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 	}
 
 	_, _, err = gh.Client.Repositories.CreateFile(
-		context.Background(),
+		ctx,
 		owner,
 		repo,
 		filePath,
 		fileContentOptions,
 	)
 	if err != nil {
-		log.BaseLogger.Error("Error creating file:", "err", err)
+		logger.Error("Error creating file:", "err", err)
 		return err
 	}
 
-	log.BaseLogger.Debug("File created successfully", "fileName", filePath)
+	logger.Debug("File created successfully")
 	return nil
 }
 
-func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelineParams map[string]any) (string, error) {
-	// Create a context
-	ctx := context.Background()
+func (gh *GitHub) TriggerPipeline(ctx context.Context, owner string, repo string, pipelineParams map[string]any) (string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "TriggerPipeline", "owner", owner, "repo", repo)
+	ctx = logger.WithCtx(ctx)
 
 	eventType := "Run Terraform"
 
 	// Convert the client payload to JSON
 	payloadBytes, err := json.Marshal(pipelineParams)
 	if err != nil {
-		log.BaseLogger.Error("Error marshalling client payload:", "err", err)
+		logger.Error("Error marshalling client payload:", "err", err)
 		return "", fmt.Errorf("failed to marshal client payload: %w", err)
 	}
 
@@ -230,16 +242,16 @@ func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelineParams map[
 	// Trigger the repository dispatch event
 	_, res, err := gh.Client.Repositories.Dispatch(ctx, owner, repo, *dispatchRequest)
 	if err != nil {
-		log.BaseLogger.Error("Failed to trigger pipeline:", "err", err)
+		logger.Error("Failed to trigger pipeline:", "err", err)
 		return "", fmt.Errorf("failed to trigger pipeline: %w", err)
 	}
 
-	log.BaseLogger.Info("TriggerPipeline", "response", res)
+	logger.Info("TriggerPipeline", "response", res)
 
 	// Return the status of the dispatch
 	return res.Status, nil
 }
 
-func (gh *GitHub) GetPipelineOutput(owner string, repo string, pipeline string) (string, error) {
+func (gh *GitHub) GetPipelineOutput(ctx context.Context, owner string, repo string, pipeline string) (string, error) {
 	return "", nil
 }

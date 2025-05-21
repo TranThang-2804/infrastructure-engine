@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"context"
 	"io"
 	"os"
 
@@ -56,6 +57,8 @@ func NewInfraPipeline(gitStore git.GitStore) InfraPipeline {
 
 func (ip *InfraPipeline) SettingInfraPipeline() error {
 	logger := log.BaseLogger.WithFields("bootstrap", "SettingInfraPipeline")
+	ctx := logger.WithCtx(context.Background())
+
 	logger.Info("Setting up infrastructure pipeline...")
 
 	var pipelineFileConfig GitPipelineFileConfig
@@ -83,7 +86,7 @@ func (ip *InfraPipeline) SettingInfraPipeline() error {
 			return nil
 		}
 
-		ip.gitStore.CreateOrUpdateFile("TranThang-2804", "platform-iac-resource", "master", fileMapping.remoteFilePath, string(content))
+		ip.gitStore.CreateOrUpdateFile(ctx, "TranThang-2804", "platform-iac-resource", "master", fileMapping.remoteFilePath, string(content))
 	}
 	return nil
 }
