@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -56,7 +55,8 @@ func NewInfraPipeline(gitStore git.GitStore) InfraPipeline {
 }
 
 func (ip *InfraPipeline) SettingInfraPipeline() error {
-	log.BaseLogger.Info("Setting up infrastructure pipeline...")
+	logger := log.BaseLogger.WithFields("bootstrap", "SettingInfraPipeline")
+	logger.Info("Setting up infrastructure pipeline...")
 
 	var pipelineFileConfig GitPipelineFileConfig
 
@@ -66,20 +66,20 @@ func (ip *InfraPipeline) SettingInfraPipeline() error {
 	case "gitlab":
 		pipelineFileConfig = gitlabPipelineFileConfig
 	default:
-		log.BaseLogger.Fatal("Unsupported CI/CD platform: ", env.Env.CI)
+		logger.Fatal("Unsupported CI/CD platform: ", env.Env.CI)
 	}
 
 	for _, fileMapping := range pipelineFileConfig.pipelineConfigurationFiles {
 		file, err := os.Open(fileMapping.filePath)
 		if err != nil {
-			fmt.Printf("Error opening file: %v\n", err)
+			logger.Error("Error opening file", "error", err)
 			return err
 		}
 		defer file.Close()
 
 		content, err := io.ReadAll(file)
 		if err != nil {
-			fmt.Printf("Error reading file: %v\n", err)
+			logger.Error("Error reading file", "error", err)
 			return nil
 		}
 

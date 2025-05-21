@@ -42,6 +42,8 @@ type Application struct {
 }
 
 func App() Application {
+	logger := log.BaseLogger.WithFields("bootstrap", "App")
+
 	mqSubjectList := []string{
 		string(constant.ToPending),
 		string(constant.ToProvisioning),
@@ -61,7 +63,7 @@ func App() Application {
 	// Create a mq infra type of NATS connection
 	mi, err := mq.NewNatsMQ(env.Env.NATS_URL, mqSubjectList)
 	if err != nil {
-		log.BaseLogger.Fatal("Failed to connect to NATS", "error", err)
+		logger.Fatal("Failed to connect to NATS", "error", err)
 	}
 	app.mi = mi
 	app.compositeResourcePublisher = mq.NewCompositeResourcePublisher(app.mi)
