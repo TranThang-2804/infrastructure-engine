@@ -3,7 +3,6 @@ module github.com/TranThang-2804/infrastructure-engine
 go 1.23.4
 
 require (
-	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/cors v1.2.1
 	github.com/go-playground/validator/v10 v10.26.0
@@ -15,6 +14,7 @@ require (
 	github.com/nats-io/nats.go v1.42.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.uber.org/zap v1.27.0
+	golang.org/x/net v0.34.0
 	golang.org/x/oauth2 v0.25.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -38,7 +38,6 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
