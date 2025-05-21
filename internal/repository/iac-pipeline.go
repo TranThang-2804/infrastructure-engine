@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/infrastructure/git"
@@ -20,20 +19,16 @@ func NewIacPipelineRepository(gitStore git.GitStore) domain.IacPipelineRepositor
 }
 
 func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.IacPipeline) (string, error) {
-	pipelineData := map[string]interface{}{
+	pipelineData := map[string]any{
 		"action":   iacPipeline.Action,
 		"filepath": iacPipeline.Name,
-	}
-	pipelinePayload, err := json.Marshal(pipelineData)
-	if err != nil {
-		return "", err
 	}
 
 	// Trigger pipeline
 	pipelineUrl, err := ir.gitStore.TriggerPipeline(
-		"TranThang-2804",
+		"dev2die",
 		"platform-iac-resource",
-		pipelinePayload,
+		pipelineData,
 	)
 	if err != nil {
 		log.Logger.Error("Error Triggering pipeline", "error", err)

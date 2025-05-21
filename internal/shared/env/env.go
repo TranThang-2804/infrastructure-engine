@@ -11,16 +11,17 @@ import (
 var Env *EnvConfig
 
 type EnvConfig struct {
-	AppEnv                 string
-	ServerAddress          string
-	ContextTimeout         int
-	AccessTokenExpiryHour  int
-	RefreshTokenExpiryHour int
-	AccessTokenSecret      string
-	RefreshTokenSecret     string
-	GitToken               string
-	CI                     string
-	NATS_URL               string
+	AppEnv         string
+	ServerAddress  string
+	ContextTimeout int
+	GitToken       string
+	CI             string
+	NATS_URL       string
+
+	GIT_MASTERDATA_REPO_OWNER string
+	GIT_MASTERDATA_REPO_NAME  string
+	GIT_RESOURCE_REPO_OWNER   string
+	GIT_RESOURCE_REPO_NAME    string
 }
 
 func LoadEnv() {
@@ -34,6 +35,11 @@ func LoadEnv() {
 		GitToken:       getEnvOrPanic("GIT_TOKEN"), // Required
 		CI:             getEnv("CI_TYPE", "github"),
 		NATS_URL:       getEnv("NATS_URL", "nats://localhost:4222"),
+
+		GIT_MASTERDATA_REPO_OWNER: getEnvOrPanic("GIT_MASTERDATA_REPO_OWNER"),
+		GIT_MASTERDATA_REPO_NAME:  getEnvOrPanic("GIT_MASTERDATA_REPO_NAME"),
+		GIT_RESOURCE_REPO_OWNER:   getEnvOrPanic("GIT_RESOURCE_REPO_OWNER"),
+		GIT_RESOURCE_REPO_NAME:    getEnvOrPanic("GIT_RESOURCE_REPO_NAME"),
 	}
 
 	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)

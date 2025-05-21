@@ -12,8 +12,8 @@ type IacPipeline struct {
 }
 
 type IacPipelineOutput struct {
-	Status     string                 `json:"status" yaml:"status"`
-	OuputValue map[string]interface{} `json:"outputValue" yaml:"outputValue"`
+	Status     string         `json:"status" yaml:"status"`
+	OuputValue map[string]any `json:"outputValue" yaml:"outputValue"`
 }
 
 type IacPipelineRepository interface {

@@ -208,26 +208,36 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 	return nil
 }
 
-func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelinePayload []byte) (string, error) {
+func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelineParams map[string]any) (string, error) {
 	// Create a context
 	ctx := context.Background()
 
+	eventType := "Run Terraform"
+
+	// Convert the client payload to JSON
+	payloadBytes, err := json.Marshal(pipelineParams)
+	if err != nil {
+		log.Logger.Error("Error marshalling client payload:", "err", err)
+		return "", fmt.Errorf("failed to marshal client payload: %w", err)
+	}
+
 	// Create a repository dispatch request
 	dispatchRequest := &github.DispatchRequestOptions{
-		EventType:     "trigger-pipeline", // Custom event type
-		ClientPayload: (*json.RawMessage)(&pipelinePayload),
+		EventType:     eventType, // Custom event type
+		ClientPayload: (*json.RawMessage)(&payloadBytes),
 	}
 
 	// Trigger the repository dispatch event
 	_, res, err := gh.Client.Repositories.Dispatch(ctx, owner, repo, *dispatchRequest)
 	if err != nil {
+		log.Logger.Error("Failed to trigger pipeline:", "err", err)
 		return "", fmt.Errorf("failed to trigger pipeline: %w", err)
 	}
-	log.Logger.Info("TriggerPipeline", "response", res.Status)
 
-	// Get url
+	log.Logger.Info("TriggerPipeline", "response", res)
 
-	return "", nil
+	// Return the status of the dispatch
+	return res.Status, nil
 }
 
 func (gh *GitHub) GetPipelineOutput(owner string, repo string, pipeline string) (string, error) {
