@@ -20,21 +20,27 @@ func NewCompositeResourceController(compositeResourceUseCase domain.CompositeRes
 }
 
 func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	logger := log.BaseLogger.FromCtx(r.Context()).WithFields("controller", utils.GetStructName(rc))
+	ctx := logger.WithCtx(r.Context())
 
-	compositeResources, err := rc.CompositeResourceUseCase.GetAll(r.Context())
+	compositeResources, err := rc.CompositeResourceUseCase.GetAll(ctx)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.BaseLogger.Error("Error getting all composite resources", "error", err.Error())
+		logger.Error("Error getting all composite resources", "error", err.Error())
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(compositeResources)
+	logger.Info("Request handled Successful")
 }
 
 func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Request) {
+	logger := log.BaseLogger.FromCtx(r.Context()).WithFields("controller", utils.GetStructName(rc))
+	ctx := logger.WithCtx(r.Context())
+
 	var request domain.CreateCompositeResourceRequest
 
 	// Parse request body
@@ -43,7 +49,7 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
-		log.BaseLogger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
+		logger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
 		return
 	}
 
@@ -51,20 +57,21 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	err = utils.ValidateStruct(request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
-		log.BaseLogger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)
+		logger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)
 		return
 	}
 
-	compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
+	compositeResource, err := rc.CompositeResourceUseCase.Create(ctx, request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusInternalServerError)
-		log.BaseLogger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
+		logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(compositeResource)
+	logger.Info("Request handled Successful")
 }
 
 func (rc *CompositeResourceController) Delete(w http.ResponseWriter, r *http.Request) {
