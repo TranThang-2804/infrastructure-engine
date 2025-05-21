@@ -115,13 +115,19 @@ func (mq *NatsMQ) Publish(subject string, message []byte, opts ...any) error {
 }
 
 func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.Duration) error {
-	// Create a NATS message with header
-	msg := nats.NewMsg(subject)
-	msg.Data = message
-	msg.Header.Set("Nats-Delay", delay.String()) // e.g., "30s"
+	go func() {
+		// Sleep for the given delay
+		time.Sleep(delay)
 
-	_, err := mq.js.PublishMsg(msg)
-	return err
+		// Publish the message after the delay
+		_, err := mq.js.Publish(subject, message)
+		if err != nil {
+			log.Logger.Error("❌ Failed to publish delayed message to", "subject", subject, "error", err)
+		} else {
+			log.Logger.Info("✅ Delayed message published to %s", "subject", subject)
+		}
+	}()
+	return nil
 }
 
 // Close unsubscribes from all subjects and closes the connection.
