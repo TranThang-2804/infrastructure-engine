@@ -272,7 +272,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 				return fmt.Errorf("Error getting pipeline output: %s", err)
 			}
 
-			var pipelineOutput map[string]interface{}
+			var pipelineOutput map[string]any
 			err = json.Unmarshal(pipelineOutputByte, &pipelineOutput)
 			if err != nil {
 				log.Logger.Error("Error unmarshalling pipeline output", "error", err)
@@ -316,7 +316,6 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 		return err
 	}
 
-  // Todo: Should have a function to publish to the provisioning subject after a dalayed
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
 		if err = cu.compositeResourceEventPublisher.PublishToProvisioningSubjectWithDelay(ctx, compositeResource); err != nil {
