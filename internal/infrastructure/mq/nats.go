@@ -68,7 +68,6 @@ func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 
 // Subscribe uses JetStream to create a durable consumer with manual ack and ack wait.
 func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) error {
-	logger := log.BaseLogger.WithFields("infrastructure", "NatsMQ", "action", "subscribing to subject", "subject", subject)
 	mq.mu.Lock()
 	defer mq.mu.Unlock()
 
@@ -81,11 +80,9 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 
 	sub, err := mq.js.QueueSubscribe(subject, queueName, func(msg *nats.Msg) {
 		if err := handler(msg.Data); err != nil {
-			logger.Error("❌ Error processing message", "error", err)
 			// Don't ack to trigger retry after AckWait
 			return
 		}
-		logger.Debug("Message handled successful")
 		msg.Ack()
 	}, nats.Durable(durableName),
 		nats.ManualAck(),
@@ -118,18 +115,12 @@ func (mq *NatsMQ) Publish(subject string, message []byte, opts ...any) error {
 }
 
 func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.Duration) error {
-	logger := log.BaseLogger.WithFields("infrastructure", "NatsMQ", "action", "publising after delay", "subject", subject)
 	go func() {
 		// Sleep for the given delay
 		time.Sleep(delay)
 
 		// Publish the message after the delay
-		_, err := mq.js.Publish(subject, message)
-		if err != nil {
-			logger.Error("❌ Failed to publish delayed message to", "error", err)
-		} else {
-			logger.Info("✅ Delayed message published to %s")
-		}
+		mq.js.Publish(subject, message)
 	}()
 	return nil
 }
