@@ -73,15 +73,18 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 		return fmt.Errorf("already subscribed to subject: %s", subject)
 	}
 
-	sub, err := mq.js.Subscribe(subject, func(msg *nats.Msg) {
+	queueName := "InfrastructureEngineWorker"
+	durableName := "worker-" + strings.ReplaceAll(subject, ".", "-")
+
+	sub, err := mq.js.QueueSubscribe(subject, queueName, func(msg *nats.Msg) {
 		if err := handler(msg.Data); err != nil {
-			log.Logger.Error("❌ Error processing message on '%s': %v\n", subject, err)
+			log.Logger.Error("❌ Error processing message", "subject", subject, "error", err)
 			// Don't ack to trigger retry after AckWait
 			return
 		}
 		log.Logger.Debug("Message handled successful")
 		msg.Ack()
-	}, nats.Durable("worker-"+strings.ReplaceAll(subject, ".", "-")),
+	}, nats.Durable(durableName),
 		nats.ManualAck(),
 		nats.AckWait(30*time.Second), // Visibility timeout
 		nats.MaxDeliver(5),           // Max retry attempts
@@ -95,7 +98,7 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 }
 
 // Publish sends a message using JetStream (persistent).
-func (mq *NatsMQ) Publish(subject string, message []byte, opts ...interface{}) error {
+func (mq *NatsMQ) Publish(subject string, message []byte, opts ...any) error {
 	// Convert opts to []nats.PubOpt
 	var pubOpts []nats.PubOpt
 	for _, opt := range opts {
@@ -108,6 +111,16 @@ func (mq *NatsMQ) Publish(subject string, message []byte, opts ...interface{}) e
 
 	// Call the JetStream Publish method
 	_, err := mq.js.Publish(subject, message, pubOpts...)
+	return err
+}
+
+func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.Duration) error {
+	// Create a NATS message with header
+	msg := nats.NewMsg(subject)
+	msg.Data = message
+	msg.Header.Set("Nats-Delay", delay.String()) // e.g., "30s"
+
+	_, err := mq.js.PublishMsg(msg)
 	return err
 }
 

@@ -27,7 +27,7 @@ type CompositeResource struct {
 	CreatedBy        string                    `json:"createdBy" yaml:"createdBy" validate:"required"`
 	LastModifiedAt   string                    `json:"lastModifiedAt" yaml:"lastModifiedAt" validate:"required"`
 	LastModifiedBy   string                    `json:"lastModifiedBy" yaml:"lastModifiedBy" validate:"required"`
-	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	Spec             map[string]any            `json:"spec" yaml:"spec" validate:"required"`
 	Status           constant.ResourceStatus   `json:"status" yaml:"status" validate:"required"`
 	Resources        []Resource                `json:"resources" yaml:"resources" validate:"required"`
 	Metadata         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
@@ -51,7 +51,7 @@ type GetCompositeResourceResponse struct {
 type CreateCompositeResourceRequest struct {
 	Name             string                    `json:"name" yaml:"name" validate:"required"`
 	Description      string                    `json:"description" yaml:"description" validate:"required"`
-	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	Spec             map[string]any            `json:"spec" yaml:"spec" validate:"required"`
 	BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
 	BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
 	MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
@@ -65,7 +65,7 @@ type CreateCompositeResourceResponse struct {
 type UpdateCompositeResourceRequest struct {
 	Name             string                    `json:"name" yaml:"name" validate:"required"`
 	Description      string                    `json:"description" yaml:"description" validate:"required"`
-	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	Spec             map[string]any            `json:"spec" yaml:"spec" validate:"required"`
 	BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
 	BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
 	MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
@@ -79,7 +79,7 @@ type UpdateCompositeResourceResponse struct {
 type DeleteCompositeResourceRequest struct {
 	Name             string                    `json:"name" yaml:"name" validate:"required"`
 	Description      string                    `json:"description" yaml:"description" validate:"required"`
-	Spec             map[string]interface{}    `json:"spec" yaml:"spec" validate:"required"`
+	Spec             map[string]any            `json:"spec" yaml:"spec" validate:"required"`
 	BluePrintId      string                    `json:"bluePrintId" yaml:"bluePrintId" validate:"required"`
 	BluePrintVersion string                    `json:"bluePrintVersion" yaml:"bluePrintVersion" validate:"required"`
 	MetaData         CompositeResourceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
@@ -100,6 +100,7 @@ type CompositeResourceRepository interface {
 type CompositeResourceEventPublisher interface {
 	PublishToPendingSubject(c context.Context, compositeResource CompositeResource) error
 	PublishToProvisioningSubject(c context.Context, compositeResource CompositeResource) error
+	PublishToProvisioningSubjectWithDelay(c context.Context, compositeResource CompositeResource) error
 	PublishToDeletingSubject(c context.Context, compositeResource CompositeResource) error
 }
 

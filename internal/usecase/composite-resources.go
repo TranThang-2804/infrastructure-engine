@@ -319,14 +319,10 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
   // Todo: Should have a function to publish to the provisioning subject after a dalayed
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
-		// Execute this in a go routine
-		go func() {
-			// add a sleep time before sending the message to the queue
-			time.Sleep(15 * time.Second)
-			if err := cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource); err != nil {
-				log.Logger.Error("Failed to publish to provisioning subject: %v", err)
-			}
-		}()
+		if err = cu.compositeResourceEventPublisher.PublishToProvisioningSubjectWithDelay(ctx, compositeResource); err != nil {
+			return err
+		}
+		return nil
 	}
 
 	log.Logger.Info("Handle Provisioning Message Successful", "message", compositeResource.Status)
