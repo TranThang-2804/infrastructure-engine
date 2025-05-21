@@ -39,12 +39,15 @@ func (cu *compositeResourceUsecase) GetAll(c context.Context) ([]domain.Composit
 
 func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeResourceRequest domain.CreateCompositeResourceRequest) (domain.CompositeResource, error) {
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	logger := log.BaseLogger.FromCtx(ctx).WithFields("usecase", utils.GetStructName(cu))
+	ctx = logger.WithCtx(ctx)
+
 	defer cancel()
 
 	// Validate BluePrintId
 	bluePrint, err := cu.bluePrintUsecase.GetById(c, createCompositeResourceRequest.BluePrintId)
 	if err != nil {
-		log.BaseLogger.Error("Error getting blueprint by id", "error", err.Error())
+		logger.Error("Error getting blueprint by id", "error", err.Error())
 		return domain.CompositeResource{}, err
 	}
 
@@ -59,15 +62,15 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	// Validate Spec With JsonSchema
 	err = utils.ValidateJsonSchema(createCompositeResourceRequest.Spec, selectedBluePrintVersion.JsonSchema)
 	if err != nil {
-		log.BaseLogger.Error("Error validating json schema", "error", err.Error())
+		logger.Error("Error validating json schema", "error", err.Error())
 		return domain.CompositeResource{}, err
 	}
 
 	// Generate uuid
-	log.BaseLogger.Debug("Generating uuidv7")
+	logger.Debug("Generating uuidv7")
 	uuid, err := utils.GenerateUUIDv7()
 	if err != nil {
-		log.BaseLogger.Error("Error getting all composite resources", "error", err.Error())
+		logger.Error("Error getting all composite resources", "error", err.Error())
 		return domain.CompositeResource{}, err
 	}
 
@@ -98,13 +101,13 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	for _, template := range selectedBluePrintVersion.CompositeTemplate {
 		selectedBluePrint, err := cu.bluePrintUsecase.GetByIdAndVersion(c, template.TemplateId, template.Version)
 		if err != nil {
-			log.BaseLogger.Error("Error getting blueprint by id", "error", err.Error())
+			logger.Error("Error getting blueprint by id", "error", err.Error())
 			return domain.CompositeResource{}, err
 		}
 
 		resourceValue, err := utils.GenerateGoTemplateOutput(createCompositeResourceRequest.Spec, template.ValueTemplate)
 		if err != nil {
-			log.BaseLogger.Error("Error generating template", "error", err.Error())
+			logger.Error("Error generating template", "error", err.Error())
 			return domain.CompositeResource{}, err
 		}
 
@@ -126,15 +129,15 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	compositeResourceCreated, err := cu.compositeResourceRepository.Create(ctx, compositeResource)
 
 	if err != nil {
-		log.BaseLogger.Error("Error creating composite resource", "error", err.Error())
+		logger.Error("Error creating composite resource", "error", err.Error())
 		return domain.CompositeResource{}, err
 	}
-	log.BaseLogger.Debug("Created composite resource", "compositeResource", compositeResourceCreated)
+	logger.Debug("Created composite resource")
 
 	// Push message to message queue to Provision
 	err = cu.compositeResourceEventPublisher.PublishToPendingSubject(c, compositeResourceCreated)
 	if err != nil {
-		log.BaseLogger.Error("Error pushing message to queue", "error", err.Error())
+		logger.Error("Error pushing message to queue", "error", err.Error())
 		return domain.CompositeResource{}, err
 	}
 
@@ -150,6 +153,9 @@ func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeRes
 }
 
 func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
+	logger := log.BaseLogger.WithFields("usecase", utils.GetStructName(cu))
+	ctx := logger.WithCtx(context.Background())
+
 	var compositeResource domain.CompositeResource
 
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
@@ -158,23 +164,20 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error unmarshalling message", "error", err.Error())
+		logger.Error("Error unmarshalling message", "error", err.Error())
 		return err
 	}
 
 	// Validate the composite resource
 	err = utils.ValidateStruct(compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error validating composite resource", "error", err.Error())
+		logger.Error("Error validating composite resource", "error", err.Error())
 		return err
 	}
 
 	// Logic for handling the pending message
 	for i := range compositeResource.Resources {
 		currentResource := &compositeResource.Resources[i]
-		// Logic to handle each resource
-		log.BaseLogger.Debug("Handling resource", "resource", currentResource)
-
 		newPipelineRun := domain.IacPipeline{
 			Name:              currentResource.Name,
 			Id:                len(currentResource.RunIds) + 1,
@@ -187,11 +190,11 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 		// Trigger the pipeline to create the resource
 		pipelineUrl, err := cu.iacPipelineUsecase.Trigger(ctx, newPipelineRun)
 		if err != nil {
-			log.BaseLogger.Error("Error triggering pipeline", "error", err.Error())
+			logger.Error("Error triggering pipeline", "error", err.Error())
 			return err
 		}
 		newPipelineRun.URL = pipelineUrl
-		log.BaseLogger.Info("newPipelineRun", "pipeline", newPipelineRun)
+		logger.Info("newPipelineRun", "pipeline", newPipelineRun)
 
 		// Add the new pipeline run to the resource
 		currentResource.RunIds = append(currentResource.RunIds, newPipelineRun)
@@ -199,7 +202,7 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 		// Set resource status
 		currentResource.Status = constant.Provisioning
 
-		log.BaseLogger.Debug("Handled resource", "resource", currentResource)
+		logger.Debug("Handled resource", "resource", currentResource)
 	}
 
 	// Save the new status
@@ -213,14 +216,17 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	// Publish the message to the provisioning subject
 	cu.compositeResourceEventPublisher.PublishToProvisioningSubject(ctx, compositeResource)
 
-	log.BaseLogger.Info("Handling pending message successful", "message", compositeResource)
+	logger.Info("Handling pending message successful")
 	return nil
 }
 
 func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
+	logger := log.BaseLogger.WithFields("usecase", utils.GetStructName(cu))
+	ctx := logger.WithCtx(context.Background())
+
 	var compositeResource domain.CompositeResource
 
-	log.BaseLogger.Debug("Start handling message provisioning")
+	logger.Debug("Start handling message provisioning")
 
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 
@@ -229,14 +235,14 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 	// Unmarshal the message into the composite resource struct
 	err := json.Unmarshal(message, &compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error unmarshalling message", "error", err.Error())
+		logger.Error("Error unmarshalling message", "error", err.Error())
 		return err
 	}
 
 	// Validate the composite resource
 	err = utils.ValidateStruct(compositeResource)
 	if err != nil {
-		log.BaseLogger.Error("Error validating composite resource", "error", err.Error())
+		logger.Error("Error validating composite resource", "error", err.Error())
 		return err
 	}
 
@@ -253,7 +259,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 
 		pipelineStatus, err := cu.iacPipelineUsecase.GetPipelineStatus(ctx, currentPipeline)
 		if err != nil {
-			log.BaseLogger.Error("Error getting pipeline status", "error", err.Error())
+			logger.Error("Error getting pipeline status", "error", err.Error())
 			return err
 		}
 
@@ -268,14 +274,14 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 			// Getting pipeline output
 			pipelineOutputByte, err := cu.iacPipelineUsecase.GetPipelineOutputByUrl(ctx, currentPipeline)
 			if err != nil {
-				log.BaseLogger.Error("Error getting pipeline output", "error", err)
+				logger.Error("Error getting pipeline output", "error", err)
 				return fmt.Errorf("Error getting pipeline output: %s", err)
 			}
 
 			var pipelineOutput map[string]any
 			err = json.Unmarshal(pipelineOutputByte, &pipelineOutput)
 			if err != nil {
-				log.BaseLogger.Error("Error unmarshalling pipeline output", "error", err)
+				logger.Error("Error unmarshalling pipeline output", "error", err)
 				return fmt.Errorf("Error unmarshalling pipeline output: %s", err)
 			}
 
@@ -286,7 +292,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 			currentResource.Status = constant.Failed
 			break
 		default:
-			log.BaseLogger.Error("Unknown pipeline status", "resource", currentResource, "pipeline status", pipelineStatus)
+			logger.Error("Unknown pipeline status", "resource", currentResource, "pipeline status", pipelineStatus)
 			break
 		}
 	}
@@ -324,7 +330,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 		return nil
 	}
 
-	log.BaseLogger.Info("Handle Provisioning Message Successful", "message", compositeResource.Status)
+	logger.Info("Handle Provisioning Message Successful", "message", compositeResource.Status)
 	return nil
 }
 
