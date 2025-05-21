@@ -8,6 +8,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var logger log.Log
+
 var Env *EnvConfig
 
 type EnvConfig struct {
@@ -25,6 +27,8 @@ type EnvConfig struct {
 }
 
 func LoadEnv() {
+	logger = log.BaseLogger.WithFields("bootstrap", "LoadEnv")
+
 	// Load .env file first (won't override real env vars)
 	_ = godotenv.Load(".env")
 
@@ -42,7 +46,7 @@ func LoadEnv() {
 		GIT_RESOURCE_REPO_NAME:    getEnvOrPanic("GIT_RESOURCE_REPO_NAME"),
 	}
 
-	log.BaseLogger.Info("Loaded Config", "AppEnv", env.AppEnv)
+	logger.Info("Loaded Config", "AppEnv", env.AppEnv)
 	Env = env
 }
 
@@ -68,6 +72,6 @@ func getEnvOrPanic(key string) string {
 	if val := os.Getenv(key); val != "" {
 		return val
 	}
-	log.BaseLogger.Fatal("Required environment variable missing", "key", key)
+	logger.Fatal("Required environment variable missing", "key", key)
 	return ""
 }
