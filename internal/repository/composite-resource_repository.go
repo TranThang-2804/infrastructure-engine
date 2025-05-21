@@ -29,31 +29,31 @@ func (cr *compositeResourceRepository) GetAll(c context.Context) ([]domain.Compo
 		var compositeResource domain.CompositeResource
 		err = yaml.Unmarshal([]byte(fileContent), &compositeResource)
 		if err != nil {
-			log.Logger.Error("Error unmarshalling YAML", "error", err)
+			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
 			return nil, err
 		}
 
 		compositeResources = append(compositeResources, compositeResource)
 	}
 
-	log.Logger.Debug("Blueprints Content", "content", compositeResources)
+	log.BaseLogger.Debug("Blueprints Content", "content", compositeResources)
 
 	return compositeResources, err
 }
 
 func (cr *compositeResourceRepository) Create(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
 	// Validate compositeResource
-	log.Logger.Debug("CompositeResource", "compositeResource", compositeResource)
+	log.BaseLogger.Debug("CompositeResource", "compositeResource", compositeResource)
 	err := utils.ValidateStruct(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error validating composite resource", "error", err)
+		log.BaseLogger.Error("Error validating composite resource", "error", err)
 		return compositeResource, err
 	}
 
 	// Convert object to YAML
 	yamlString, err := convertToYaml(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error converting to YAML:", "error", err)
+		log.BaseLogger.Error("Error converting to YAML:", "error", err)
 		return compositeResource, err
 	}
 
@@ -68,7 +68,7 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 		yamlString,
 	)
 	if err != nil {
-		log.Logger.Error("Error creating file", "error", err)
+		log.BaseLogger.Error("Error creating file", "error", err)
 		return compositeResource, err
 	}
 
@@ -77,17 +77,17 @@ func (cr *compositeResourceRepository) Create(c context.Context, compositeResour
 
 func (cr *compositeResourceRepository) Update(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
 	// Validate compositeResource
-	log.Logger.Debug("CompositeResource", "compositeResource", compositeResource)
+	log.BaseLogger.Debug("CompositeResource", "compositeResource", compositeResource)
 	err := utils.ValidateStruct(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error validating composite resource", "error", err)
+		log.BaseLogger.Error("Error validating composite resource", "error", err)
 		return compositeResource, err
 	}
 
 	// Convert object to YAML
 	yamlString, err := convertToYaml(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error converting to YAML:", "error", err)
+		log.BaseLogger.Error("Error converting to YAML:", "error", err)
 		return compositeResource, err
 	}
 
@@ -102,7 +102,7 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 		filepath,
 	)
 	if err != nil {
-		log.Logger.Error("Error reading current file content", "error", err)
+		log.BaseLogger.Error("Error reading current file content", "error", err)
 		return compositeResource, err
 	}
 
@@ -115,7 +115,7 @@ func (cr *compositeResourceRepository) Update(c context.Context, compositeResour
 		yamlString,
 	)
 	if err != nil {
-		log.Logger.Error("Error updating file", "error", err)
+		log.BaseLogger.Error("Error updating file", "error", err)
 		return compositeResource, err
 	}
 
@@ -148,7 +148,7 @@ func generateFilePath(compositeResource domain.CompositeResource) string {
 func convertToYaml(compositeResource domain.CompositeResource) (string, error) {
 	yamlBytes, err := yaml.Marshal(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error converting to YAML:", "error", err)
+		log.BaseLogger.Error("Error converting to YAML:", "error", err)
 		return "", err
 	}
 

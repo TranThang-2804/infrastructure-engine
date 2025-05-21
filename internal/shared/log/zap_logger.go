@@ -5,14 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime/debug"
-	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-var once sync.Once
 
 type ctxKey struct{}
 
@@ -23,6 +19,12 @@ type ZapLogger struct {
 // Get initializes a zap.Logger instance if it has not been initialized
 // already and returns the same instance for subsequent calls.
 func Init() {
+	// Check if the logger is already initialized
+	if BaseLogger != nil {
+		BaseLogger.DPanic("Base Global Logger is already initialized")
+		return
+	}
+
 	var logger *zap.Logger
 
 	stdout := zapcore.AddSync(os.Stdout)
@@ -61,35 +63,16 @@ func Init() {
 		consoleEncoder = zapcore.NewConsoleEncoder(developmentCfg)
 	}
 
-	var gitRevision string
-
-	buildInfo, ok := debug.ReadBuildInfo()
-	if ok {
-		for _, v := range buildInfo.Settings {
-			if v.Key == "vcs.revision" {
-				gitRevision = v.Value
-				break
-			}
-		}
-	}
-
 	// log to stdout
-	core := zapcore.NewCore(consoleEncoder, stdout, logLevel).
-		With(
-			[]zapcore.Field{
-				zap.String("git_revision", gitRevision),
-				zap.String("go_version", buildInfo.GoVersion),
-			},
-		)
-
+	core := zapcore.NewCore(consoleEncoder, stdout, logLevel)
 	logger = zap.New(core)
-	Logger = &ZapLogger{logger: logger}
+	BaseLogger = &ZapLogger{logger: logger}
 }
 
 // FromCtx returns the Logger associated with the ctx. If no logger
 // is associated, the default logger is returned, unless it is nil
 // in which case a disabled logger is returned.
-func (l *ZapLogger) FromCtx(ctx context.Context) *ZapLogger {
+func (l *ZapLogger) FromCtx(ctx context.Context) Log {
 	// Check if the logger is already attached to the context
 	// If it is, return the logger
 	if l, ok := ctx.Value(ctxKey{}).(*ZapLogger); ok {
@@ -115,37 +98,43 @@ func (l *ZapLogger) WithCtx(ctx context.Context) context.Context {
 	return context.WithValue(ctx, ctxKey{}, l)
 }
 
+// WithFields returns a new ZapLogger with extra fields
+func (l *ZapLogger) WithFields(fields ...any) Log {
+	s := l.logger.Sugar().With(fields...)
+	return &ZapLogger{logger: s.Desugar()}
+}
+
 // Debug logs an error message with the given fields.
-func (l *ZapLogger) Debug(msg string, fields ...interface{}) {
+func (l *ZapLogger) Debug(msg string, fields ...any) {
 	l.logger.Sugar().Debugw(msg, fields...)
 }
 
 // Info logs an error message with the given fields.
-func (l *ZapLogger) Info(msg string, fields ...interface{}) {
+func (l *ZapLogger) Info(msg string, fields ...any) {
 	l.logger.Sugar().Infow(msg, fields...)
 }
 
 // Warn logs an error message with the given fields.
-func (l *ZapLogger) Warn(msg string, fields ...interface{}) {
+func (l *ZapLogger) Warn(msg string, fields ...any) {
 	l.logger.Sugar().Warnw(msg, fields...)
 }
 
 // Error logs an error message with the given fields.
-func (l *ZapLogger) Error(msg string, fields ...interface{}) {
+func (l *ZapLogger) Error(msg string, fields ...any) {
 	l.logger.Sugar().Errorw(msg, fields...)
 }
 
 // Panic logs an error message with the given fields.
-func (l *ZapLogger) Panic(msg string, fields ...interface{}) {
+func (l *ZapLogger) Panic(msg string, fields ...any) {
 	l.logger.Sugar().Panicw(msg, fields...)
 }
 
 // DPanic logs an error message with the given fields.
-func (l *ZapLogger) DPanic(msg string, fields ...interface{}) {
+func (l *ZapLogger) DPanic(msg string, fields ...any) {
 	l.logger.Sugar().DPanicw(msg, fields...)
 }
 
 // Fatal logs an error message with the given fields.
-func (l *ZapLogger) Fatal(msg string, fields ...interface{}) {
+func (l *ZapLogger) Fatal(msg string, fields ...any) {
 	l.logger.Sugar().Fatalw(msg, fields...)
 }

@@ -23,11 +23,11 @@ func (cr *CompositeResourcePublisher) PublishToPendingSubject(c context.Context,
 	// Publish message to queue
 	messageData, err := json.Marshal(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
+		log.BaseLogger.Error("Error marshalling composite resource to JSON", "error", err)
 		return err
 	}
 	cr.messageQueue.Publish("composite-resource.pending", messageData)
-	log.Logger.Info("Publish to pending subject", "compositeResourceId", compositeResource.Id)
+	log.BaseLogger.Info("Publish to pending subject", "compositeResourceId", compositeResource.Id)
 	return nil
 }
 
@@ -35,7 +35,7 @@ func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(c context.Con
 	// Publish message to queue
 	messageData, err := json.Marshal(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
+		log.BaseLogger.Error("Error marshalling composite resource to JSON", "error", err)
 		return err
 	}
 	return cr.messageQueue.Publish("composite-resource.provisioning", messageData)
@@ -45,7 +45,7 @@ func (cr *CompositeResourcePublisher) PublishToProvisioningSubjectWithDelay(c co
 	// Publish message to queue
 	messageData, err := json.Marshal(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
+		log.BaseLogger.Error("Error marshalling composite resource to JSON", "error", err)
 		return err
 	}
 
@@ -57,7 +57,7 @@ func (cr *CompositeResourcePublisher) PublishToDeletingSubject(c context.Context
 	// Publish message to queue
 	messageData, err := json.Marshal(compositeResource)
 	if err != nil {
-		log.Logger.Error("Error marshalling composite resource to JSON", "error", err)
+		log.BaseLogger.Error("Error marshalling composite resource to JSON", "error", err)
 		return err
 	}
 	return cr.messageQueue.Publish("composite-resource.deleting", messageData)

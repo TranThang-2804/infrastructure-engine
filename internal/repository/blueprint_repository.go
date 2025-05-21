@@ -29,14 +29,14 @@ func (br *bluePrintRepository) GetAll(c context.Context) ([]domain.BluePrint, er
 		var bluePrint domain.BluePrint
 		err = yaml.Unmarshal([]byte(fileContent), &bluePrint)
 		if err != nil {
-			log.Logger.Error("Error unmarshalling YAML", "error", err)
+			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
 			return nil, err
 		}
 
 		bluePrints = append(bluePrints, bluePrint)
 	}
 
-	log.Logger.Debug("Blueprints Content", "content", bluePrints)
+	log.BaseLogger.Debug("Blueprints Content", "content", bluePrints)
 
 	return bluePrints, err
 }
@@ -48,11 +48,11 @@ func (br *bluePrintRepository) GetById(c context.Context, id string) (domain.Blu
 		var bluePrint domain.BluePrint
 		err = yaml.Unmarshal([]byte(fileContent), &bluePrint)
 		if err != nil {
-			log.Logger.Error("Error unmarshalling YAML", "error", err)
+			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
 			return domain.BluePrint{}, err
 		}
 		if bluePrint.Id == id {
-			log.Logger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
+			log.BaseLogger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
 			return bluePrint, nil
 		}
 	}
@@ -67,15 +67,15 @@ func (br *bluePrintRepository) GetByIdAndVersion(c context.Context, id string, v
 		var bluePrint domain.BluePrint
 		err = yaml.Unmarshal([]byte(fileContent), &bluePrint)
 		if err != nil {
-			log.Logger.Error("Error unmarshalling YAML", "error", err)
+			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
 			return domain.BluePrintVersion{}, err
 		}
 		if bluePrint.Id == id {
-			log.Logger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
+			log.BaseLogger.Debug("Blueprint Content Found With ID", "content", bluePrint, "id", id)
 
 			for _, ver := range bluePrint.Versions {
 				if ver.Name == version {
-					log.Logger.Debug("Blueprint Version Found With ID", "content", version, "id", id)
+					log.BaseLogger.Debug("Blueprint Version Found With ID", "content", version, "id", id)
 					return ver, nil
 				}
 			}

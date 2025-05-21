@@ -43,17 +43,17 @@ func NewNatsMQ(url string, subjectNames []string) (MessageQueue, error) {
 	_, err = js.StreamInfo(streamConfig.Name)
 	if err == nil {
 		// Stream exists, no need to create it again
-		log.Logger.Info("Stream already exists. Skipping creation.")
+		log.BaseLogger.Info("Stream already exists. Skipping creation.")
 	} else if err != nats.ErrStreamNotFound {
 		// Some other error occurred
-		log.Logger.Fatal("Jetstream queue has some error", "error", err)
+		log.BaseLogger.Fatal("Jetstream queue has some error", "error", err)
 	} else {
 		// Stream does not exist, create it
 		_, err = js.AddStream(streamConfig)
 		if err != nil {
-			log.Logger.Fatal("Cannot create Jetstream queue", "error", err)
+			log.BaseLogger.Fatal("Cannot create Jetstream queue", "error", err)
 		}
-		log.Logger.Info("Jetstream queue created successfully")
+		log.BaseLogger.Info("Jetstream queue created successfully")
 	}
 
 	return &NatsMQ{
@@ -78,11 +78,11 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 
 	sub, err := mq.js.QueueSubscribe(subject, queueName, func(msg *nats.Msg) {
 		if err := handler(msg.Data); err != nil {
-			log.Logger.Error("❌ Error processing message", "subject", subject, "error", err)
+			log.BaseLogger.Error("❌ Error processing message", "subject", subject, "error", err)
 			// Don't ack to trigger retry after AckWait
 			return
 		}
-		log.Logger.Debug("Message handled successful")
+		log.BaseLogger.Debug("Message handled successful")
 		msg.Ack()
 	}, nats.Durable(durableName),
 		nats.ManualAck(),
@@ -122,9 +122,9 @@ func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.D
 		// Publish the message after the delay
 		_, err := mq.js.Publish(subject, message)
 		if err != nil {
-			log.Logger.Error("❌ Failed to publish delayed message to", "subject", subject, "error", err)
+			log.BaseLogger.Error("❌ Failed to publish delayed message to", "subject", subject, "error", err)
 		} else {
-			log.Logger.Info("✅ Delayed message published to %s", "subject", subject)
+			log.BaseLogger.Info("✅ Delayed message published to %s", "subject", subject)
 		}
 	}()
 	return nil

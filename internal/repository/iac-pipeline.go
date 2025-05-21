@@ -31,7 +31,7 @@ func (ir *iacPipelineRepository) Trigger(c context.Context, iacPipeline domain.I
 		pipelineData,
 	)
 	if err != nil {
-		log.Logger.Error("Error Triggering pipeline", "error", err)
+		log.BaseLogger.Error("Error Triggering pipeline", "error", err)
 		return "", err
 	}
 

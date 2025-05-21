@@ -8,7 +8,7 @@ import (
 func GenerateUUIDv7() (string, error) {
 	uuid, err := uuid.NewV7()
 	if err != nil {
-		log.Logger.Error("Error GenerateUUIDv7", "error", err.Error())
+		log.BaseLogger.Error("Error GenerateUUIDv7", "error", err.Error())
 		return "", err
 	}
 

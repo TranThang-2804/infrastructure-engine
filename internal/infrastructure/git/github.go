@@ -25,26 +25,26 @@ func (gh *GitHub) ReadFileContent(owner string, repo string, branch string, path
 		&github.RepositoryContentGetOptions{Ref: branch},
 	)
 	if err != nil {
-		log.Logger.Error("Error fetching file content:", "err", err)
+		log.BaseLogger.Error("Error fetching file content:", "err", err)
 		return "", err
 	}
 
 	// Check if the path is a file
 	if rawFileContent == nil || rawFileContent.GetType() != "file" {
-		log.Logger.Error("The provided path is not a file:", "path", path)
+		log.BaseLogger.Error("The provided path is not a file:", "path", path)
 		return "", fmt.Errorf("the provided path is not a file: %s", path)
 	}
 
 	// Decode the file content (GitHub API returns it as base64-encoded)
 	content, err := base64.StdEncoding.DecodeString(*rawFileContent.Content)
 	if err != nil {
-		log.Logger.Error("Error decoding file content:", "err", err)
+		log.BaseLogger.Error("Error decoding file content:", "err", err)
 		return "", err
 	}
 
 	// Print the file content
 	fileContent := string(content)
-	log.Logger.Debug("File Content", "content", fileContent)
+	log.BaseLogger.Debug("File Content", "content", fileContent)
 	return fileContent, nil
 }
 
@@ -58,13 +58,13 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 		&github.RepositoryContentGetOptions{Ref: branch},
 	)
 	if err != nil {
-		log.Logger.Error("Error fetching directory content:", "err", err)
+		log.BaseLogger.Error("Error fetching directory content:", "err", err)
 		return nil, err
 	}
 
 	// Check if the path is a directory
 	if directoryContent == nil {
-		log.Logger.Error("The provided path is not a directory", "path", path)
+		log.BaseLogger.Error("The provided path is not a directory", "path", path)
 		return nil, fmt.Errorf("the provided path is not a directory or is empty: %s", path)
 	}
 
@@ -75,7 +75,7 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 			// Fetch the file content
 			fileContent, err := gh.ReadFileContent(owner, repo, branch, content.GetPath())
 			if err != nil {
-				log.Logger.Error("Error fetching file content:", "file", content.GetPath(), "err", err)
+				log.BaseLogger.Error("Error fetching file content:", "file", content.GetPath(), "err", err)
 				return nil, err
 			}
 
@@ -85,7 +85,7 @@ func (gh *GitHub) GetAllFileContentsInDirectory(owner string, repo string, branc
 	}
 
 	// Log and return the file contents
-	log.Logger.Debug("File contents in directory", "path", path, "fileContents", fileContents)
+	log.BaseLogger.Debug("File contents in directory", "path", path, "fileContents", fileContents)
 	return fileContents, nil
 }
 
@@ -100,11 +100,11 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 	)
 	if err == nil && fileContent != nil {
 		err := fmt.Errorf("file %s already exists in branch %s", filePath, branch)
-		log.Logger.Error("File already exists", "filePath", filePath, "branch", branch)
+		log.BaseLogger.Error("File already exists", "filePath", filePath, "branch", branch)
 		return err
 	}
 	if err != nil && !strings.Contains(err.Error(), "404") {
-		log.Logger.Error("Error checking file existence", "err", err)
+		log.BaseLogger.Error("Error checking file existence", "err", err)
 		return err
 	}
 
@@ -124,11 +124,11 @@ func (gh *GitHub) CreateFile(owner string, repo string, branch string, filePath 
 		fileContentOptions,
 	)
 	if err != nil {
-		log.Logger.Error("Error creating file:", "err", err)
+		log.BaseLogger.Error("Error creating file:", "err", err)
 		return err
 	}
 
-	log.Logger.Debug("File created successfully", "fileName", filePath)
+	log.BaseLogger.Debug("File created successfully", "fileName", filePath)
 	return nil
 }
 
@@ -142,7 +142,7 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 		&github.RepositoryContentGetOptions{Ref: branch},
 	)
 	if err != nil && !strings.Contains(err.Error(), "404") {
-		log.Logger.Error("Error checking file existence:", "err", err)
+		log.BaseLogger.Error("Error checking file existence:", "err", err)
 		return err
 	}
 
@@ -150,13 +150,13 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 	if fileContent != nil {
 		decodedContent, decodeErr := fileContent.GetContent()
 		if decodeErr != nil {
-			log.Logger.Error("Error decoding file content:", "err", decodeErr)
+			log.BaseLogger.Error("Error decoding file content:", "err", decodeErr)
 			return decodeErr
 		}
 
 		// Compare the existing content with the new content
 		if decodedContent == content {
-			log.Logger.Info("File content is identical, no update needed", "fileName", filePath)
+			log.BaseLogger.Info("File content is identical, no update needed", "fileName", filePath)
 			return nil
 		}
 
@@ -177,11 +177,11 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 			fileContentOptions,
 		)
 		if err != nil {
-			log.Logger.Error("Error updating file:", "err", err)
+			log.BaseLogger.Error("Error updating file:", "err", err)
 			return err
 		}
 
-		log.Logger.Debug("File updated successfully", "fileName", filePath)
+		log.BaseLogger.Debug("File updated successfully", "fileName", filePath)
 		return nil
 	}
 
@@ -200,11 +200,11 @@ func (gh *GitHub) CreateOrUpdateFile(owner string, repo string, branch string, f
 		fileContentOptions,
 	)
 	if err != nil {
-		log.Logger.Error("Error creating file:", "err", err)
+		log.BaseLogger.Error("Error creating file:", "err", err)
 		return err
 	}
 
-	log.Logger.Debug("File created successfully", "fileName", filePath)
+	log.BaseLogger.Debug("File created successfully", "fileName", filePath)
 	return nil
 }
 
@@ -217,7 +217,7 @@ func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelineParams map[
 	// Convert the client payload to JSON
 	payloadBytes, err := json.Marshal(pipelineParams)
 	if err != nil {
-		log.Logger.Error("Error marshalling client payload:", "err", err)
+		log.BaseLogger.Error("Error marshalling client payload:", "err", err)
 		return "", fmt.Errorf("failed to marshal client payload: %w", err)
 	}
 
@@ -230,11 +230,11 @@ func (gh *GitHub) TriggerPipeline(owner string, repo string, pipelineParams map[
 	// Trigger the repository dispatch event
 	_, res, err := gh.Client.Repositories.Dispatch(ctx, owner, repo, *dispatchRequest)
 	if err != nil {
-		log.Logger.Error("Failed to trigger pipeline:", "err", err)
+		log.BaseLogger.Error("Failed to trigger pipeline:", "err", err)
 		return "", fmt.Errorf("failed to trigger pipeline: %w", err)
 	}
 
-	log.Logger.Info("TriggerPipeline", "response", res)
+	log.BaseLogger.Info("TriggerPipeline", "response", res)
 
 	// Return the status of the dispatch
 	return res.Status, nil

@@ -61,7 +61,7 @@ func App() Application {
 	// Create a mq infra type of NATS connection
 	mi, err := mq.NewNatsMQ(env.Env.NATS_URL, mqSubjectList)
 	if err != nil {
-		log.Logger.Fatal("Failed to connect to NATS", "error", err)
+		log.BaseLogger.Fatal("Failed to connect to NATS", "error", err)
 	}
 	app.mi = mi
 	app.compositeResourcePublisher = mq.NewCompositeResourcePublisher(app.mi)

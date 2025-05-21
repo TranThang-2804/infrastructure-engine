@@ -13,7 +13,7 @@ func init() {
 	log.Init()
 	env.LoadEnv()
 
-	log.Logger.Info("Starting the application - Author: Tommy Tran - tranthang.dev@gmail.com")
+	log.BaseLogger.Info("Starting the application - Author: Tommy Tran - tranthang.dev@gmail.com")
 }
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 
 	r := route.SetupRoute(app)
 
-	log.Logger.Info("Starting server...", "on port", env.Env.ServerAddress)
+	log.BaseLogger.Info("Starting server...", "on port", env.Env.ServerAddress)
 
 	http.ListenAndServe(env.Env.ServerAddress, r)
 }

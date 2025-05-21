@@ -10,8 +10,8 @@ import (
 // and returns the resulting output as a map[string]interface{}.
 func GenerateGoTemplateOutput(spec map[string]interface{}, templateStr string) (string, error) {
 	// Parse the template string
-	log.Logger.Debug("Parsing template", "template", templateStr)
-	log.Logger.Debug("Parsing template", "spec", spec)
+	log.BaseLogger.Debug("Parsing template", "template", templateStr)
+	log.BaseLogger.Debug("Parsing template", "spec", spec)
 	tmpl, err := template.New("template").Parse(templateStr)
 	if err != nil {
 		return "", err
@@ -24,7 +24,7 @@ func GenerateGoTemplateOutput(spec map[string]interface{}, templateStr string) (
 	if err := tmpl.Execute(&outputBuffer, spec); err != nil {
 		return "", err
 	}
-	log.Logger.Debug("Parsing template", "output", outputBuffer.String())
+	log.BaseLogger.Debug("Parsing template", "output", outputBuffer.String())
 
 	return outputBuffer.String(), nil
 }

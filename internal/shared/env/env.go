@@ -42,7 +42,7 @@ func LoadEnv() {
 		GIT_RESOURCE_REPO_NAME:    getEnvOrPanic("GIT_RESOURCE_REPO_NAME"),
 	}
 
-	log.Logger.Info("Loaded Config", "AppEnv", env.AppEnv)
+	log.BaseLogger.Info("Loaded Config", "AppEnv", env.AppEnv)
 	Env = env
 }
 
@@ -68,6 +68,6 @@ func getEnvOrPanic(key string) string {
 	if val := os.Getenv(key); val != "" {
 		return val
 	}
-	log.Logger.Fatal("Required environment variable missing", "key", key)
+	log.BaseLogger.Fatal("Required environment variable missing", "key", key)
 	return ""
 }

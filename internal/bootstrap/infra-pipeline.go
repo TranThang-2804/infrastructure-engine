@@ -56,7 +56,7 @@ func NewInfraPipeline(gitStore git.GitStore) InfraPipeline {
 }
 
 func (ip *InfraPipeline) SettingInfraPipeline() error {
-	log.Logger.Info("Setting up infrastructure pipeline...")
+	log.BaseLogger.Info("Setting up infrastructure pipeline...")
 
 	var pipelineFileConfig GitPipelineFileConfig
 
@@ -66,7 +66,7 @@ func (ip *InfraPipeline) SettingInfraPipeline() error {
 	case "gitlab":
 		pipelineFileConfig = gitlabPipelineFileConfig
 	default:
-		log.Logger.Fatal("Unsupported CI/CD platform: ", env.Env.CI)
+		log.BaseLogger.Fatal("Unsupported CI/CD platform: ", env.Env.CI)
 	}
 
 	for _, fileMapping := range pipelineFileConfig.pipelineConfigurationFiles {

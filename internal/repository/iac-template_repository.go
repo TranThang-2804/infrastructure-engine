@@ -28,14 +28,14 @@ func (ir *iacTemplateRepository) GetAll(c context.Context) ([]domain.IacTemplate
 		var iacTemplate domain.IacTemplate
 		err = yaml.Unmarshal([]byte(fileContent), &iacTemplate)
 		if err != nil {
-			log.Logger.Error("Error unmarshalling YAML", "error", err)
+			log.BaseLogger.Error("Error unmarshalling YAML", "error", err)
 			return nil, err
 		}
 
 		iacTemplates = append(iacTemplates, iacTemplate)
 	}
 
-	log.Logger.Debug("Blueprints Content", "content", iacTemplates)
+	log.BaseLogger.Debug("Blueprints Content", "content", iacTemplates)
 
 	return iacTemplates, err
 }

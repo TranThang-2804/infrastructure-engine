@@ -26,7 +26,7 @@ func (rc *CompositeResourceController) GetAll(w http.ResponseWriter, r *http.Req
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Logger.Error("Error getting all composite resources", "error", err.Error())
+		log.BaseLogger.Error("Error getting all composite resources", "error", err.Error())
 		return
 	}
 
@@ -43,7 +43,7 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
-		log.Logger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
+		log.BaseLogger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
 		return
 	}
 
@@ -51,14 +51,14 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	err = utils.ValidateStruct(request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
-		log.Logger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)
+		log.BaseLogger.Error("Error validating request", "error", err.Error(), "compositeResourceConfig", request)
 		return
 	}
 
 	compositeResource, err := rc.CompositeResourceUseCase.Create(r.Context(), request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusInternalServerError)
-		log.Logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
+		log.BaseLogger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
 		return
 	}
 

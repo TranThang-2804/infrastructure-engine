@@ -12,13 +12,13 @@ func ValidateJsonSchema(spec map[string]interface{}, schema map[string]interface
 	schemaLoader := gojsonschema.NewGoLoader(schema)
 	specLoader := gojsonschema.NewGoLoader(spec)
 
-	log.Logger.Debug("ValidateJsonSchema", "schema", schema, "spec", spec)
-	log.Logger.Debug("ValidateJsonSchema", "schema", schemaLoader, "spec", specLoader)
+	log.BaseLogger.Debug("ValidateJsonSchema", "schema", schema, "spec", spec)
+	log.BaseLogger.Debug("ValidateJsonSchema", "schema", schemaLoader, "spec", specLoader)
 
 	// Validate the spec against the schema
 	result, err := gojsonschema.Validate(schemaLoader, specLoader)
 	if err != nil {
-		log.Logger.Error("ValidateJsonSchema", "err", "Error validating JSON schema:", "err detail", err)
+		log.BaseLogger.Error("ValidateJsonSchema", "err", "Error validating JSON schema:", "err detail", err)
 		return err // Return error if validation process fails
 	}
 

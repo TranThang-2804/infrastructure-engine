@@ -2,16 +2,17 @@ package log
 
 import "context"
 
-var Logger *ZapLogger
+var BaseLogger Log
 
 type Log interface {
-	FromCtx(ctx context.Context) *ZapLogger
+	FromCtx(ctx context.Context) Log
 	WithCtx(ctx context.Context) context.Context
-	Debug(msg string, fields ...interface{})
-	Info(msg string, fields ...interface{})
-	Warn(msg string, fields ...interface{})
-	Error(msg string, fields ...interface{})
-	Panic(msg string, fields ...interface{})
-	DPanic(msg string, fields ...interface{})
-	Fatal(msg string, fields ...interface{})
+	WithFields(fields ...any) Log
+	Debug(msg string, fields ...any)
+	Info(msg string, fields ...any)
+	Warn(msg string, fields ...any)
+	Error(msg string, fields ...any)
+	Panic(msg string, fields ...any)
+	DPanic(msg string, fields ...any)
+	Fatal(msg string, fields ...any)
 }
