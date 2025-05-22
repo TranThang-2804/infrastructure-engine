@@ -8,6 +8,7 @@ import (
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant"
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant/errorcode"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/env"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
@@ -156,6 +157,8 @@ func (cu *compositeResourceUsecase) HandlePending(message []byte) error {
 	logger := log.BaseLogger.WithFields("usecase", utils.GetStructName(cu))
 	ctx := logger.WithCtx(context.Background())
 
+	logger.Info("Handling message pending")
+
 	var compositeResource domain.CompositeResource
 
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
@@ -226,7 +229,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 
 	var compositeResource domain.CompositeResource
 
-	logger.Debug("Start handling message provisioning")
+	logger.Debug("Handling message provisioning")
 
 	ctx, cancel := context.WithTimeout(context.Background(), cu.contextTimeout)
 
@@ -324,10 +327,7 @@ func (cu *compositeResourceUsecase) HandleProvisioning(message []byte) error {
 
 	// If composite resource is still in progress (not done or failed) -> send a new message to the provisioning subject
 	if compositeResource.Status != constant.Done && compositeResource.Status != constant.Failed {
-		if err = cu.compositeResourceEventPublisher.PublishToProvisioningSubjectWithDelay(ctx, compositeResource); err != nil {
-			return err
-		}
-		return nil
+		return errorcode.QueueMessageNeedRetry
 	}
 
 	logger.Info("Handle Provisioning Message Successful", "message", compositeResource.Status)

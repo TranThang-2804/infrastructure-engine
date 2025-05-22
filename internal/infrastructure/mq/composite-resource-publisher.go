@@ -3,7 +3,6 @@ package mq
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/TranThang-2804/infrastructure-engine/internal/domain"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
@@ -44,20 +43,6 @@ func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(c context.Con
 		return err
 	}
 	return cr.messageQueue.Publish("composite-resource.provisioning", messageData)
-}
-
-func (cr *CompositeResourcePublisher) PublishToProvisioningSubjectWithDelay(c context.Context, compositeResource domain.CompositeResource) error {
-	logger := log.BaseLogger.WithFields("infrastructure", utils.GetStructName(cr))
-
-	// Publish message to queue
-	messageData, err := json.Marshal(compositeResource)
-	if err != nil {
-		logger.Error("Error marshalling composite resource to JSON", "error", err)
-		return err
-	}
-
-	delay := 15 * time.Second
-	return cr.messageQueue.PublishAfterDelay("composite-resource.provisioning", messageData, delay)
 }
 
 func (cr *CompositeResourcePublisher) PublishToDeletingSubject(c context.Context, compositeResource domain.CompositeResource) error {

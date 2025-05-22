@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TranThang-2804/infrastructure-engine/internal/shared/constant/errorcode"
 	"github.com/TranThang-2804/infrastructure-engine/internal/shared/log"
 	"github.com/nats-io/nats.go"
 )
@@ -81,13 +82,19 @@ func (mq *NatsMQ) Subscribe(subject string, handler func(message []byte) error) 
 	sub, err := mq.js.QueueSubscribe(subject, queueName, func(msg *nats.Msg) {
 		if err := handler(msg.Data); err != nil {
 			// Don't ack to trigger retry after AckWait
+
+			// if error code is the message need to retry -> nak the message
+			if err == errorcode.QueueMessageNeedRetry {
+				log.BaseLogger.Info("HIHIHIHI")
+				msg.NakWithDelay(10 * time.Second)
+			}
 			return
 		}
 		msg.Ack()
 	}, nats.Durable(durableName),
 		nats.ManualAck(),
-		nats.AckWait(30*time.Second), // Visibility timeout
-		nats.MaxDeliver(5),           // Max retry attempts
+		nats.MaxDeliver(10),
+		nats.AckWait(60*time.Second), // Visibility timeout
 	)
 	if err != nil {
 		return err
@@ -112,17 +119,6 @@ func (mq *NatsMQ) Publish(subject string, message []byte, opts ...any) error {
 	// Call the JetStream Publish method
 	_, err := mq.js.Publish(subject, message, pubOpts...)
 	return err
-}
-
-func (mq *NatsMQ) PublishAfterDelay(subject string, message []byte, delay time.Duration) error {
-	go func() {
-		// Sleep for the given delay
-		time.Sleep(delay)
-
-		// Publish the message after the delay
-		mq.js.Publish(subject, message)
-	}()
-	return nil
 }
 
 // Close unsubscribes from all subjects and closes the connection.
