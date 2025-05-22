@@ -9,7 +9,10 @@ type compositeResourceConsumer struct {
 	messageQueue             MessageQueue
 }
 
-func NewCompositeResourceConsumer(mq MessageQueue, compositeResourceUsecase domain.CompositeResourceUsecase) domain.CompositeResourceEventConsumer {
+func NewCompositeResourceConsumer(
+	mq MessageQueue,
+	compositeResourceUsecase domain.CompositeResourceUsecase,
+) domain.CompositeResourceEventConsumer {
 	return &compositeResourceConsumer{
 		compositeResourceUsecase: compositeResourceUsecase,
 		messageQueue:             mq,

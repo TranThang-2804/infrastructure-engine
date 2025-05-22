@@ -6,6 +6,6 @@ import (
 )
 
 var (
-	QueueMessageNeedRetry = fmt.Errorf("QueueMessageNeedRetry")
+	QueueMessageNeedRetry  = fmt.Errorf("QueueMessageNeedRetry")
 	QueueAlreadySubscribed = errors.New("already subscribed to subject")
 )

@@ -78,7 +78,12 @@ func App() Application {
 	app.bluePrintUsecase = usecase.NewBluePrintUsecase(app.bluePrintRepository)
 	app.iacTemplateUsecase = usecase.NewIacTemplateUsecase(app.iacTemplateRepository)
 	app.iacPipelineUsecase = usecase.NewIacPipelineUsecase(app.iacPipelineRepository)
-	app.compositeResourceUsecase = usecase.NewCompositeResourceUsecase(app.compositeResourceRepository, app.compositeResourcePublisher, app.bluePrintUsecase, app.iacPipelineUsecase)
+	app.compositeResourceUsecase = usecase.NewCompositeResourceUsecase(
+		app.compositeResourceRepository,
+		app.compositeResourcePublisher,
+		app.bluePrintUsecase,
+		app.iacPipelineUsecase,
+	)
 
 	// Setting up the controllers
 	app.HealthController = controller.NewHealthController()

@@ -7,7 +7,7 @@ import (
 	"github.com/TranThang-2804/infrastructure-engine/internal/utils"
 )
 
-type HealthController struct {}
+type HealthController struct{}
 
 func NewHealthController() *HealthController {
 	return &HealthController{}

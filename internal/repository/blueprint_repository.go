@@ -27,7 +27,13 @@ func (br *bluePrintRepository) GetAll(ctx context.Context) ([]domain.BluePrint, 
 
 	var bluePrints []domain.BluePrint
 
-	fileContents, err := br.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-template", "master", "blueprint")
+	fileContents, err := br.gitStore.GetAllFileContentsInDirectory(
+		ctx,
+		"TranThang-2804",
+		"platform-iac-template",
+		"master",
+		"blueprint",
+	)
 
 	for _, fileContent := range fileContents {
 		var bluePrint domain.BluePrint
@@ -49,7 +55,13 @@ func (br *bluePrintRepository) GetById(ctx context.Context, id string) (domain.B
 	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(br))
 	ctx = logger.WithCtx(ctx)
 
-	fileContents, err := br.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-template", "master", "blueprint")
+	fileContents, err := br.gitStore.GetAllFileContentsInDirectory(
+		ctx,
+		"TranThang-2804",
+		"platform-iac-template",
+		"master",
+		"blueprint",
+	)
 
 	for _, fileContent := range fileContents {
 		var bluePrint domain.BluePrint
@@ -67,11 +79,21 @@ func (br *bluePrintRepository) GetById(ctx context.Context, id string) (domain.B
 	return domain.BluePrint{}, fmt.Errorf("Blueprint not found with id: %s", id)
 }
 
-func (br *bluePrintRepository) GetByIdAndVersion(ctx context.Context, id string, version string) (domain.BluePrintVersion, error) {
+func (br *bluePrintRepository) GetByIdAndVersion(
+	ctx context.Context,
+	id string,
+	version string,
+) (domain.BluePrintVersion, error) {
 	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(br))
 	ctx = logger.WithCtx(ctx)
 
-	fileContents, err := br.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-template", "master", "blueprint")
+	fileContents, err := br.gitStore.GetAllFileContentsInDirectory(
+		ctx,
+		"TranThang-2804",
+		"platform-iac-template",
+		"master",
+		"blueprint",
+	)
 
 	for _, fileContent := range fileContents {
 		var bluePrint domain.BluePrint

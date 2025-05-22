@@ -13,7 +13,9 @@ type CompositeResourceController struct {
 	CompositeResourceUseCase domain.CompositeResourceUsecase
 }
 
-func NewCompositeResourceController(compositeResourceUseCase domain.CompositeResourceUsecase) *CompositeResourceController {
+func NewCompositeResourceController(
+	compositeResourceUseCase domain.CompositeResourceUsecase,
+) *CompositeResourceController {
 	return &CompositeResourceController{
 		CompositeResourceUseCase: compositeResourceUseCase,
 	}
@@ -49,7 +51,13 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusBadRequest)
-		logger.Error("Error parsing body of creating resource api", "error", err.Error(), "compositeResourceConfig", request)
+		logger.Error(
+			"Error parsing body of creating resource api",
+			"error",
+			err.Error(),
+			"compositeResourceConfig",
+			request,
+		)
 		return
 	}
 
@@ -64,7 +72,13 @@ func (rc *CompositeResourceController) Create(w http.ResponseWriter, r *http.Req
 	compositeResource, err := rc.CompositeResourceUseCase.Create(ctx, request)
 	if err != nil {
 		http.Error(w, utils.JsonError(err.Error()), http.StatusInternalServerError)
-		logger.Error("Error creating resource config", "error", err.Error(), "compositeResourceConfig", compositeResource)
+		logger.Error(
+			"Error creating resource config",
+			"error",
+			err.Error(),
+			"compositeResourceConfig",
+			compositeResource,
+		)
 		return
 	}
 

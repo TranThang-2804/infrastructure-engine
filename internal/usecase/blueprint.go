@@ -32,7 +32,11 @@ func (bp *bluePrintUsecase) GetById(c context.Context, id string) (domain.BluePr
 	return bp.bluePrintRepository.GetById(ctx, id)
 }
 
-func (bp *bluePrintUsecase) GetByIdAndVersion(c context.Context, id string, version string) (domain.BluePrintVersion, error) {
+func (bp *bluePrintUsecase) GetByIdAndVersion(
+	c context.Context,
+	id string,
+	version string,
+) (domain.BluePrintVersion, error) {
 	ctx, cancel := context.WithTimeout(c, bp.contextTimeout)
 	defer cancel()
 	return bp.bluePrintRepository.GetByIdAndVersion(ctx, id, version)

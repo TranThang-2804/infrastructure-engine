@@ -26,7 +26,10 @@ func (iu *iacPipelineUsecase) Trigger(c context.Context, iacPipeline domain.IacP
 	return iu.iacPipelineRepository.Trigger(ctx, iacPipeline)
 }
 
-func (iu *iacPipelineUsecase) GetPipelineOutputByUrl(c context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
+func (iu *iacPipelineUsecase) GetPipelineOutputByUrl(
+	c context.Context,
+	iacPipeline domain.IacPipeline,
+) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(c, iu.contextTimeout)
 	defer cancel()
 	return iu.iacPipelineRepository.GetPipelineOutputByUrl(ctx, iacPipeline)

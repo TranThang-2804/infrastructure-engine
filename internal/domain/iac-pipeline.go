@@ -3,16 +3,16 @@ package domain
 import "context"
 
 type IacPipeline struct {
-	Name              string            `json:"name" yaml:"name"`
-	Id                int               `json:"id" yaml:"id"`
-	Action            string            `json:"action" yaml:"action"`
+	Name              string            `json:"name"     yaml:"name"`
+	Id                int               `json:"id"       yaml:"id"`
+	Action            string            `json:"action"   yaml:"action"`
 	GitProvider       string            `json:"provider" yaml:"provider"`
-	URL               string            `json:"url" yaml:"url"`
-	IacPipelineOutput IacPipelineOutput `json:"output" yaml:"output"`
+	URL               string            `json:"url"      yaml:"url"`
+	IacPipelineOutput IacPipelineOutput `json:"output"   yaml:"output"`
 }
 
 type IacPipelineOutput struct {
-	Status     string         `json:"status" yaml:"status"`
+	Status     string         `json:"status"      yaml:"status"`
 	OuputValue map[string]any `json:"outputValue" yaml:"outputValue"`
 }
 

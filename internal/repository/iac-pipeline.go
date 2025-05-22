@@ -44,11 +44,17 @@ func (ir *iacPipelineRepository) Trigger(ctx context.Context, iacPipeline domain
 	return pipelineUrl, nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineOutputByUrl(ctx context.Context, iacPipeline domain.IacPipeline) ([]byte, error) {
+func (ir *iacPipelineRepository) GetPipelineOutputByUrl(
+	ctx context.Context,
+	iacPipeline domain.IacPipeline,
+) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func (ir *iacPipelineRepository) GetPipelineStatus(ctx context.Context, iacIacPipeline domain.IacPipeline) (string, error) {
+func (ir *iacPipelineRepository) GetPipelineStatus(
+	ctx context.Context,
+	iacIacPipeline domain.IacPipeline,
+) (string, error) {
 	return "Running", nil
 }
 

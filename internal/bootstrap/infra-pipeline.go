@@ -86,7 +86,14 @@ func (ip *InfraPipeline) SettingInfraPipeline() error {
 			return nil
 		}
 
-		ip.gitStore.CreateOrUpdateFile(ctx, "TranThang-2804", "platform-iac-resource", "master", fileMapping.remoteFilePath, string(content))
+		ip.gitStore.CreateOrUpdateFile(
+			ctx,
+			"TranThang-2804",
+			"platform-iac-resource",
+			"master",
+			fileMapping.remoteFilePath,
+			string(content),
+		)
 	}
 	return nil
 }

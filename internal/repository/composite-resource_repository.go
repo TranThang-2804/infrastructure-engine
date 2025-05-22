@@ -26,7 +26,13 @@ func (cr *compositeResourceRepository) GetAll(ctx context.Context) ([]domain.Com
 
 	var compositeResources []domain.CompositeResource
 
-	compositeResourceContents, err := cr.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-resource", "master", "template")
+	compositeResourceContents, err := cr.gitStore.GetAllFileContentsInDirectory(
+		ctx,
+		"TranThang-2804",
+		"platform-iac-resource",
+		"master",
+		"template",
+	)
 
 	for _, fileContent := range compositeResourceContents {
 		var compositeResource domain.CompositeResource
@@ -44,7 +50,10 @@ func (cr *compositeResourceRepository) GetAll(ctx context.Context) ([]domain.Com
 	return compositeResources, err
 }
 
-func (cr *compositeResourceRepository) Create(ctx context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+func (cr *compositeResourceRepository) Create(
+	ctx context.Context,
+	compositeResource domain.CompositeResource,
+) (domain.CompositeResource, error) {
 	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(cr))
 	ctx = logger.WithCtx(ctx)
 
@@ -82,7 +91,10 @@ func (cr *compositeResourceRepository) Create(ctx context.Context, compositeReso
 	return compositeResource, nil
 }
 
-func (cr *compositeResourceRepository) Update(ctx context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+func (cr *compositeResourceRepository) Update(
+	ctx context.Context,
+	compositeResource domain.CompositeResource,
+) (domain.CompositeResource, error) {
 	logger := log.BaseLogger.FromCtx(ctx).WithFields("repository", utils.GetStructName(cr))
 	ctx = logger.WithCtx(ctx)
 
@@ -134,7 +146,10 @@ func (cr *compositeResourceRepository) Update(ctx context.Context, compositeReso
 	return compositeResource, nil
 }
 
-func (cr *compositeResourceRepository) Delete(c context.Context, compositeResource domain.CompositeResource) (domain.CompositeResource, error) {
+func (cr *compositeResourceRepository) Delete(
+	c context.Context,
+	compositeResource domain.CompositeResource,
+) (domain.CompositeResource, error) {
 
 	return compositeResource, nil
 }

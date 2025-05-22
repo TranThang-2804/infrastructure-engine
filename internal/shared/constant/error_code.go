@@ -1,7 +1,5 @@
 package constant
 
-import ()
-
 type ErrorCode int
 
 const (

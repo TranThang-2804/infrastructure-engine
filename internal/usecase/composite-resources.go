@@ -22,7 +22,12 @@ type compositeResourceUsecase struct {
 	contextTimeout                  time.Duration
 }
 
-func NewCompositeResourceUsecase(compositeResourceRepository domain.CompositeResourceRepository, compositeResourceEventPublisher domain.CompositeResourceEventPublisher, bluePrintUsecase domain.BluePrintUsecase, iacPiacPipelineUsecase domain.IacPipelineUsecase) domain.CompositeResourceUsecase {
+func NewCompositeResourceUsecase(
+	compositeResourceRepository domain.CompositeResourceRepository,
+	compositeResourceEventPublisher domain.CompositeResourceEventPublisher,
+	bluePrintUsecase domain.BluePrintUsecase,
+	iacPiacPipelineUsecase domain.IacPipelineUsecase,
+) domain.CompositeResourceUsecase {
 	return &compositeResourceUsecase{
 		compositeResourceRepository:     compositeResourceRepository,
 		compositeResourceEventPublisher: compositeResourceEventPublisher,
@@ -38,7 +43,10 @@ func (cu *compositeResourceUsecase) GetAll(c context.Context) ([]domain.Composit
 	return cu.compositeResourceRepository.GetAll(ctx)
 }
 
-func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeResourceRequest domain.CreateCompositeResourceRequest) (domain.CompositeResource, error) {
+func (cu *compositeResourceUsecase) Create(
+	c context.Context,
+	createCompositeResourceRequest domain.CreateCompositeResourceRequest,
+) (domain.CompositeResource, error) {
 	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
 	logger := log.BaseLogger.FromCtx(ctx).WithFields("usecase", utils.GetStructName(cu))
 	ctx = logger.WithCtx(ctx)
@@ -106,7 +114,10 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 			return domain.CompositeResource{}, err
 		}
 
-		resourceValue, err := utils.GenerateGoTemplateOutput(createCompositeResourceRequest.Spec, template.ValueTemplate)
+		resourceValue, err := utils.GenerateGoTemplateOutput(
+			createCompositeResourceRequest.Spec,
+			template.ValueTemplate,
+		)
 		if err != nil {
 			logger.Error("Error generating template", "error", err.Error())
 			return domain.CompositeResource{}, err
@@ -145,11 +156,17 @@ func (cu *compositeResourceUsecase) Create(c context.Context, createCompositeRes
 	return compositeResource, nil
 }
 
-func (cu *compositeResourceUsecase) Update(c context.Context, deleteCompositeResourceRequest domain.UpdateCompositeResourceRequest) (domain.CompositeResource, error) {
+func (cu *compositeResourceUsecase) Update(
+	c context.Context,
+	deleteCompositeResourceRequest domain.UpdateCompositeResourceRequest,
+) (domain.CompositeResource, error) {
 	return domain.CompositeResource{}, nil
 }
 
-func (cu *compositeResourceUsecase) Delete(c context.Context, deleteCompositeResourceRequest domain.DeleteCompositeResourceRequest) (domain.CompositeResource, error) {
+func (cu *compositeResourceUsecase) Delete(
+	c context.Context,
+	deleteCompositeResourceRequest domain.DeleteCompositeResourceRequest,
+) (domain.CompositeResource, error) {
 	return domain.CompositeResource{}, nil
 }
 

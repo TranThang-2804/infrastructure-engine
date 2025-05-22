@@ -15,8 +15,15 @@ type GitHub struct {
 	Client *github.Client
 }
 
-func (gh *GitHub) ReadFileContent(ctx context.Context, owner string, repo string, branch string, path string) (string, error) {
-	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "ReadFileContent", "owner", owner, "repo", repo, "branch", branch, "path", path)
+func (gh *GitHub) ReadFileContent(
+	ctx context.Context,
+	owner string,
+	repo string,
+	branch string,
+	path string,
+) (string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).
+		WithFields("function", "ReadFileContent", "owner", owner, "repo", repo, "branch", branch, "path", path)
 	ctx = logger.WithCtx(ctx)
 
 	// Fetch the file content
@@ -51,8 +58,15 @@ func (gh *GitHub) ReadFileContent(ctx context.Context, owner string, repo string
 	return fileContent, nil
 }
 
-func (gh *GitHub) GetAllFileContentsInDirectory(ctx context.Context, owner string, repo string, branch string, path string) ([]string, error) {
-	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "GetAllFileContentsInDirectory", "owner", owner, "repo", repo, "branch", branch, "path", path)
+func (gh *GitHub) GetAllFileContentsInDirectory(
+	ctx context.Context,
+	owner string,
+	repo string,
+	branch string,
+	path string,
+) ([]string, error) {
+	logger := log.BaseLogger.FromCtx(ctx).
+		WithFields("function", "GetAllFileContentsInDirectory", "owner", owner, "repo", repo, "branch", branch, "path", path)
 	ctx = logger.WithCtx(ctx)
 
 	// Fetch the directory content
@@ -95,8 +109,16 @@ func (gh *GitHub) GetAllFileContentsInDirectory(ctx context.Context, owner strin
 	return fileContents, nil
 }
 
-func (gh *GitHub) CreateFile(ctx context.Context, owner string, repo string, branch string, filePath string, content string) error {
-	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "GetAllFileContentsInDirectory", "owner", owner, "repo", repo, "branch", branch, "path", filePath)
+func (gh *GitHub) CreateFile(
+	ctx context.Context,
+	owner string,
+	repo string,
+	branch string,
+	filePath string,
+	content string,
+) error {
+	logger := log.BaseLogger.FromCtx(ctx).
+		WithFields("function", "GetAllFileContentsInDirectory", "owner", owner, "repo", repo, "branch", branch, "path", filePath)
 	ctx = logger.WithCtx(ctx)
 
 	// Check if the file already exists
@@ -141,8 +163,16 @@ func (gh *GitHub) CreateFile(ctx context.Context, owner string, repo string, bra
 	return nil
 }
 
-func (gh *GitHub) CreateOrUpdateFile(ctx context.Context, owner string, repo string, branch string, filePath string, content string) error {
-	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "CreateOrUpdateFile", "owner", owner, "repo", repo, "branch", branch, "path", filePath)
+func (gh *GitHub) CreateOrUpdateFile(
+	ctx context.Context,
+	owner string,
+	repo string,
+	branch string,
+	filePath string,
+	content string,
+) error {
+	logger := log.BaseLogger.FromCtx(ctx).
+		WithFields("function", "CreateOrUpdateFile", "owner", owner, "repo", repo, "branch", branch, "path", filePath)
 	ctx = logger.WithCtx(ctx)
 
 	// Check if the file exists
@@ -220,7 +250,12 @@ func (gh *GitHub) CreateOrUpdateFile(ctx context.Context, owner string, repo str
 	return nil
 }
 
-func (gh *GitHub) TriggerPipeline(ctx context.Context, owner string, repo string, pipelineParams map[string]any) (string, error) {
+func (gh *GitHub) TriggerPipeline(
+	ctx context.Context,
+	owner string,
+	repo string,
+	pipelineParams map[string]any,
+) (string, error) {
 	logger := log.BaseLogger.FromCtx(ctx).WithFields("function", "TriggerPipeline", "owner", owner, "repo", repo)
 	ctx = logger.WithCtx(ctx)
 

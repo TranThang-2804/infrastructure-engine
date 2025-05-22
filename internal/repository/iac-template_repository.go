@@ -25,7 +25,13 @@ func (ir *iacTemplateRepository) GetAll(ctx context.Context) ([]domain.IacTempla
 	ctx = logger.WithCtx(ctx)
 	var iacTemplates []domain.IacTemplate
 
-	fileContents, err := ir.gitStore.GetAllFileContentsInDirectory(ctx, "TranThang-2804", "platform-iac-template", "master", "template")
+	fileContents, err := ir.gitStore.GetAllFileContentsInDirectory(
+		ctx,
+		"TranThang-2804",
+		"platform-iac-template",
+		"master",
+		"template",
+	)
 
 	for _, fileContent := range fileContents {
 		var iacTemplate domain.IacTemplate

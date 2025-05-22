@@ -19,7 +19,10 @@ func NewCompositeResourcePublisher(mq MessageQueue) domain.CompositeResourceEven
 	}
 }
 
-func (cr *CompositeResourcePublisher) PublishToPendingSubject(c context.Context, compositeResource domain.CompositeResource) error {
+func (cr *CompositeResourcePublisher) PublishToPendingSubject(
+	c context.Context,
+	compositeResource domain.CompositeResource,
+) error {
 	logger := log.BaseLogger.WithFields("infrastructure", utils.GetStructName(cr))
 
 	// Publish message to queue
@@ -33,7 +36,10 @@ func (cr *CompositeResourcePublisher) PublishToPendingSubject(c context.Context,
 	return nil
 }
 
-func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(c context.Context, compositeResource domain.CompositeResource) error {
+func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(
+	c context.Context,
+	compositeResource domain.CompositeResource,
+) error {
 	logger := log.BaseLogger.WithFields("infrastructure", utils.GetStructName(cr))
 
 	// Publish message to queue
@@ -45,7 +51,10 @@ func (cr *CompositeResourcePublisher) PublishToProvisioningSubject(c context.Con
 	return cr.messageQueue.Publish("composite-resource.provisioning", messageData)
 }
 
-func (cr *CompositeResourcePublisher) PublishToDeletingSubject(c context.Context, compositeResource domain.CompositeResource) error {
+func (cr *CompositeResourcePublisher) PublishToDeletingSubject(
+	c context.Context,
+	compositeResource domain.CompositeResource,
+) error {
 	logger := log.BaseLogger.WithFields("infrastructure", utils.GetStructName(cr))
 
 	// Publish message to queue
